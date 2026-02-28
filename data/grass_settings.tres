@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="GrassSettings" format=3 uid="uid://bdqxm3xsqddvg"]
+
+[ext_resource type="Script" uid="uid://crp6h8gcouspi" path="res://world/grass_settings.gd" id="1_settings"]
+[ext_resource type="Script" uid="uid://ixjo45sa0sdv" path="res://world/grass_decoration_entry.gd" id="2_entry"]
+
+[sub_resource type="Resource" id="Entry_1"]
+script = ExtResource("2_entry")
+tileId = 147
+
+[sub_resource type="Resource" id="Entry_2"]
+script = ExtResource("2_entry")
+tileId = 148
+
+[sub_resource type="Resource" id="Entry_3"]
+script = ExtResource("2_entry")
+tileId = 149
+weight = 1.5
+
+[sub_resource type="Resource" id="Entry_4"]
+script = ExtResource("2_entry")
+tileId = 150
+
+[sub_resource type="Resource" id="Entry_5"]
+script = ExtResource("2_entry")
+tileId = 151
+weight = 0.5
+
+[sub_resource type="Resource" id="Entry_6"]
+script = ExtResource("2_entry")
+tileId = 152
+weight = 0.5
+
+[sub_resource type="Resource" id="Entry_7"]
+script = ExtResource("2_entry")
+tileId = 153
+
+[sub_resource type="Resource" id="Entry_8"]
+script = ExtResource("2_entry")
+tileId = 154
+
+[sub_resource type="Resource" id="Entry_9"]
+script = ExtResource("2_entry")
+tileId = 155
+weight = 0.75
+
+[resource]
+script = ExtResource("1_settings")
+grassDecorationChance = 0.07
+grassDecorations = Array[ExtResource("2_entry")]([SubResource("Entry_1"), SubResource("Entry_2"), SubResource("Entry_3"), SubResource("Entry_4"), SubResource("Entry_5"), SubResource("Entry_6"), SubResource("Entry_7"), SubResource("Entry_8"), SubResource("Entry_9")])

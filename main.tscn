@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://main00000001"]
+
+[ext_resource type="Script" uid="uid://ci07dx2bub8lh" path="res://main.gd" id="1_main"]
+[ext_resource type="TileSet" uid="uid://tileset00001" path="res://textures/world_tileset.tres" id="3_tileset"]
+[ext_resource type="Script" uid="uid://b0v1353g01cda" path="res://world/world_tilemap.gd" id="4_worldscript"]
+
+[node name="Main" type="Node2D" unique_id=1621069194]
+script = ExtResource("1_main")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=517199889]
+tile_set = ExtResource("3_tileset")
+script = ExtResource("4_worldscript")
+
+[node name="TileMapLayerDecoration" type="TileMapLayer" parent="." unique_id=773947711]
+tile_set = ExtResource("3_tileset")
+
+[node name="EntityLayer" type="Node2D" parent="." unique_id=222333444]

@@ -1,0 +1,13 @@
+# Godot cache / import data (regenerated on open)
+.godot/
+
+# Claude Code local settings (machine-specific permissions)
+.claude/
+
+# Export presets contain absolute paths — don't commit
+export_presets.cfg
+
+# Mono/C# (if ever added)
+.mono/
+data_*/
+mono_crash.*.json
