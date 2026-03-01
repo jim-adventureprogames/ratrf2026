@@ -4,11 +4,11 @@
  <layer id="1" name="ground" width="8" height="8">
   <data encoding="csv">
 97,97,97,97,97,97,97,97,
-97,0,100,100,100,100,0,97,
-0,0,99,99,99,99,0,0,
-0,99,99,99,99,99,99,0,
-0,99,99,99,99,99,99,0,
-0,0,99,99,99,99,0,0,
+97,0,99,99,99,99,0,97,
+97,100,99,99,99,99,99,97,
+97,100,99,99,99,99,99,97,
+97,100,99,99,99,99,99,97,
+97,100,99,99,99,99,99,97,
 97,0,99,99,99,99,0,97,
 97,97,97,97,97,97,97,97
 </data>
@@ -27,14 +27,14 @@
  </layer>
  <layer id="3" name="wall" width="8" height="8">
   <data encoding="csv">
+0,0,92,69,69,92,0,0,
+0,69,69,0,0,69,69,0,
 0,0,0,0,0,0,0,0,
-0,92,0,0,0,0,92,0,
-92,69,0,0,0,0,69,92,
-92,0,0,7,7,0,0,92,
-92,0,0,0,0,0,0,92,
-69,92,0,7,7,0,92,69,
-0,69,0,0,0,0,69,0,
-0,0,0,0,0,0,0,0
+0,0,0,7,0,7,0,0,
+0,0,0,7,0,7,0,0,
+0,0,0,0,0,0,0,0,
+0,69,92,0,0,92,69,0,
+0,0,92,92,92,92,0,0
 </data>
  </layer>
  <layer id="4" name="wall_decoration" width="8" height="8">
@@ -50,19 +50,19 @@
 </data>
  </layer>
  <objectgroup id="5" name="spawn">
-  <object id="2" name="spawn_pennant" x="17.2727" y="9.09091">
+  <object id="2" name="spawn_pennant" x="5.75" y="21.2273">
    <properties>
     <property name="prefab" value="deco_pennant"/>
    </properties>
    <point/>
   </object>
-  <object id="4" name="spawn_pennant" x="77.6364" y="8.54545">
+  <object id="4" name="spawn_pennant" x="6.5" y="81.4091">
    <properties>
     <property name="prefab" value="deco_pennant"/>
    </properties>
    <point/>
   </object>
-  <object id="5" name="player_start" x="41.7669" y="92.0031">
+  <object id="5" name="player_start" x="89.5" y="45">
    <properties>
     <property name="spawn" value="player"/>
    </properties>

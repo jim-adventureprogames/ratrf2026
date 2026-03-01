@@ -10,6 +10,10 @@ var entityRegistry: Dictionary = {}   # int → Entity
 var nextEntityId:   int = 0
 var currentZoneId:  int = -1
 
+# Populated by stampTmx whenever an object carries a "spawn" property.
+# Key = spawn value (e.g. "player"), value = Array of Vector3i world positions.
+var spawnPoints: Dictionary = {}   # String → Array[Vector3i]
+
 # Set by main.gd before the first zone load. Used by MoverComponent to
 # trigger visual reloads on zone change without coupling to the scene tree.
 var worldTileMap: WorldTileMap
@@ -19,6 +23,9 @@ var grassSettings: GrassSettings
 
 # Loaded from data/npc_settings.tres — edit that file in the inspector.
 var npcSettings: NpcSettings
+
+# Loaded from data/world_settings.tres — edit that file in the inspector.
+var worldSettings: WorldSettings
 
 var mapInfo : MapDataInfo
 
@@ -32,12 +39,37 @@ func _ready() -> void:
 	if npcSettings == null:
 		push_warning("MapManager: npc_settings.tres not found, using defaults.")
 		npcSettings = NpcSettings.new()
+	worldSettings = load("res://data/world_settings.tres") as WorldSettings
+	if worldSettings == null:
+		push_warning("MapManager: world_settings.tres not found, using defaults.")
+		worldSettings = WorldSettings.new()
 
 
 # Returns a tile ID chosen from grassSettings.grassDecorations by weight.
 # Returns Tile.EMPTY_TILE if the array is empty.
 func pickGrassDecoration() -> int:
 	var decorations := grassSettings.grassDecorations
+	if decorations.is_empty():
+		return Tile.EMPTY_TILE
+
+	var totalWeight := 0.0
+	for entry: TileDecorationEntry in decorations:
+		totalWeight += entry.weight
+
+	var roll       := randf() * totalWeight
+	var cumulative := 0.0
+	for entry: TileDecorationEntry in decorations:
+		cumulative += entry.weight
+		if roll < cumulative:
+			return entry.tileId
+
+	return decorations.back().tileId  # fallback for floating-point edge cases
+
+
+# Returns a tile ID chosen from grassSettings.dirtDecorations by weight.
+# Returns Tile.EMPTY_TILE if the array is empty.
+func pickDirtDecoration() -> int:
+	var decorations := grassSettings.dirtDecorations
 	if decorations.is_empty():
 		return Tile.EMPTY_TILE
 
@@ -159,12 +191,13 @@ func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
 	var inData       := false
 
 	# Spawn-layer state — populated across several element events before the
-	# </object> closing tag fires and we finally call _spawnEntityFromPrefab.
+	# </object> closing tag fires and we finally act on the collected data.
 	var inSpawnGroup  := false
 	var inSpawnObject := false
 	var spawnPixelX   := 0.0
 	var spawnPixelY   := 0.0
 	var spawnPrefab   := ""
+	var spawnTag      := ""
 
 	while parser.read() == OK:
 		match parser.get_node_type():
@@ -188,10 +221,14 @@ func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
 							spawnPixelX   = parser.get_named_attribute_value_safe("x").to_float()
 							spawnPixelY   = parser.get_named_attribute_value_safe("y").to_float()
 							spawnPrefab   = ""
+							spawnTag      = ""
 					"property":
 						# Each <property> is self-closing — read value here directly.
-						if inSpawnObject and parser.get_named_attribute_value_safe("name") == "prefab":
-							spawnPrefab = parser.get_named_attribute_value_safe("value")
+						if inSpawnObject:
+							var propName := parser.get_named_attribute_value_safe("name")
+							match propName:
+								"prefab": spawnPrefab = parser.get_named_attribute_value_safe("value")
+								"spawn":  spawnTag    = parser.get_named_attribute_value_safe("value")
 
 			XMLParser.NODE_TEXT:
 				if inData and currentLayer != "":
@@ -201,14 +238,20 @@ func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
 			XMLParser.NODE_ELEMENT_END:
 				match parser.get_node_name():
 					"object":
-						# All properties for this object have been read — spawn if we have a prefab.
-						if inSpawnObject and spawnPrefab != "":
+						# All properties for this object have been read — act on them.
+						if inSpawnObject:
 							var tileX    := int(spawnPixelX / Globals.TILE_SIZE)
 							var tileY    := int(spawnPixelY / Globals.TILE_SIZE)
 							var worldPos := Vector3i(topLeft.x + tileX, topLeft.y + tileY, topLeft.z)
-							_spawnEntityFromPrefab(spawnPrefab, worldPos)
+							if spawnPrefab != "":
+								_spawnEntityFromPrefab(spawnPrefab, worldPos)
+							if spawnTag != "":
+								if not spawnPoints.has(spawnTag):
+									spawnPoints[spawnTag] = []
+								spawnPoints[spawnTag].append(worldPos)
 						inSpawnObject = false
 						spawnPrefab   = ""
+						spawnTag      = ""
 					"objectgroup":
 						inSpawnGroup = false
 

@@ -9,4 +9,7 @@ extends Resource
 @export var grassDecorations: Array[TileDecorationEntry] = []
 
 
+# Probability (0.0–1.0) that any individual tile within a dirtalized section receives a decoration.
+@export_range(0.0, 1.0, 0.01) var dirtDecorationChance: float = 0.4
+
 @export var dirtDecorations: Array[TileDecorationEntry] = []

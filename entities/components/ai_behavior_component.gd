@@ -26,7 +26,8 @@ func takeAction() -> bool:
 		return actionPoints <= 0
 
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
-	if mover and mover.tryMove(nextStepDirection):
+	if mover:
+		mover.tryMove(nextStepDirection)
 		actionPoints -= 1
 
 	nextStepTile      = Vector3i(-1, -1, -1)

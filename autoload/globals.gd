@@ -25,11 +25,12 @@ const ZONE_PIXEL_HEIGHT := TILE_SIZE * ZONE_HEIGHT_TILES  # 240
 const UI_PANEL_X        := ZONE_PIXEL_WIDTH               # 240 — right panel starts here
 const UI_PANEL_WIDTH    := 80                             # 320 - 240
 
-const ZONE_GRID_WIDTH   := 5
-const ZONE_GRID_HEIGHT  := 5
-const ZONE_COUNT        := ZONE_GRID_WIDTH * ZONE_GRID_HEIGHT
-# Integer division gives centre index: (5*5-1)/2 = 12
-const STARTING_ZONE     := ZONE_GRID_WIDTH * (ZONE_GRID_HEIGHT / 2) + (ZONE_GRID_WIDTH / 2)
+# These are vars (not consts) so WorldGenerator can set them at runtime
+# after reading WorldSettings.  Read-only everywhere except WorldGenerator.generateWorld().
+var ZONE_GRID_WIDTH:  int = 5
+var ZONE_GRID_HEIGHT: int = 5
+var ZONE_COUNT:       int = 25
+var STARTING_ZONE:    int = 12
 
 
 func _ready() -> void:

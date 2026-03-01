@@ -21,7 +21,6 @@ func decideWhatToDo() -> void:
 		var target := mover.resolveTargetWorldPosition(dir)
 		if target.z < 0:
 			continue
-		if MapManager.testDestinationTile(target) == Globals.EMoveTestResult.OK:
-			nextStepTile      = target
-			nextStepDirection = dir
-			return
+		nextStepTile      = target
+		nextStepDirection = dir
+		return

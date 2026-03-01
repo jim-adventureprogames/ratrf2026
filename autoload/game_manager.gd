@@ -22,22 +22,30 @@ var pendingAIComponents: Array[AIBehaviorComponent] = []
 
 func startGame() -> void:
 	generateWorld()
-	MapManager.worldTileMap.loadZone(Globals.STARTING_ZONE)
 	spawnPlayer()
 	_spawnDebugMarks()
+	MapManager.worldTileMap.loadZone(playerEntity.worldPosition.z)
 
 
 func generateWorld() -> void:
 	WorldGenerator.generateWorld()
 
 
+func _pickPlayerSpawn() -> Vector3i:
+	var points: Array = MapManager.spawnPoints.get("player", [])
+	if points.is_empty():
+		push_warning("GameManager: no 'player' spawn points found, falling back to zone centre.")
+		return Vector3i(
+			Globals.ZONE_WIDTH_TILES  / 2,
+			Globals.ZONE_HEIGHT_TILES / 2,
+			Globals.STARTING_ZONE
+		)
+	return points[randi() % points.size()]
+
+
 func spawnPlayer() -> void:
 	playerEntity               = load("res://entity_prefabs/player.tscn").instantiate()
-	playerEntity.worldPosition  = Vector3i(
-		Globals.ZONE_WIDTH_TILES  / 2,
-		Globals.ZONE_HEIGHT_TILES / 2,
-		Globals.STARTING_ZONE
-	)
+	playerEntity.worldPosition  = _pickPlayerSpawn()
 	MapManager.registerEntity(playerEntity)
 	entityLayer.add_child(playerEntity)
 
@@ -53,14 +61,17 @@ func _spawnDebugMarks() -> void:
 	if packed == null:
 		push_error("GameManager: could not load mark.tscn")
 		return
+		
+	var spawnZone = playerEntity.worldPosition.z
 
 	var spawned  := 0
 	var attempts := 0
 	while spawned < 5 and attempts < 200:
 		attempts += 1
-		var x        := randi_range(0, Globals.ZONE_WIDTH_TILES  - 1)
-		var y        := randi_range(0, Globals.ZONE_HEIGHT_TILES - 1)
-		var worldPos := Vector3i(x, y, Globals.STARTING_ZONE)
+		var inset    := WorldGenerator.WALL_INSET + 1
+		var x        := randi_range(inset, Globals.ZONE_WIDTH_TILES  - 1 - inset)
+		var y        := randi_range(inset, Globals.ZONE_HEIGHT_TILES - 1 - inset)
+		var worldPos := Vector3i(x, y, spawnZone)
 		if MapManager.testDestinationTile(worldPos) != Globals.EMoveTestResult.OK:
 			continue
 		var mark := packed.instantiate() as Entity
@@ -69,7 +80,6 @@ func _spawnDebugMarks() -> void:
 		mark.worldPosition = worldPos
 		MapManager.applySpawnVariant(mark)
 		MapManager.registerEntity(mark)
-		entityLayer.add_child(mark)
 		spawned += 1
 
 
