@@ -6,11 +6,19 @@ enum EGamePhase {
 	EndOfTurnCleanup,
 }
 
+enum EGameState {
+	MainMenu,
+	Gameplay,
+	GameOver,
+}
+
 # Set by main.gd before startGame() is called.
 var entityLayer: Node2D
 
 var playerEntity:        Entity
 var currentPhase:        EGamePhase             = EGamePhase.Player
+
+var gameState:			 EGameState				= EGameState.MainMenu
 
 # All AI components in the world, registered when their entity is registered.
 var aiComponents:        Array[AIBehaviorComponent] = []
@@ -24,7 +32,10 @@ func startGame() -> void:
 	generateWorld()
 	spawnPlayer()
 	_spawnDebugMarks()
+	HUDMiniMap.summon().populate();
+	HUDMiniMap.summon().setPlayerZone(playerEntity.worldPosition.z);
 	MapManager.worldTileMap.loadZone(playerEntity.worldPosition.z)
+	gameState = EGameState.Gameplay;
 
 
 func generateWorld() -> void:
@@ -52,6 +63,7 @@ func spawnPlayer() -> void:
 	var mover := playerEntity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
 		mover.turnTaken.connect(_onPlayerTurnTaken)
+		mover.zoneCrossed.connect(_onPlayerZoneChanged)
 
 
 # ── Debug helpers ────────────────────────────────────────────────────────────
@@ -61,18 +73,22 @@ func _spawnDebugMarks() -> void:
 	if packed == null:
 		push_error("GameManager: could not load mark.tscn")
 		return
-		
-	var spawnZone = playerEntity.worldPosition.z
 
+	# Spawn marks in every zone.
+	for zone: Zone in MapManager.zones:
+		_spawnDebugMarksInZone(packed, zone.id, 6)
+
+
+func _spawnDebugMarksInZone(packed: PackedScene, zoneId: int, count: int) -> void:
+	var inset    := WorldGenerator.WALL_INSET + 1
 	var spawned  := 0
 	var attempts := 0
-	while spawned < 5 and attempts < 200:
+	while spawned < count and attempts < 200:
 		attempts += 1
-		var inset    := WorldGenerator.WALL_INSET + 1
 		var x        := randi_range(inset, Globals.ZONE_WIDTH_TILES  - 1 - inset)
 		var y        := randi_range(inset, Globals.ZONE_HEIGHT_TILES - 1 - inset)
-		var worldPos := Vector3i(x, y, spawnZone)
-		if MapManager.testDestinationTile(worldPos) != Globals.EMoveTestResult.OK:
+		var worldPos := Vector3i(x, y, zoneId)
+		if MapManager.testDestinationTile(worldPos, false) != Globals.EMoveTestResult.OK:
 			continue
 		var mark := packed.instantiate() as Entity
 		if mark == null:
@@ -81,6 +97,12 @@ func _spawnDebugMarks() -> void:
 		MapManager.applySpawnVariant(mark)
 		MapManager.registerEntity(mark)
 		spawned += 1
+
+
+# ── Player actions ───────────────────────────────────────────────────────────
+
+func handlePlayerDoPickPocket(attacker: PlayerCharacterComponent, victim: MarkComponent) -> void:
+	pass
 
 
 # ── AI registration ───────────────────────────────────────────────────────────
@@ -98,6 +120,17 @@ func unregisterAIComponent(ai: AIBehaviorComponent) -> void:
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 func _process(_delta: float) -> void:
+	match gameState:
+		EGameState.MainMenu:
+			#wait
+			_processMainMenu(_delta);
+		EGameState.Gameplay:
+			_processMainGameplay(_delta);
+
+func _processMainMenu(_delta: float) -> void:
+	pass
+
+func _processMainGameplay(_delta: float) -> void:
 	match currentPhase:
 		EGamePhase.Player:
 			_processPlayerPhase()
@@ -105,7 +138,6 @@ func _process(_delta: float) -> void:
 			_processMonsterPhase()
 		EGamePhase.EndOfTurnCleanup:
 			_processEndOfTurnCleanup()
-
 
 # ── Phase handlers ────────────────────────────────────────────────────────────
 
@@ -122,6 +154,10 @@ func _onPlayerTurnTaken() -> void:
 	# Snapshot all AIs into the pending list for this turn.
 	pendingAIComponents = aiComponents.duplicate()
 	currentPhase = EGamePhase.Monster
+
+
+func _onPlayerZoneChanged(newZoneId: int) -> void:
+	HUDMiniMap.summon().setPlayerZone(newZoneId)
 
 
 func _processMonsterPhase() -> void:

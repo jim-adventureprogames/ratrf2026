@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="3_u22ac"]
 [ext_resource type="Script" uid="uid://ceow7ubw3uq76" path="res://entities/components/mover_component.gd" id="4_lvaaw"]
 [ext_resource type="Script" uid="uid://v5ppikna2ils" path="res://entities/components/mark_component.gd" id="5_twwuj"]
+[ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="6_bmpbl"]
 
 [node name="mark" type="Node2D" unique_id=967847664]
 script = ExtResource("1_twwuj")
@@ -21,3 +22,6 @@ script = ExtResource("4_lvaaw")
 
 [node name="markComponent" type="Node" parent="." unique_id=686798874]
 script = ExtResource("5_twwuj")
+
+[node name="bumpableComponent" type="Node" parent="." unique_id=112233445]
+script = ExtResource("6_bmpbl")

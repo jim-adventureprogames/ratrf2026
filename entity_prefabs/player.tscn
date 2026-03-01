@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="3_58d0q"]
 [ext_resource type="Script" uid="uid://ceow7ubw3uq76" path="res://entities/components/mover_component.gd" id="4_pgbv6"]
 [ext_resource type="Script" uid="uid://cwc2catdd2ds8" path="res://entities/components/player_input_component.gd" id="5_lt4ib"]
+[ext_resource type="Script" path="res://entities/components/player_character_component.gd" id="6_plrch"]
 
 [node name="player" type="Node2D" unique_id=967847664]
 script = ExtResource("1_3bt45")
@@ -18,6 +19,10 @@ script = ExtResource("3_58d0q")
 
 [node name="moverComponent" type="Node" parent="." unique_id=224727644]
 script = ExtResource("4_pgbv6")
+bCanBumpThings = true
 
 [node name="playerInputComponent" type="Node" parent="." unique_id=2114926421]
 script = ExtResource("5_lt4ib")
+
+[node name="playerCharacterComponent" type="Node" parent="." unique_id=334455667]
+script = ExtResource("6_plrch")

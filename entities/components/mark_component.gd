@@ -4,6 +4,21 @@ class_name MarkComponent
 extends AIBehaviorComponent
 
 
+func onAttached() -> void:
+	super.onAttached()
+	var bumpable := entity.getComponent(&"BumpableComponent") as BumpableComponent
+	if bumpable:
+		bumpable.bumped.connect(_onBumped)
+	else:
+		push_warning("MarkComponent: no BumpableComponent found on entity '%s'." % entity.name)
+
+
+func _onBumped(by: Entity) -> void:
+	var playerCharacter := by.getComponent(&"PlayerCharacterComponent") as PlayerCharacterComponent
+	if playerCharacter:
+		GameManager.handlePlayerDoPickPocket(playerCharacter, self)
+
+
 # Examines the world and picks the best action for this turn.
 # Currently: choose a random passable adjacent tile to wander into.
 func decideWhatToDo() -> void:

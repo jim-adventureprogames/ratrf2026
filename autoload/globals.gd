@@ -1,9 +1,10 @@
 extends Node
 
 enum EMoveTestResult {
-	OK,
-	Wall,
-	Entity,
+	OK,				# move is fine
+	Wall,			# a wall with nothing bumpable on it
+	Entity,			# an entity that prevents movement, but doesn't respond to bump
+	Bumpable,		# something that responds to bumping.
 }
 
 enum EFacing {
@@ -52,6 +53,7 @@ func initializeInputActions() -> void:
 	_defineAction("move_up_right",    [KEY_KP_9])
 	_defineAction("move_down_left",   [KEY_KP_1])
 	_defineAction("move_down_right",  [KEY_KP_3])
+	_defineAction("toggle_minimap",   [KEY_TAB])
 
 
 func _defineAction(actionName: String, keycodes: Array) -> void:
@@ -86,3 +88,32 @@ func getAdjacentZoneId(zoneId: int, direction: Vector2i) -> int:
 	if zoneY < 0 or zoneY >= ZONE_GRID_HEIGHT:
 		return -1
 	return zoneY * ZONE_GRID_WIDTH + zoneX
+
+
+# Returns the neighboring zone ID and the edge of that neighbor facing back toward
+# the source zone.  Returns an empty Dictionary if the edge leads off the world grid.
+# Example: getZoneNeighborByDirection(4, East) → { "zoneId": 5, "edge": West }
+func getZoneNeighborByDirection(zoneId: int, edge: Zone.EZoneEdge) -> Dictionary:
+	var direction  := _zoneEdgeToDirection(edge)
+	var neighborId := getAdjacentZoneId(zoneId, direction)
+	if neighborId == -1:
+		return {}
+	return { "zoneId": neighborId, "edge": _oppositeZoneEdge(edge) }
+
+
+func _zoneEdgeToDirection(edge: Zone.EZoneEdge) -> Vector2i:
+	match edge:
+		Zone.EZoneEdge.North:  return Vector2i( 0, -1)
+		Zone.EZoneEdge.South:  return Vector2i( 0,  1)
+		Zone.EZoneEdge.East:   return Vector2i( 1,  0)
+		Zone.EZoneEdge.West:   return Vector2i(-1,  0)
+	return Vector2i.ZERO
+
+
+func _oppositeZoneEdge(edge: Zone.EZoneEdge) -> Zone.EZoneEdge:
+	match edge:
+		Zone.EZoneEdge.North:  return Zone.EZoneEdge.South
+		Zone.EZoneEdge.South:  return Zone.EZoneEdge.North
+		Zone.EZoneEdge.East:   return Zone.EZoneEdge.West
+		Zone.EZoneEdge.West:   return Zone.EZoneEdge.East
+	return Zone.EZoneEdge.Center

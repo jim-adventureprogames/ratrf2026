@@ -8,17 +8,31 @@ var entityId: int = -1
 var worldPosition: Vector3i = Vector3i.ZERO
 
 # Keyed by each component's script global class name as a StringName.
-# Components register themselves here in their own _ready().
+# Components register themselves here in their own _initialize().
 var components: Dictionary = {}
 
+# Guard so _initialize() is idempotent — safe to call from both _ready()
+# (in-tree entities) and MapManager.registerEntity() (off-tree entities).
+var _initialized: bool = false
 
-func _ready() -> void:
-	# All children's _ready() have already fired, so every component has
-	# registered itself in the dict. Call onAttached() in scene order so
-	# components can safely cross-reference siblings.
+
+# Initializes all child components and fires onAttached() on each.
+# Called automatically by _ready() when the entity enters the scene tree,
+# and explicitly by MapManager.registerEntity() for off-tree entities.
+func _initialize() -> void:
+	if _initialized:
+		return
+	_initialized = true
+	for child in get_children():
+		if child.has_method("_initialize"):
+			child._initialize()
 	for child in get_children():
 		if child.has_method("onAttached"):
 			child.onAttached()
+
+
+func _ready() -> void:
+	_initialize()
 
 
 # Adds a component node at runtime (entity already in the scene tree).

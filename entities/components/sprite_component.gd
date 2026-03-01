@@ -7,12 +7,16 @@ var entity:      Entity
 var activeTween: Tween
 
 
-func _ready() -> void:
+func _initialize() -> void:
 	entity = get_parent() as Entity
 	if entity == null:
 		push_error("SpriteComponent must be a direct child of an Entity node.")
 		return
 	entity.components[&"SpriteComponent"] = self
+
+
+func _ready() -> void:
+	_initialize()
 
 
 func _exit_tree() -> void:

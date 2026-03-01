@@ -29,6 +29,8 @@ var worldSettings: WorldSettings
 
 var mapInfo : MapDataInfo
 
+var zoneAStar : AStarGrid2D = AStarGrid2D.new()
+
 func _ready() -> void:
 	mapInfo = load("res://world/map_data_info.tres") as MapDataInfo
 	grassSettings = load("res://data/grass_settings.tres") as GrassSettings
@@ -114,6 +116,9 @@ func getEntitiesAt(worldPos: Vector3i) -> Array[Entity]:
 
 
 func registerEntity(entity: Entity) -> void:
+	# Ensure components are wired up even if the entity was never added to the
+	# scene tree (e.g. entities spawned in zones the player hasn't visited yet).
+	entity._initialize()
 	entity.entityId  = nextEntityId
 	nextEntityId    += 1
 	entityRegistry[entity.entityId] = entity
@@ -354,15 +359,18 @@ func fillWallRect(start: Vector2i, end: Vector2i, zoneId: int, color: MapDataInf
 
 # ── Movement validation ─────────────────────────────────────────────────────────
 
-func testDestinationTile(targetPosition: Vector3i) -> Globals.EMoveTestResult:
+func testDestinationTile(targetPosition: Vector3i, bCheckBump: bool) -> Globals.EMoveTestResult:
 	var tile := getTileAt(targetPosition)
 	if tile == null:
 		return Globals.EMoveTestResult.Wall
+	for entity: Entity in tile.entities:
+		if bCheckBump and entity.getComponent(&"BumpableComponent") != null:
+			return Globals.EMoveTestResult.Bumpable
+		if entity.getComponent(&"BlocksMovementComponent") != null:
+			return Globals.EMoveTestResult.Entity
 	if tile.wall != Tile.EMPTY_TILE:
 		return Globals.EMoveTestResult.Wall
 	if tile.ground in mapInfo.wallTileIds:
 		return Globals.EMoveTestResult.Wall
-	for entity: Entity in tile.entities:
-		if entity.getComponent(&"BlocksMovementComponent") != null:
-			return Globals.EMoveTestResult.Entity
+
 	return Globals.EMoveTestResult.OK

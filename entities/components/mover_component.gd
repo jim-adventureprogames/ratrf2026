@@ -17,6 +17,7 @@ const TWEEN_DURATION := 0.12
 var state:  EState         = EState.Idle
 var facing: Globals.EFacing = Globals.EFacing.Down
 
+@export var bCanBumpThings: bool = false;
 
 func setMovingComplete() -> void:
 	state = EState.Idle
@@ -35,8 +36,11 @@ func tryMove(direction: Vector2i) -> bool:
 		state = EState.Bump
 		movementBlocked.emit(direction)
 		return false
-	if MapManager.testDestinationTile(target) != Globals.EMoveTestResult.OK:
+	var moveResult := MapManager.testDestinationTile(target, bCanBumpThings)
+	if moveResult != Globals.EMoveTestResult.OK:
 		state = EState.Bump
+		if moveResult == Globals.EMoveTestResult.Bumpable:
+			_triggerBumpablesAt(target)
 		movementBlocked.emit(direction)
 		return false
 	commitMove(direction, target)
@@ -124,6 +128,14 @@ func resolveTargetWorldPosition(direction: Vector2i) -> Vector3i:
 		targetZone = adjacentZone
 
 	return Vector3i(targetTileX, targetTileY, targetZone)
+
+
+# Fires trigger() on every BumpableComponent in the entities at the given tile.
+func _triggerBumpablesAt(targetPos: Vector3i) -> void:
+	for target: Entity in MapManager.getEntitiesAt(targetPos):
+		var bumpable := target.getComponent(&"BumpableComponent") as BumpableComponent
+		if bumpable:
+			bumpable.trigger(entity)
 
 
 static func tileToPixel(worldPos: Vector3i) -> Vector2:
