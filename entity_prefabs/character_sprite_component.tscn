@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dyh2ayogxl77q"]
+
+[ext_resource type="SpriteFrames" uid="uid://cs3bdfs75a7ib" path="res://spriteframes/default_character.tres" id="1_kte8i"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="2_gjqo2"]
+
+[node name="spriteComponent" type="AnimatedSprite2D" unique_id=1750217986]
+sprite_frames = ExtResource("1_kte8i")
+animation = &"idle_right"
+autoplay = "idle_right"
+script = ExtResource("2_gjqo2")

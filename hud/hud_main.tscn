@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://buif2cv1tpj8w"]
+
+[ext_resource type="Texture2D" uid="uid://cnqm75rne1ssb" path="res://textures/ui/hud_main_bg.png" id="1_xhti2"]
+[ext_resource type="Script" uid="uid://s8576nc4pgyj" path="res://hud/hud_main.gd" id="1_y6pgg"]
+[ext_resource type="FontFile" uid="uid://c6dreu7bcj0bo" path="res://fonts/tf3.otf" id="2_y6pgg"]
+
+[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_y6pgg")
+btnDebugStart = NodePath("imgBG/btnDebugStart")
+
+[node name="imgBG" type="TextureRect" parent="." unique_id=99211727]
+layout_mode = 0
+offset_left = 240.0
+offset_right = 320.0
+offset_bottom = 240.0
+texture = ExtResource("1_xhti2")
+
+[node name="btnDebugStart" type="Button" parent="imgBG" unique_id=543835367]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 7.0
+offset_right = 68.0
+offset_bottom = 25.0
+theme_override_fonts/font = ExtResource("2_y6pgg")
+theme_override_font_sizes/font_size = 8
+text = "START"

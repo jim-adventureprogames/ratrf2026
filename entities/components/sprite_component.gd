@@ -1,60 +1,92 @@
 class_name SpriteComponent
-extends EntityComponent
+extends AnimatedSprite2D
 
-const TEXTURE_PATH := "res://textures/world.png"
+const BUMP_DURATION := 0.06
 
-var tileIndex: int
-var entityLayer: Node2D
-var sprite: Sprite2D
+var entity:      Entity
 var activeTween: Tween
 
 
-func _init(layer: Node2D, spriteIndex: int) -> void:
-	entityLayer = layer
-	tileIndex   = spriteIndex
+func _ready() -> void:
+	entity = get_parent() as Entity
+	if entity == null:
+		push_error("SpriteComponent must be a direct child of an Entity node.")
+		return
+	entity.components[&"SpriteComponent"] = self
+
+
+func _exit_tree() -> void:
+	onDetached()
 
 
 func onAttached() -> void:
-	_buildSprite()
+	entity.position = MoverComponent.tileToPixel(entity.worldPosition)
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
 		mover.movementCommitted.connect(onMovementCommitted)
+		mover.movementBlocked.connect(onMovementBlocked)
 
 
 func onDetached() -> void:
-	if activeTween:
+	if activeTween and is_instance_valid(activeTween):
 		activeTween.kill()
-	if sprite and is_instance_valid(sprite):
-		sprite.queue_free()
-
-
-func _buildSprite() -> void:
-	sprite         = Sprite2D.new()
-	sprite.texture = _buildAtlasTexture()
-	entityLayer.add_child(sprite)
-	sprite.position = MoverComponent.tileToPixel(entity.worldPosition)
-
-
-func _buildAtlasTexture() -> AtlasTexture:
-	var atlas  := AtlasTexture.new()
-	atlas.atlas = load(TEXTURE_PATH)
-	var coords  := Globals.tileIndexToAtlasCoords(tileIndex)
-	atlas.region = Rect2(
-		coords.x * Globals.TILE_SIZE,
-		coords.y * Globals.TILE_SIZE,
-		Globals.TILE_SIZE,
-		Globals.TILE_SIZE
-	)
-	return atlas
 
 
 func onMovementCommitted(from: Vector2, to: Vector2, bZoneChange: bool, newZoneId: int, direction: Vector2i) -> void:
 	if activeTween:
 		activeTween.kill()
-	sprite.position = _entryPixel(to, direction) if bZoneChange else from
-	activeTween = entityLayer.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	activeTween.tween_property(sprite, "position", to, MoverComponent.TWEEN_DURATION)
+	entity.position = _entryPixel(to, direction) if bZoneChange else from
+	activeTween = entity.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	activeTween.tween_property(entity, "position", to, MoverComponent.TWEEN_DURATION)
 	activeTween.tween_callback(_onTweenFinished)
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover:
+		play(_animationName("move", mover.facing))
+
+
+func _onTweenFinished() -> void:
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover == null:
+		return
+	mover.setMovingComplete()
+	var inputComp := entity.getComponent(&"PlayerInputComponent") as PlayerInputComponent
+	var inputDir  := inputComp.getInputDirection() if inputComp else Vector2i.ZERO
+	if inputDir == Vector2i.ZERO:
+		play(_animationName("idle", mover.facing))
+
+
+func onMovementBlocked(direction: Vector2i) -> void:
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover == null:
+		return
+	play(_animationName("idle", mover.facing))
+	if activeTween:
+		activeTween.kill()
+	var startPos := entity.position
+	var bumpPos  := startPos + Vector2(direction) * Globals.TILE_SIZE * 0.5
+	activeTween  = entity.create_tween()
+	activeTween.tween_property(entity, "position", bumpPos,  BUMP_DURATION).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	activeTween.tween_property(entity, "position", startPos, BUMP_DURATION).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	activeTween.tween_callback(_onBumpFinished)
+
+
+func _onBumpFinished() -> void:
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover == null:
+		return
+	mover.setBumpComplete()
+	var inputComp := entity.getComponent(&"PlayerInputComponent") as PlayerInputComponent
+	var inputDir  := inputComp.getInputDirection() if inputComp else Vector2i.ZERO
+	if inputDir == Vector2i.ZERO:
+		play(_animationName("idle", mover.facing))
+
+
+func _animationName(prefix: String, facing: Globals.EFacing) -> StringName:
+	match facing:
+		Globals.EFacing.Right: return StringName(prefix + "_right")
+		Globals.EFacing.Left:  return StringName(prefix + "_left")
+		Globals.EFacing.Up:    return StringName(prefix + "_up")
+		_:                     return StringName(prefix + "_down")
 
 
 func _entryPixel(toPixel: Vector2, direction: Vector2i) -> Vector2:
@@ -65,9 +97,3 @@ func _entryPixel(toPixel: Vector2, direction: Vector2i) -> Vector2:
 	if   direction.y < 0: ey =  Globals.ZONE_PIXEL_HEIGHT + Globals.TILE_SIZE * 0.5
 	elif direction.y > 0: ey = -Globals.TILE_SIZE * 0.5
 	return Vector2(ex, ey)
-
-
-func _onTweenFinished() -> void:
-	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
-	if mover:
-		mover.setMovingComplete()

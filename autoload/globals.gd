@@ -6,6 +6,13 @@ enum EMoveTestResult {
 	Entity,
 }
 
+enum EFacing {
+	Up,
+	Right,
+	Down,
+	Left,
+}
+
 const TILE_SIZE              := 12
 const TILESET_WIDTH_TILES    := 23   # world.png is 276px wide  (276 / 12)
 const TILESET_HEIGHT_TILES   := 11   # world.png is 132px tall  (132 / 12)
@@ -18,10 +25,10 @@ const ZONE_PIXEL_HEIGHT := TILE_SIZE * ZONE_HEIGHT_TILES  # 240
 const UI_PANEL_X        := ZONE_PIXEL_WIDTH               # 240 — right panel starts here
 const UI_PANEL_WIDTH    := 80                             # 320 - 240
 
-const ZONE_GRID_WIDTH   := 3
-const ZONE_GRID_HEIGHT  := 3
+const ZONE_GRID_WIDTH   := 5
+const ZONE_GRID_HEIGHT  := 5
 const ZONE_COUNT        := ZONE_GRID_WIDTH * ZONE_GRID_HEIGHT
-# Integer division gives centre index: (3*3-1)/2 = 4
+# Integer division gives centre index: (5*5-1)/2 = 12
 const STARTING_ZONE     := ZONE_GRID_WIDTH * (ZONE_GRID_HEIGHT / 2) + (ZONE_GRID_WIDTH / 2)
 
 

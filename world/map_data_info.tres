@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MapDataInfo" format=3 uid="uid://73nqap24sfsc"]
+
+[ext_resource type="Script" uid="uid://bejo8lurnu6hj" path="res://world/map_data_info.gd" id="1_hodvx"]
+
+[resource]
+script = ExtResource("1_hodvx")
+wallTileIds = Dictionary[int, int]({
+0: 85,
+1: 86,
+2: 87,
+3: 88,
+4: 89,
+5: 90,
+6: 91
+})
+metadata/_custom_type_script = "uid://bejo8lurnu6hj"

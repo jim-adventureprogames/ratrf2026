@@ -4,15 +4,38 @@ extends TileMapLayer
 const GROUND_SOURCE_ID := 0
 
 # Set by main.gd before the first loadZone call
-var decorationLayer: TileMapLayer
+var groundDecorationLayer: TileMapLayer
+var wallLayer:             TileMapLayer
+var wallDecorationLayer:   TileMapLayer
+
+
+func _ready() -> void:
+	_registerAllAtlasTiles()
+
+
+func _registerAllAtlasTiles() -> void:
+	var source := tile_set.get_source(GROUND_SOURCE_ID) as TileSetAtlasSource
+	if source == null:
+		push_error("WorldTileMap: no TileSetAtlasSource at source ID %d" % GROUND_SOURCE_ID)
+		return
+	for y in Globals.TILESET_HEIGHT_TILES:
+		for x in Globals.TILESET_WIDTH_TILES:
+			var coords := Vector2i(x, y)
+			if not source.has_tile(coords):
+				source.create_tile(coords)
 
 
 func loadZone(zoneId: int) -> void:
 	clear()
-	if decorationLayer:
-		decorationLayer.clear()
+	if groundDecorationLayer: groundDecorationLayer.clear()
+	if wallLayer:             wallLayer.clear()
+	if wallDecorationLayer:   wallDecorationLayer.clear()
+
+	MapManager.refreshZoneEntityTiles(zoneId)
+	MapManager.refreshZoneSceneNodes(zoneId)
 
 	var zone := MapManager.getZone(zoneId)
+	
 	if zone == null:
 		return
 
@@ -27,18 +50,14 @@ func loadZone(zoneId: int) -> void:
 				set_cell(coords, GROUND_SOURCE_ID,
 						Globals.tileIndexToAtlasCoords(tile.ground))
 
-			if tile.groundDecoration != Tile.EMPTY_TILE and decorationLayer:
-				decorationLayer.set_cell(coords, GROUND_SOURCE_ID,
+			if tile.groundDecoration != Tile.EMPTY_TILE and groundDecorationLayer:
+				groundDecorationLayer.set_cell(coords, GROUND_SOURCE_ID,
 						Globals.tileIndexToAtlasCoords(tile.groundDecoration))
 
+			if tile.wall != Tile.EMPTY_TILE and wallLayer:
+				wallLayer.set_cell(coords, GROUND_SOURCE_ID,
+						Globals.tileIndexToAtlasCoords(tile.wall))
 
-func testDestinationTile(targetPosition: Vector3i) -> Globals.EMoveTestResult:
-	var tile := MapManager.getTileAt(targetPosition)
-	if tile == null:
-		return Globals.EMoveTestResult.Wall
-	if tile.wall != Tile.EMPTY_TILE:
-		return Globals.EMoveTestResult.Wall
-	for entity: Entity in tile.entities:
-		if entity.getComponent(&"BlocksMovementComponent") != null:
-			return Globals.EMoveTestResult.Entity
-	return Globals.EMoveTestResult.OK
+			if tile.wallDecoration != Tile.EMPTY_TILE and wallDecorationLayer:
+				wallDecorationLayer.set_cell(coords, GROUND_SOURCE_ID,
+						Globals.tileIndexToAtlasCoords(tile.wallDecoration))

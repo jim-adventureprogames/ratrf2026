@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://beluf1eq01r0j"
+path="res://.godot/imported/test_jibba.dialogue-ed622e058c7e46f8a3d4722c774f7eaf.tres"
+
+[deps]
+
+source_file="res://dialogue/test_jibba.dialogue"
+dest_files=["res://.godot/imported/test_jibba.dialogue-ed622e058c7e46f8a3d4722c774f7eaf.tres"]
+
+[params]
+
+defaults=true

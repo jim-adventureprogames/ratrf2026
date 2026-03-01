@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://crc43nwt1culo"]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_twwuj"]
+[ext_resource type="SpriteFrames" uid="uid://cs3bdfs75a7ib" path="res://spriteframes/default_character.tres" id="2_0dqb0"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="3_u22ac"]
+[ext_resource type="Script" uid="uid://ceow7ubw3uq76" path="res://entities/components/mover_component.gd" id="4_lvaaw"]
+[ext_resource type="Script" uid="uid://v5ppikna2ils" path="res://entities/components/mark_component.gd" id="5_twwuj"]
+
+[node name="mark" type="Node2D" unique_id=967847664]
+script = ExtResource("1_twwuj")
+
+[node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1394865929]
+sprite_frames = ExtResource("2_0dqb0")
+animation = &"idle_right"
+autoplay = "idle_right"
+frame_progress = 0.75387526
+script = ExtResource("3_u22ac")
+
+[node name="moverComponent" type="Node" parent="." unique_id=224727644]
+script = ExtResource("4_lvaaw")
+
+[node name="markComponent" type="Node" parent="." unique_id=686798874]
+script = ExtResource("5_twwuj")

@@ -18,19 +18,26 @@ config/icon="res://icon.svg"
 [autoload]
 
 Globals="*res://autoload/globals.gd"
-MapManager="*res://world/map_manager.gd"
+GameManager="*uid://cvqy1jwskgxk6"
+MapManager="*uid://dsbkwc1x0ml2l"
+DialogueManager="*uid://c3rodes2l3gxb"
+DialogueStateManager="*uid://bb8cxu6ukdvtu"
 
 [display]
 
 window/size/viewport_width=320
 window/size/viewport_height=240
-window/size/window_width_override=960
-window/size/window_height_override=720
+window/size/window_width_override=1280
+window/size/window_height_override=960
 window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/YATI/plugin.cfg")
+enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg")
+
+[internationalization]
+
+locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue")
 
 [rendering]
 

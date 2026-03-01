@@ -1,29 +1,53 @@
 class_name Entity
-extends RefCounted
+extends Node2D
 
+# Assigned by MapManager.registerEntity(). -1 until registered.
 var entityId: int = -1
+
+# x/y = tile coordinates within the zone, z = zone ID.
 var worldPosition: Vector3i = Vector3i.ZERO
-var components: Dictionary = {}  # StringName → EntityComponent
+
+# Keyed by each component's script global class name as a StringName.
+# Components register themselves here in their own _ready().
+var components: Dictionary = {}
 
 
-func addComponent(component: EntityComponent) -> void:
-	var key: StringName = component.get_script().get_global_name()
-	components[key] = component
-	component.entity = self
-	component.onAttached()
+func _ready() -> void:
+	# All children's _ready() have already fired, so every component has
+	# registered itself in the dict. Call onAttached() in scene order so
+	# components can safely cross-reference siblings.
+	for child in get_children():
+		if child.has_method("onAttached"):
+			child.onAttached()
 
 
-func getComponent(componentName: StringName) -> EntityComponent:
+# Adds a component node at runtime (entity already in the scene tree).
+# For scene-defined components, addComponent is not needed — they wire
+# themselves up automatically via their _ready() and this entity's _ready().
+func addComponent(component: Node) -> void:
+	add_child(component)
+	if is_inside_tree() and component.has_method("onAttached"):
+		component.onAttached()
+
+
+func getComponent(componentName: StringName) -> Node:
 	return components.get(componentName, null)
 
 
 func removeComponent(componentName: StringName) -> void:
-	var c: EntityComponent = components.get(componentName, null)
+	var c: Node = components.get(componentName, null)
 	if c:
-		c.onDetached()
 		components.erase(componentName)
+		c.queue_free()
 
 
 func onTakeTurn() -> void:
-	for c: EntityComponent in components.values():
-		c.onTakeTurn()
+	for c in components.values():
+		if c.has_method("onTakeTurn"):
+			c.onTakeTurn()
+
+
+func onEndOfTurn() -> void:
+	for c in components.values():
+		if c.has_method("onEndOfTurn"):
+			c.onEndOfTurn()

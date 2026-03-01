@@ -2,34 +2,63 @@ class_name MoverComponent
 extends EntityComponent
 
 signal movementCommitted(fromPixel: Vector2, toPixel: Vector2, bZoneChange: bool, newZoneId: int, direction: Vector2i)
+signal movementBlocked(direction: Vector2i)
 signal zoneCrossed(newZoneId: int)
 signal turnTaken
 
+enum EState {
+	Idle,
+	Moving,
+	Bump,
+}
+
 const TWEEN_DURATION := 0.12
 
-var worldMap: WorldTileMap   # set by main.gd before first use
-var bMoving: bool = false
+var state:  EState         = EState.Idle
+var facing: Globals.EFacing = Globals.EFacing.Down
 
 
 func setMovingComplete() -> void:
-	bMoving = false
+	state = EState.Idle
+
+
+func setBumpComplete() -> void:
+	state = EState.Idle
 
 
 func tryMove(direction: Vector2i) -> bool:
-	if bMoving:
+	if state != EState.Idle:
 		return false
+	_updateFacing(direction)
 	var target := resolveTargetWorldPosition(direction)
 	if target.z < 0:
+		state = EState.Bump
+		movementBlocked.emit(direction)
 		return false
-	if worldMap.testDestinationTile(target) != Globals.EMoveTestResult.OK:
+	if MapManager.testDestinationTile(target) != Globals.EMoveTestResult.OK:
+		state = EState.Bump
+		movementBlocked.emit(direction)
 		return false
 	commitMove(direction, target)
 	return true
 
 
+func _updateFacing(direction: Vector2i) -> void:
+	if direction.x > 0:
+		facing = Globals.EFacing.Right
+	elif direction.x < 0:
+		facing = Globals.EFacing.Left
+	elif direction.y < 0:
+		facing = Globals.EFacing.Up
+	else:
+		facing = Globals.EFacing.Down
+
+
 func commitMove(direction: Vector2i, target: Vector3i) -> void:
+	_updateFacing(direction)
 	var bZoneChange := target.z != entity.worldPosition.z
 	var fromPixel   := tileToPixel(entity.worldPosition)
+	var oldZoneId   := entity.worldPosition.z
 
 	var oldTile := MapManager.getTileAt(entity.worldPosition)
 	if oldTile:
@@ -41,9 +70,23 @@ func commitMove(direction: Vector2i, target: Vector3i) -> void:
 	if newTile:
 		newTile.entities.append(entity)
 
-	bMoving = true
+	state = EState.Moving
 
 	if bZoneChange:
+		var isPlayer := entity.getComponent(&"PlayerInputComponent") != null
+		if isPlayer:
+			# Player zone crossing: reload the visual tilemap.  loadZone calls
+			# refreshZoneSceneNodes which sets currentZoneId and manages all
+			# entities' scene presence at once.
+			MapManager.worldTileMap.loadZone(entity.worldPosition.z)
+		else:
+			# NPC zone crossing: only adjust this entity's scene node.
+			# The tilemap stays on the player's zone.
+			var newZoneId := entity.worldPosition.z
+			if newZoneId == MapManager.currentZoneId and not entity.is_inside_tree():
+				GameManager.entityLayer.add_child(entity)
+			elif oldZoneId == MapManager.currentZoneId and entity.is_inside_tree():
+				GameManager.entityLayer.remove_child(entity)
 		zoneCrossed.emit(entity.worldPosition.z)
 
 	movementCommitted.emit(fromPixel, tileToPixel(target), bZoneChange, entity.worldPosition.z, direction)

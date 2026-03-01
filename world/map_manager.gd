@@ -1,16 +1,26 @@
 extends Node
 
+
+
+
 # All zones in the world, indexed by zone ID.
 var zones: Array[Zone] = []
 
 var entityRegistry: Dictionary = {}   # int → Entity
-var nextEntityId: int = 0
+var nextEntityId:   int = 0
+var currentZoneId:  int = -1
+
+# Set by main.gd before the first zone load. Used by MoverComponent to
+# trigger visual reloads on zone change without coupling to the scene tree.
+var worldTileMap: WorldTileMap
 
 # Loaded from data/grass_settings.tres — edit that file in the inspector.
 var grassSettings: GrassSettings
 
+var mapInfo : MapDataInfo
 
 func _ready() -> void:
+	mapInfo = load("res://world/map_data_info.tres") as MapDataInfo
 	grassSettings = load("res://data/grass_settings.tres") as GrassSettings
 	if grassSettings == null:
 		push_warning("MapManager: grass_settings.tres not found, using defaults.")
@@ -84,3 +94,184 @@ func unregisterEntity(entity: Entity) -> void:
 func processTurn() -> void:
 	for entity: Entity in entityRegistry.values():
 		entity.onTakeTurn()
+
+
+# Clears and rebuilds tile.entities for every tile in the given zone using
+# the authoritative entityRegistry.  Called whenever a zone is loaded so that
+# tile data is always consistent regardless of how entities were added or moved.
+func refreshZoneEntityTiles(zoneId: int) -> void:
+	var zone := getZone(zoneId)
+	if zone == null:
+		return
+	for tile: Tile in zone.tiles:
+		tile.entities.clear()
+	for entity: Entity in entityRegistry.values():
+		if entity.worldPosition.z == zoneId:
+			var tile := getTileAt(entity.worldPosition)
+			if tile:
+				tile.entities.append(entity)
+
+
+# Adds entities that belong to zoneId to the scene tree (entityLayer) and
+# removes entities that belong to other zones.  Entities always live in the
+# registry; this only controls physical scene presence for rendering/processing.
+func refreshZoneSceneNodes(zoneId: int) -> void:
+	currentZoneId = zoneId
+	for entity: Entity in entityRegistry.values():
+		var belongsHere := entity.worldPosition.z == zoneId
+		var inScene     := entity.is_inside_tree()
+		if belongsHere and not inScene:
+			GameManager.entityLayer.add_child(entity)
+		elif not belongsHere and inScene:
+			GameManager.entityLayer.remove_child(entity)
+
+
+# ── TMX stamping ───────────────────────────────────────────────────────────────
+
+# Parses a .tmx file from res://tiled/ and writes its tile data into the world
+# at the given top-left world position (x, y = tile coords, z = zone ID).
+# Only tiles with a non-zero GID overwrite the destination; zero GIDs are skipped
+# so the underlying zone data shows through.
+func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
+	var path   := "res://tiled/" + tmxName
+	var parser := XMLParser.new()
+	if parser.open(path) != OK:
+		push_error("MapManager.stampTmx: could not open '%s'" % path)
+		return
+
+	# Tile-layer state
+	var currentLayer := ""
+	var layerWidth   := 0
+	var layerHeight  := 0
+	var inData       := false
+
+	# Spawn-layer state — populated across several element events before the
+	# </object> closing tag fires and we finally call _spawnEntityFromPrefab.
+	var inSpawnGroup  := false
+	var inSpawnObject := false
+	var spawnPixelX   := 0.0
+	var spawnPixelY   := 0.0
+	var spawnPrefab   := ""
+
+	while parser.read() == OK:
+		match parser.get_node_type():
+
+			XMLParser.NODE_ELEMENT:
+				var tag := parser.get_node_name()
+				match tag:
+					"layer":
+						currentLayer = parser.get_named_attribute_value_safe("name")
+						layerWidth   = int(parser.get_named_attribute_value_safe("width"))
+						layerHeight  = int(parser.get_named_attribute_value_safe("height"))
+						inData       = false
+					"data":
+						inData = true
+					"objectgroup":
+						if parser.get_named_attribute_value_safe("name") == "spawn":
+							inSpawnGroup = true
+					"object":
+						if inSpawnGroup:
+							inSpawnObject = true
+							spawnPixelX   = parser.get_named_attribute_value_safe("x").to_float()
+							spawnPixelY   = parser.get_named_attribute_value_safe("y").to_float()
+							spawnPrefab   = ""
+					"property":
+						# Each <property> is self-closing — read value here directly.
+						if inSpawnObject and parser.get_named_attribute_value_safe("name") == "prefab":
+							spawnPrefab = parser.get_named_attribute_value_safe("value")
+
+			XMLParser.NODE_TEXT:
+				if inData and currentLayer != "":
+					_applyLayerData(parser.get_node_data(), currentLayer, layerWidth, layerHeight, topLeft)
+					inData = false
+
+			XMLParser.NODE_ELEMENT_END:
+				match parser.get_node_name():
+					"object":
+						# All properties for this object have been read — spawn if we have a prefab.
+						if inSpawnObject and spawnPrefab != "":
+							var tileX    := int(spawnPixelX / Globals.TILE_SIZE)
+							var tileY    := int(spawnPixelY / Globals.TILE_SIZE)
+							var worldPos := Vector3i(topLeft.x + tileX, topLeft.y + tileY, topLeft.z)
+							_spawnEntityFromPrefab(spawnPrefab, worldPos)
+						inSpawnObject = false
+						spawnPrefab   = ""
+					"objectgroup":
+						inSpawnGroup = false
+
+
+func _spawnEntityFromPrefab(prefabName: String, worldPos: Vector3i) -> void:
+	var scenePath := "res://entity_prefabs/" + prefabName + ".tscn"
+	var packed    := load(scenePath) as PackedScene
+	if packed == null:
+		push_error("MapManager: could not load prefab '%s'" % scenePath)
+		return
+	var entity := packed.instantiate() as Entity
+	if entity == null:
+		push_error("MapManager: scene root is not an Entity in '%s'" % scenePath)
+		return
+	entity.worldPosition = worldPos
+	registerEntity(entity)
+	# Do NOT add to the scene tree here.  refreshZoneSceneNodes() handles
+	# scene presence when the zone containing this entity is loaded.
+
+
+func _applyLayerData(csv: String, layerName: String, width: int, height: int, topLeft: Vector3i) -> void:
+	var tokens := csv.split(",", false)
+	var col    := 0
+	var row    := 0
+	for token: String in tokens:
+		var trimmed := token.strip_edges()
+		if trimmed.is_empty():
+			continue
+		var gid       := int(trimmed)
+		var tileIndex := Tile.EMPTY_TILE if gid == 0 else gid - 1
+		var worldPos  := Vector3i(topLeft.x + col, topLeft.y + row, topLeft.z)
+		var tile      := getTileAt(worldPos)
+		if tile:
+			match layerName:
+				"ground":            tile.ground           = tileIndex
+				"ground_decoration": tile.groundDecoration = tileIndex
+				"wall":              tile.wall             = tileIndex
+				"wall_decoration":   tile.wallDecoration   = tileIndex
+		col += 1
+		if col >= width:
+			col  = 0
+			row += 1
+
+
+# ── Procedural decoration ──────────────────────────────────────────────────────
+
+# Fills every tile.wall in the rectangle [start..end] (inclusive) within the
+# given zone with the wall tile ID for the given color.
+# start and end can be in any order; the function normalises them.
+func fillWallRect(start: Vector2i, end: Vector2i, zoneId: int, color: MapDataInfo.EWallColor) -> void:
+	if not mapInfo.wallTileIds.has(color):
+		push_warning("MapManager.fillWallRect: no tile ID configured for color %d" % color)
+		return
+	var tileId := mapInfo.wallTileIds[color]
+	var x0     := mini(start.x, end.x)
+	var x1     := maxi(start.x, end.x)
+	var y0     := mini(start.y, end.y)
+	var y1     := maxi(start.y, end.y)
+	for x in range(x0, x1 + 1):
+		for y in range(y0, y1 + 1):
+			var tile := getTileAt(Vector3i(x, y, zoneId))
+			if tile:
+				tile.wall = tileId
+
+
+# ── Movement validation ─────────────────────────────────────────────────────────
+
+func testDestinationTile(targetPosition: Vector3i) -> Globals.EMoveTestResult:
+	var tile := getTileAt(targetPosition)
+	if tile == null:
+		return Globals.EMoveTestResult.Wall
+	if tile.wall != Tile.EMPTY_TILE:
+		return Globals.EMoveTestResult.Wall
+	if tile.ground in mapInfo.wallTileIds:
+		return Globals.EMoveTestResult.Wall
+	for entity: Entity in tile.entities:
+		if entity.getComponent(&"BlocksMovementComponent") != null:
+			return Globals.EMoveTestResult.Entity
+	return Globals.EMoveTestResult.OK
