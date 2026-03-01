@@ -1,5 +1,5 @@
 @tool
-class_name GrassDecorationEntry
+class_name TileDecorationEntry
 extends Resource
 
 const TILE_SIZE              := 12

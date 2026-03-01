@@ -30,16 +30,29 @@ func onAttached() -> void:
 func onDetached() -> void:
 	if activeTween and is_instance_valid(activeTween):
 		activeTween.kill()
+		activeTween = null
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover and mover.state != MoverComponent.EState.Idle:
+		# Tween was killed mid-flight — snap to the actual tile position and
+		# reset mover state so the entity is ready to act next turn.
+		entity.position = MoverComponent.tileToPixel(entity.worldPosition)
+		mover.setMovingComplete()
 
 
 func onMovementCommitted(from: Vector2, to: Vector2, bZoneChange: bool, newZoneId: int, direction: Vector2i) -> void:
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if not entity.is_inside_tree():
+		# Entity is off-screen — teleport to destination so position is correct
+		# if it re-enters the scene tree later, then settle state immediately.
+		entity.position = to
+		if mover: mover.setMovingComplete()
+		return
 	if activeTween:
 		activeTween.kill()
 	entity.position = _entryPixel(to, direction) if bZoneChange else from
 	activeTween = entity.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	activeTween.tween_property(entity, "position", to, MoverComponent.TWEEN_DURATION)
 	activeTween.tween_callback(_onTweenFinished)
-	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
 		play(_animationName("move", mover.facing))
 
@@ -58,6 +71,10 @@ func _onTweenFinished() -> void:
 func onMovementBlocked(direction: Vector2i) -> void:
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover == null:
+		return
+	if not entity.is_inside_tree():
+		# Entity is off-screen — skip the bump tween and settle state immediately.
+		mover.setBumpComplete()
 		return
 	play(_animationName("idle", mover.facing))
 	if activeTween:

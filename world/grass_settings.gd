@@ -6,4 +6,7 @@ extends Resource
 
 # Each entry pairs a tile ID with a relative weight.
 # Higher weight = more likely to be chosen. Weights need not sum to 1.0.
-@export var grassDecorations: Array[GrassDecorationEntry] = []
+@export var grassDecorations: Array[TileDecorationEntry] = []
+
+
+@export var dirtDecorations: Array[TileDecorationEntry] = []

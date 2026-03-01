@@ -17,6 +17,9 @@ var worldTileMap: WorldTileMap
 # Loaded from data/grass_settings.tres — edit that file in the inspector.
 var grassSettings: GrassSettings
 
+# Loaded from data/npc_settings.tres — edit that file in the inspector.
+var npcSettings: NpcSettings
+
 var mapInfo : MapDataInfo
 
 func _ready() -> void:
@@ -25,6 +28,10 @@ func _ready() -> void:
 	if grassSettings == null:
 		push_warning("MapManager: grass_settings.tres not found, using defaults.")
 		grassSettings = GrassSettings.new()
+	npcSettings = load("res://data/npc_settings.tres") as NpcSettings
+	if npcSettings == null:
+		push_warning("MapManager: npc_settings.tres not found, using defaults.")
+		npcSettings = NpcSettings.new()
 
 
 # Returns a tile ID chosen from grassSettings.grassDecorations by weight.
@@ -35,12 +42,12 @@ func pickGrassDecoration() -> int:
 		return Tile.EMPTY_TILE
 
 	var totalWeight := 0.0
-	for entry: GrassDecorationEntry in decorations:
+	for entry: TileDecorationEntry in decorations:
 		totalWeight += entry.weight
 
 	var roll       := randf() * totalWeight
 	var cumulative := 0.0
-	for entry: GrassDecorationEntry in decorations:
+	for entry: TileDecorationEntry in decorations:
 		cumulative += entry.weight
 		if roll < cumulative:
 			return entry.tileId
@@ -81,12 +88,18 @@ func registerEntity(entity: Entity) -> void:
 	var tile := getTileAt(entity.worldPosition)
 	if tile:
 		tile.entities.append(entity)
+	for child in entity.get_children():
+		if child is AIBehaviorComponent:
+			GameManager.registerAIComponent(child)
 
 
 func unregisterEntity(entity: Entity) -> void:
 	var tile := getTileAt(entity.worldPosition)
 	if tile:
 		tile.entities.erase(entity)
+	for child in entity.get_children():
+		if child is AIBehaviorComponent:
+			GameManager.unregisterAIComponent(child)
 	entityRegistry.erase(entity.entityId)
 	entity.entityId = -1
 
@@ -211,9 +224,29 @@ func _spawnEntityFromPrefab(prefabName: String, worldPos: Vector3i) -> void:
 		push_error("MapManager: scene root is not an Entity in '%s'" % scenePath)
 		return
 	entity.worldPosition = worldPos
+	applySpawnVariant(entity)
 	registerEntity(entity)
 	# Do NOT add to the scene tree here.  refreshZoneSceneNodes() handles
 	# scene presence when the zone containing this entity is loaded.
+
+
+# Applies any data-driven visual variants to a freshly instantiated entity.
+# Currently: picks a random SpriteFrames for mark entities.
+func applySpawnVariant(entity: Entity) -> void:
+	var isMark := false
+	var spriteComp: AnimatedSprite2D = null
+	for child in entity.get_children():
+		if child is MarkComponent:
+			isMark = true
+		if child is AnimatedSprite2D:
+			spriteComp = child
+
+	if not isMark or spriteComp == null:
+		return
+	if npcSettings.markSpriteFrames.is_empty():
+		return
+
+	spriteComp.sprite_frames = npcSettings.markSpriteFrames[randi() % npcSettings.markSpriteFrames.size()]
 
 
 func _applyLayerData(csv: String, layerName: String, width: int, height: int, topLeft: Vector3i) -> void:

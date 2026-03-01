@@ -9,14 +9,22 @@ enum EGamePhase {
 # Set by main.gd before startGame() is called.
 var entityLayer: Node2D
 
-var playerEntity: Entity
-var currentPhase: EGamePhase = EGamePhase.Player
+var playerEntity:        Entity
+var currentPhase:        EGamePhase             = EGamePhase.Player
+
+# All AI components in the world, registered when their entity is registered.
+var aiComponents:        Array[AIBehaviorComponent] = []
+
+# AIs that still need to finish their action this turn.
+# Populated at the start of each Monster phase; shrinks as AIs report done.
+var pendingAIComponents: Array[AIBehaviorComponent] = []
 
 
 func startGame() -> void:
 	generateWorld()
 	MapManager.worldTileMap.loadZone(Globals.STARTING_ZONE)
 	spawnPlayer()
+	_spawnDebugMarks()
 
 
 func generateWorld() -> void:
@@ -38,7 +46,46 @@ func spawnPlayer() -> void:
 		mover.turnTaken.connect(_onPlayerTurnTaken)
 
 
-# ── Main loop ────────────────────────────────────────────────────────────────
+# ── Debug helpers ────────────────────────────────────────────────────────────
+
+func _spawnDebugMarks() -> void:
+	var packed := load("res://entity_prefabs/mark.tscn") as PackedScene
+	if packed == null:
+		push_error("GameManager: could not load mark.tscn")
+		return
+
+	var spawned  := 0
+	var attempts := 0
+	while spawned < 5 and attempts < 200:
+		attempts += 1
+		var x        := randi_range(0, Globals.ZONE_WIDTH_TILES  - 1)
+		var y        := randi_range(0, Globals.ZONE_HEIGHT_TILES - 1)
+		var worldPos := Vector3i(x, y, Globals.STARTING_ZONE)
+		if MapManager.testDestinationTile(worldPos) != Globals.EMoveTestResult.OK:
+			continue
+		var mark := packed.instantiate() as Entity
+		if mark == null:
+			continue
+		mark.worldPosition = worldPos
+		MapManager.applySpawnVariant(mark)
+		MapManager.registerEntity(mark)
+		entityLayer.add_child(mark)
+		spawned += 1
+
+
+# ── AI registration ───────────────────────────────────────────────────────────
+
+func registerAIComponent(ai: AIBehaviorComponent) -> void:
+	if not aiComponents.has(ai):
+		aiComponents.append(ai)
+
+
+func unregisterAIComponent(ai: AIBehaviorComponent) -> void:
+	aiComponents.erase(ai)
+	pendingAIComponents.erase(ai)
+
+
+# ── Main loop ─────────────────────────────────────────────────────────────────
 
 func _process(_delta: float) -> void:
 	match currentPhase:
@@ -50,7 +97,7 @@ func _process(_delta: float) -> void:
 			_processEndOfTurnCleanup()
 
 
-# ── Phase handlers ───────────────────────────────────────────────────────────
+# ── Phase handlers ────────────────────────────────────────────────────────────
 
 func _processPlayerPhase() -> void:
 	if playerEntity == null:
@@ -62,12 +109,23 @@ func _processPlayerPhase() -> void:
 
 
 func _onPlayerTurnTaken() -> void:
+	# Snapshot all AIs into the pending list for this turn.
+	pendingAIComponents = aiComponents.duplicate()
 	currentPhase = EGamePhase.Monster
 
 
 func _processMonsterPhase() -> void:
-	MapManager.processTurn()
-	currentPhase = EGamePhase.EndOfTurnCleanup
+	# Each frame, give every pending AI a chance to act.
+	# Remove ones that report done (true); keep ones still busy (false).
+	# The phase holds here across as many frames as needed until all are done.
+	var i := pendingAIComponents.size() - 1
+	while i >= 0:
+		if pendingAIComponents[i].takeAction():
+			pendingAIComponents.remove_at(i)
+		i -= 1
+
+	if pendingAIComponents.is_empty():
+		currentPhase = EGamePhase.EndOfTurnCleanup
 
 
 func _processEndOfTurnCleanup() -> void:
