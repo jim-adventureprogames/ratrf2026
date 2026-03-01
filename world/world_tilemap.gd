@@ -18,7 +18,8 @@ func _registerAllAtlasTiles() -> void:
 	if source == null:
 		push_error("WorldTileMap: no TileSetAtlasSource at source ID %d" % GROUND_SOURCE_ID)
 		return
-	for y in Globals.TILESET_HEIGHT_TILES:
+	var heightInTiles := source.texture.get_height() / Globals.TILE_SIZE
+	for y in heightInTiles:
 		for x in Globals.TILESET_WIDTH_TILES:
 			var coords := Vector2i(x, y)
 			if not source.has_tile(coords):

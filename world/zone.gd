@@ -8,10 +8,28 @@ extends Resource
 # Flat 1D array of tiles; index with (y * ZONE_WIDTH_TILES + x)
 var tiles: Array[Tile] = []
 
+# Landmark positions in local tile coordinates (x, y within this zone).
+var northCenter:  Vector2i
+var southCenter:  Vector2i
+var westCenter:   Vector2i
+var eastCenter:   Vector2i
+var centerCenter: Vector2i
+
 
 # Called by MapManager after construction to populate the tile array.
 func initializeTiles() -> void:
-	var count := Globals.ZONE_WIDTH_TILES * Globals.ZONE_HEIGHT_TILES
+	var count  := Globals.ZONE_WIDTH_TILES * Globals.ZONE_HEIGHT_TILES
+	var halfX  := Globals.ZONE_WIDTH_TILES  / 2
+	var halfY  := Globals.ZONE_HEIGHT_TILES / 2
+	var farX   := Globals.ZONE_WIDTH_TILES  - 1
+	var farY   := Globals.ZONE_HEIGHT_TILES - 1
+
+	northCenter  = Vector2i(halfX, 0)
+	southCenter  = Vector2i(halfX, farY)
+	westCenter   = Vector2i(0,     halfY)
+	eastCenter   = Vector2i(farX,  halfY)
+	centerCenter = Vector2i(halfX, halfY)
+
 	tiles.resize(count)
 	for i in count:
 		tiles[i] = Tile.new()

@@ -8,8 +8,10 @@ extends Resource
 # Higher weight = more likely to be chosen. Weights need not sum to 1.0.
 @export var grassDecorations: Array[TileDecorationEntry] = []
 
-
-# Probability (0.0–1.0) that any individual tile within a dirtalized section receives a decoration.
-@export_range(0.0, 1.0, 0.01) var dirtDecorationChance: float = 0.4
-
 @export var dirtDecorations: Array[TileDecorationEntry] = []
+
+# Probability that the next step in dirtalizeLine will drift instead of going directly to the goal.
+@export_range(0.0, 1.0, 0.01) var dirtalizeDriftChance: float = 0.45;
+
+# Probablility that a tile that is not the center of a dirtalizeSection call is converted to dirt.
+@export_range(0.0, 1.0, 0.01) var dirtalizeGroundNotCenterChance: float = 0.2;

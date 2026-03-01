@@ -15,7 +15,9 @@ enum EFacing {
 
 const TILE_SIZE              := 12
 const TILESET_WIDTH_TILES    := 23   # world.png is 276px wide  (276 / 12)
-const TILESET_HEIGHT_TILES   := 11   # world.png is 132px tall  (132 / 12)
+# TILESET_HEIGHT_TILES is intentionally absent — derived at runtime from the
+# texture height in WorldTileMap._registerAllAtlasTiles() so it stays correct
+# whenever world.png grows taller.
 
 const ZONE_WIDTH_TILES  := 20
 const ZONE_HEIGHT_TILES := 20

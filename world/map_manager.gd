@@ -321,20 +321,35 @@ func _applyLayerData(csv: String, layerName: String, width: int, height: int, to
 # Fills every tile.wall in the rectangle [start..end] (inclusive) within the
 # given zone with the wall tile ID for the given color.
 # start and end can be in any order; the function normalises them.
+# Pass 1: set all tiles to the base wall tile.
+# Pass 2: any tile whose southern neighbour is not a wall (or is out of zone)
+#         is switched to the cap tile — one row above on the tileset.
 func fillWallRect(start: Vector2i, end: Vector2i, zoneId: int, color: MapDataInfo.EWallColor) -> void:
 	if not mapInfo.wallTileIds.has(color):
 		push_warning("MapManager.fillWallRect: no tile ID configured for color %d" % color)
 		return
-	var tileId := mapInfo.wallTileIds[color]
-	var x0     := mini(start.x, end.x)
-	var x1     := maxi(start.x, end.x)
-	var y0     := mini(start.y, end.y)
-	var y1     := maxi(start.y, end.y)
+	var tileId    := mapInfo.wallTileIds[color]
+	var capTileId := tileId - Globals.TILESET_WIDTH_TILES
+	var x0        := mini(start.x, end.x)
+	var x1        := maxi(start.x, end.x)
+	var y0        := mini(start.y, end.y)
+	var y1        := maxi(start.y, end.y)
+
 	for x in range(x0, x1 + 1):
 		for y in range(y0, y1 + 1):
 			var tile := getTileAt(Vector3i(x, y, zoneId))
 			if tile:
 				tile.wall = tileId
+
+	for x in range(x0, x1 + 1):
+		for y in range(y0, y1 + 1):
+			var tile := getTileAt(Vector3i(x, y, zoneId))
+			if tile == null:
+				continue
+			var tileBelow    := getTileAt(Vector3i(x, y + 1, zoneId))
+			var isBottomEdge := tileBelow == null or tileBelow.wall == Tile.EMPTY_TILE
+			if isBottomEdge:
+				tile.wall = capTileId
 
 
 # ── Movement validation ─────────────────────────────────────────────────────────

@@ -44,12 +44,13 @@ static func generateWorld() -> void:
 		ZoneGenerator.generateZone(zone)
 		MapManager.zones[i] = zone
 
-	_buildPerimeterWall()
+	var gateZones := _buildPerimeterWall()
+	_buildDirtPaths(gateZones)
 
 
 # ── Wall construction ───────────────────────────────────────────────────────────
 
-static func _buildPerimeterWall() -> void:
+static func _buildPerimeterWall() -> Dictionary:
 	# The wall forms a rectangle around the entire faire.  Each side runs
 	# through one row or column of zones at a fixed inset from the zone edge.
 	#
@@ -113,15 +114,17 @@ static func _buildPerimeterWall() -> void:
 			Vector2i(wallFarX, wallTop), Vector2i(wallFarX, wallBottom),
 			eastId, MapDataInfo.EWallColor.light_blue)
 
-	_placeNorthGate()
-	_placeSouthGate()
-	_placeEastGate()
-	_placeWestGate()
+	return {
+		"north": _placeNorthGate(),
+		"south": _placeSouthGate(),
+		"east":  _placeEastGate(),
+		"west":  _placeWestGate(),
+	}
 
 
 # ── Gate placement ──────────────────────────────────────────────────────────────
 
-static func _placeNorthGate() -> void:
+static func _placeNorthGate() -> int:
 	# Avoid the two corner zones so there is always solid wall at the corners.
 	var gateZoneX := randi_range(1, Globals.ZONE_GRID_WIDTH - 2)
 	# Random x — gate fits fully inside the zone with one tile of wall on each side.
@@ -129,9 +132,10 @@ static func _placeNorthGate() -> void:
 	# Shift up so NORTH_GATE_WALL_ROW lands on the wall tile line (y = WALL_INSET).
 	var gateY     := WALL_INSET - NORTH_GATE_WALL_ROW
 	MapManager.stampTmx("entrance_gate_north.tmx", Vector3i(gateX, gateY, gateZoneX))
+	return gateZoneX
 
 
-static func _placeSouthGate() -> void:
+static func _placeSouthGate() -> int:
 	var gateZoneX := randi_range(1, Globals.ZONE_GRID_WIDTH - 2)
 	var gateX     := randi_range(1, Globals.ZONE_WIDTH_TILES - GATE_SIZE - 1)
 	# Shift down so SOUTH_GATE_WALL_ROW lands on the south wall line (y = wallFarY).
@@ -139,9 +143,10 @@ static func _placeSouthGate() -> void:
 	var gateY     := wallFarY - SOUTH_GATE_WALL_ROW
 	var zoneId    := (Globals.ZONE_GRID_HEIGHT - 1) * Globals.ZONE_GRID_WIDTH + gateZoneX
 	MapManager.stampTmx("entrance_gate_south.tmx", Vector3i(gateX, gateY, zoneId))
+	return zoneId
 
 
-static func _placeEastGate() -> void:
+static func _placeEastGate() -> int:
 	# Avoid the two corner zones (zoneY 0 and ZONE_GRID_HEIGHT-1).
 	var gateZoneY := randi_range(1, Globals.ZONE_GRID_HEIGHT - 2)
 	# Random y — gate fits fully inside the zone with one tile of wall on each side.
@@ -151,15 +156,49 @@ static func _placeEastGate() -> void:
 	var gateX     := wallFarX - EAST_GATE_WALL_COL
 	var zoneId    := gateZoneY * Globals.ZONE_GRID_WIDTH + (Globals.ZONE_GRID_WIDTH - 1)
 	MapManager.stampTmx("entrance_gate_east.tmx", Vector3i(gateX, gateY, zoneId))
+	return zoneId
 
 
-static func _placeWestGate() -> void:
+static func _placeWestGate() -> int:
 	var gateZoneY := randi_range(1, Globals.ZONE_GRID_HEIGHT - 2)
 	var gateY     := randi_range(1, Globals.ZONE_HEIGHT_TILES - GATE_SIZE - 1)
 	# Shift left so WEST_GATE_WALL_COL lands on the west wall line (x = WALL_INSET).
 	var gateX     := WALL_INSET - WEST_GATE_WALL_COL
 	var zoneId    := gateZoneY * Globals.ZONE_GRID_WIDTH
 	MapManager.stampTmx("entrance_gate_west.tmx", Vector3i(gateX, gateY, zoneId))
+	return zoneId
+
+
+# ── Dirt paths ──────────────────────────────────────────────────────────────────
+
+# Draws a drunken dirt path across each gate zone from its centerCenter to the
+# edge opposite the gate, so there is a visible trail leading through the zone.
+static func _buildDirtPaths(gateZones: Dictionary) -> void:
+	var radius := 2
+
+	var northZone := MapManager.getZone(gateZones["north"]) as Zone
+	if northZone:
+		var z := gateZones["north"] as int
+		dirtalizeLine(Vector3i(northZone.centerCenter.x, northZone.centerCenter.y, z),
+					  Vector3i(northZone.southCenter.x,  northZone.southCenter.y,  z), radius)
+
+	var southZone := MapManager.getZone(gateZones["south"]) as Zone
+	if southZone:
+		var z := gateZones["south"] as int
+		dirtalizeLine(Vector3i(southZone.centerCenter.x, southZone.centerCenter.y, z),
+					  Vector3i(southZone.northCenter.x,  southZone.northCenter.y,  z), radius)
+
+	var eastZone := MapManager.getZone(gateZones["east"]) as Zone
+	if eastZone:
+		var z := gateZones["east"] as int
+		dirtalizeLine(Vector3i(eastZone.centerCenter.x, eastZone.centerCenter.y, z),
+					  Vector3i(eastZone.westCenter.x,   eastZone.westCenter.y,   z), radius)
+
+	var westZone := MapManager.getZone(gateZones["west"]) as Zone
+	if westZone:
+		var z := gateZones["west"] as int
+		dirtalizeLine(Vector3i(westZone.centerCenter.x, westZone.centerCenter.y, z),
+					  Vector3i(westZone.eastCenter.x,   westZone.eastCenter.y,   z), radius)
 
 
 # ── Procedural decoration ───────────────────────────────────────────────────────
@@ -168,18 +207,57 @@ static func _placeWestGate() -> void:
 # `radius` controls the half-extent: radius=1 gives a 3×3 square, radius=2
 # gives a 5×5 square, and so on.
 # The centre tile always receives a decoration.  Every surrounding tile rolls
-# against grassSettings.dirtDecorationChance for its decoration.
-# Tiles outside the zone bounds are silently skipped.
+# against grassSettings.dirtalizeGroundNotCenterChance for its decoration.
+# Tiles outside the zone bounds or not on base grass are silently skipped.
 static func dirtalizeSection(center: Vector3i, radius: int) -> void:
-	var chance := MapManager.grassSettings.dirtDecorationChance
+	var chance := MapManager.grassSettings.dirtalizeGroundNotCenterChance
 	for dy in range(-radius, radius + 1):
 		for dx in range(-radius, radius + 1):
 			var pos  := Vector3i(center.x + dx, center.y + dy, center.z)
 			var tile := MapManager.getTileAt(pos)
-			if tile == null:
+			if tile == null or tile.ground != ZoneGenerator.GRASS_GROUND_INDEX:
 				continue
 			var isCenter := dx == 0 and dy == 0
 			if isCenter or randf() < chance:
 				var decoration := MapManager.pickDirtDecoration()
 				if decoration != Tile.EMPTY_TILE:
 					tile.groundDecoration = decoration
+
+
+# Drunken-walks from start to end, calling dirtalizeSection at each step.
+# The path is biased toward the destination but occasionally stumbles in a
+# random cardinal direction, controlled by grassSettings.dirtalizeDriftChance.
+# start and end must share the same zone (z value).
+# maxSteps is capped at 4× the Manhattan distance to guarantee termination.
+static func dirtalizeLine(start: Vector3i, end: Vector3i, radius: int) -> void:
+	var current   := start
+	var maxSteps  := (int)(abs(end.x - start.x) + abs(end.y - start.y)) * 4
+	var steps     := 0
+	var driftChance := MapManager.grassSettings.dirtalizeDriftChance
+
+	dirtalizeSection(current, radius)
+
+	while (current.x != end.x or current.y != end.y) and steps < maxSteps:
+		steps += 1
+		var dx := end.x - current.x
+		var dy := end.y - current.y
+
+		var step: Vector2i
+		if randf() >= driftChance:
+			# Bias toward goal — pick whichever axis has remaining distance.
+			# When both axes do, choose randomly between them.
+			if dx == 0:
+				step = Vector2i(0, sign(dy))
+			elif dy == 0:
+				step = Vector2i(sign(dx), 0)
+			elif randf() < 0.5:
+				step = Vector2i(sign(dx), 0)
+			else:
+				step = Vector2i(0, sign(dy))
+		else:
+			# Random stumble in any cardinal direction.
+			var cardinals := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+			step = cardinals[randi() % 4]
+
+		current = Vector3i(current.x + step.x, current.y + step.y, current.z)
+		dirtalizeSection(current, radius)
