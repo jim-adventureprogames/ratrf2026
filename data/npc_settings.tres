@@ -1,8 +1,16 @@
 [gd_resource type="Resource" script_class="NpcSettings" format=3 uid="uid://ckh8pc7ya2q48"]
 
-[ext_resource type="SpriteFrames" path="res://spriteframes/green_wizard.tres" id="1_fx487"]
+[ext_resource type="SpriteFrames" path="res://spriteframes/orange_guard.tres" id="1_0l0a3"]
+[ext_resource type="SpriteFrames" uid="uid://cmhjejfr0tp2" path="res://spriteframes/green_wizard.tres" id="1_fx487"]
 [ext_resource type="Script" uid="uid://cbjs2ks5lsoh2" path="res://data/npc_settings.gd" id="1_h6wk3"]
+[ext_resource type="SpriteFrames" uid="uid://hckneedupuy4" path="res://spriteframes/red_monk.tres" id="2_s51pe"]
+[ext_resource type="SpriteFrames" uid="uid://bgunw2ggomk0o" path="res://spriteframes/blue_wizard.tres" id="3_0l0a3"]
+[ext_resource type="SpriteFrames" uid="uid://css8tptgaovc4" path="res://spriteframes/orange_monk.tres" id="4_nl5vd"]
+[ext_resource type="SpriteFrames" uid="uid://dwpy1u6h1a3uo" path="res://spriteframes/black_wizard.tres" id="5_1o4ii"]
+[ext_resource type="SpriteFrames" uid="uid://doqukdci4ist6" path="res://spriteframes/green_archer.tres" id="6_443wm"]
+[ext_resource type="SpriteFrames" uid="uid://d040k2u1cw5dr" path="res://spriteframes/green_bandit.tres" id="7_x4udb"]
 
 [resource]
 script = ExtResource("1_h6wk3")
-markSpriteFrames = Array[SpriteFrames]([ExtResource("1_fx487")])
+markSpriteFrames = Array[SpriteFrames]([ExtResource("1_fx487"), ExtResource("2_s51pe"), ExtResource("3_0l0a3"), ExtResource("4_nl5vd"), ExtResource("5_1o4ii"), ExtResource("6_443wm"), ExtResource("7_x4udb")])
+guardSpriteFrames = Array[SpriteFrames]([ExtResource("1_0l0a3")])

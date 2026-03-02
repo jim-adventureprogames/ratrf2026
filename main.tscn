@@ -4,6 +4,7 @@
 [ext_resource type="TileSet" uid="uid://tileset00001" path="res://textures/world_tileset.tres" id="3_tileset"]
 [ext_resource type="PackedScene" uid="uid://buif2cv1tpj8w" path="res://hud/hud_main.tscn" id="4_1bvp3"]
 [ext_resource type="Script" uid="uid://b0v1353g01cda" path="res://world/world_tilemap.gd" id="4_worldscript"]
+[ext_resource type="PackedScene" uid="uid://chfcho1oklluj" path="res://hud/hud_mini_map.tscn" id="5_lquwl"]
 
 [node name="Main" type="Node2D" unique_id=1621069194]
 script = ExtResource("1_main")
@@ -24,3 +25,5 @@ tile_set = ExtResource("3_tileset")
 [node name="EntityLayer" type="Node2D" parent="." unique_id=222333444]
 
 [node name="HUD_Main" parent="." unique_id=1639213077 instance=ExtResource("4_1bvp3")]
+
+[node name="HUD_MiniMap" parent="." unique_id=546947764 instance=ExtResource("5_lquwl")]

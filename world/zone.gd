@@ -1,12 +1,20 @@
 class_name Zone
 extends Resource
 
+enum EZoneEdge { North, South, East, West, Center }
+
 @export var id:           int    = 0
 @export var friendlyName: String = ""
 @export var region:       String = ""
 
 # Flat 1D array of tiles; index with (y * ZONE_WIDTH_TILES + x)
 var tiles: Array[Tile] = []
+
+# How untouched this zone feels.  Starts at 99 (fully wild).
+# Set to 0 when a dirt path runs through the zone, then re-scored by
+# WorldGenerator._determineZoneWilderness() as BFS distance from the
+# nearest dirtalized zone.
+var wildernessScore: int = 99
 
 # Landmark positions in local tile coordinates (x, y within this zone).
 var northCenter:  Vector2i

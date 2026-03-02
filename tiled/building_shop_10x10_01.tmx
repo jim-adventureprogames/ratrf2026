@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="6" nextobjectid="5">
+ <tileset firstgid="1" source="world.tsx"/>
+ <layer id="1" name="ground" width="10" height="10">
+  <data encoding="csv">
+97,97,97,97,97,97,97,97,97,97,
+97,97,96,96,96,96,96,96,97,97,
+97,96,96,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,96,96,97,
+97,97,96,96,96,96,96,96,97,97,
+97,97,97,97,97,97,97,97,97,97
+</data>
+ </layer>
+ <layer id="2" name="ground_decoration" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="wall" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,68,0,0,0,0,0,0,68,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,68,0,0,0,0,0,0,68,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="wall_decoration" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="5" name="objects">
+  <object id="1" name="spawn_chest_clothing" x="42" y="44.3636">
+   <properties>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="2" name="spawn_chest_clothing" x="78" y="44.7273">
+   <properties>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="spawn_chest_clothing" x="77.8182" y="81.2727">
+   <properties>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="4" name="spawn_chest_clothing" x="41.4545" y="81.4545">
+   <properties>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>

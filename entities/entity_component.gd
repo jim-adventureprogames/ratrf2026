@@ -45,3 +45,13 @@ func onTakeTurn() -> void:
 # Override to reset per-turn state, trigger passive effects, etc.
 func onEndOfTurn() -> void:
 	pass
+
+
+# Called by Entity when the mouse cursor enters this entity's bounds.
+func onHovered() -> void:
+	pass
+
+
+# Called by Entity when the mouse cursor leaves this entity's bounds.
+func onUnhovered() -> void:
+	pass

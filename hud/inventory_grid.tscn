@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://br36q3ycvgdft"]
+
+[ext_resource type="Script" uid="uid://pocs2glww72n" path="res://hud/inventoryGrid.gd" id="1_hts6p"]
+[ext_resource type="PackedScene" uid="uid://cpljr20q7mbyv" path="res://hud/item_display_container.tscn" id="2_4n2b3"]
+
+[node name="InventoryGrid" type="GridContainer" unique_id=1499663633]
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 4
+script = ExtResource("1_hts6p")
+itemContainerPrefab = ExtResource("2_4n2b3")
+
+[node name="ItemDisplayContainer" parent="." unique_id=1917912905 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer2" parent="." unique_id=226962082 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer3" parent="." unique_id=1000151953 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer4" parent="." unique_id=670316224 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer5" parent="." unique_id=488519159 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer6" parent="." unique_id=169925703 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer7" parent="." unique_id=1538043489 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer8" parent="." unique_id=1622573407 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer9" parent="." unique_id=1417947966 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer10" parent="." unique_id=1996619631 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer11" parent="." unique_id=974376598 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer12" parent="." unique_id=1090715964 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer13" parent="." unique_id=298316632 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer14" parent="." unique_id=458793761 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer15" parent="." unique_id=291674019 instance=ExtResource("2_4n2b3")]
+layout_mode = 2
+
+[node name="ItemDisplayContainer16" parent="." unique_id=1209459626 instance=ExtResource("2_4n2b3")]
+layout_mode = 2

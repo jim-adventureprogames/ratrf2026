@@ -38,6 +38,8 @@ var STARTING_ZONE:    int = 12
 
 func _ready() -> void:
 	initializeInputActions()
+	RandomTable._loadAllTables()
+	ItemData.loadAll()
 
 
 # Defines all movement input actions at runtime.

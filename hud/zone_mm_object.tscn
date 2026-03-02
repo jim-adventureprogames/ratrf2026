@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cfdg5e1es4cpv"]
+
+[ext_resource type="Script" uid="uid://jokodx1amm8c" path="res://hud/mm_zone_object.gd" id="1_123gw"]
+[ext_resource type="FontFile" uid="uid://cxso6mympqjfo" path="res://fonts/tf3.ttf" id="2_123gw"]
+
+[node name="zoneMMObject" type="ColorRect" unique_id=866521110 node_paths=PackedStringArray("lblInfo")]
+custom_minimum_size = Vector2(4, 4)
+offset_right = 4.0
+offset_bottom = 4.0
+color = Color(0, 0.7529412, 0, 1)
+script = ExtResource("1_123gw")
+lblInfo = NodePath("lblInfo")
+
+[node name="lblInfo" type="Label" parent="." unique_id=1200231726]
+layout_mode = 0
+offset_right = 4.0
+offset_bottom = 4.0
+theme_override_fonts/font = ExtResource("2_123gw")
+theme_override_font_sizes/font_size = 2

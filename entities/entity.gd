@@ -65,3 +65,15 @@ func onEndOfTurn() -> void:
 	for c in components.values():
 		if c.has_method("onEndOfTurn"):
 			c.onEndOfTurn()
+
+
+func onHovered() -> void:
+	for c in components.values():
+		if c.has_method("onHovered"):
+			c.onHovered()
+
+
+func onUnhovered() -> void:
+	for c in components.values():
+		if c.has_method("onUnhovered"):
+			c.onUnhovered()

@@ -22,6 +22,11 @@ GameManager="*uid://cvqy1jwskgxk6"
 MapManager="*uid://dsbkwc1x0ml2l"
 DialogueManager="*uid://c3rodes2l3gxb"
 DialogueStateManager="*uid://bb8cxu6ukdvtu"
+Console="*uid://ouiu5xh1cs8n"
+
+[console]
+
+theme="uid://dh3olhywni52l"
 
 [display]
 
@@ -33,10 +38,11 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg")
 
 [internationalization]
 
+locale/translations=PackedStringArray("res://strings/ratrf_stringtables.en.translation")
 locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue")
 
 [rendering]

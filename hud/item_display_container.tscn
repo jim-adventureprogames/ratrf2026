@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cpljr20q7mbyv"]
+
+[ext_resource type="Texture2D" uid="uid://df55njechkkce" path="res://textures/ui/inventory_item_bg.png" id="1_hqhx8"]
+[ext_resource type="Script" uid="uid://nfiagxyljjtc" path="res://hud/item_display_container.gd" id="2_hqhx8"]
+[ext_resource type="FontFile" uid="uid://cxso6mympqjfo" path="res://fonts/tf3.ttf" id="3_hqhx8"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_svixf"]
+load_path = "res://.godot/imported/loots.png-5db1fa5ef0f72cc4c0e799eb9149812c.ctex"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aeu7l"]
+atlas = SubResource("CompressedTexture2D_svixf")
+region = Rect2(0, 0, 12, 12)
+
+[node name="ItemDisplayContainer" type="TextureRect" unique_id=1917912905 node_paths=PackedStringArray("imgItem", "lblCount")]
+custom_minimum_size = Vector2(14, 14)
+texture = ExtResource("1_hqhx8")
+script = ExtResource("2_hqhx8")
+imgItem = NodePath("imgItem")
+lblCount = NodePath("lblCount")
+
+[node name="imgItem" type="TextureRect" parent="." unique_id=355077762]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 13.0
+offset_bottom = 13.0
+texture = SubResource("AtlasTexture_aeu7l")
+
+[node name="lblCount" type="Label" parent="." unique_id=113026383]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 7.0
+offset_right = 13.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color(0, 0.7176471, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 0
+theme_override_fonts/font = ExtResource("3_hqhx8")
+theme_override_font_sizes/font_size = 4
+text = "99"
+horizontal_alignment = 2
+vertical_alignment = 2

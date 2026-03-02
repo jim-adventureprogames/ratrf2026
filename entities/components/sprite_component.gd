@@ -3,9 +3,20 @@ extends AnimatedSprite2D
 
 const BUMP_DURATION := 0.06
 
-var entity:      Entity
-var activeTween: Tween
+var entity:         Entity
+var activeTween:    Tween
+var _savedMaterial: Material
 
+enum ESpriteBorderStyle 
+{
+	none = 0,
+	has_loot = 1,
+	observant = 2,
+	hostile = 3,
+	mouse_over = 999
+}
+
+var lastSetBorderStyle: ESpriteBorderStyle;
 
 func _initialize() -> void:
 	entity = get_parent() as Entity
@@ -13,10 +24,30 @@ func _initialize() -> void:
 		push_error("SpriteComponent must be a direct child of an Entity node.")
 		return
 	entity.components[&"SpriteComponent"] = self
+	# If the entity is off-tree at init time, park the material so we don't
+	# consume shader instance variable slots for entities that aren't rendering.
+	if not is_inside_tree() and material != null:
+		_savedMaterial = material
+		material       = null
 
 
 func _ready() -> void:
 	_initialize()
+
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_ENTER_TREE:
+			# Restore the material now that this node will actually be rendered.
+			if _savedMaterial != null:
+				material       = _savedMaterial
+				_savedMaterial = null
+				set_instance_shader_parameter("border_state", lastSetBorderStyle)
+		NOTIFICATION_EXIT_TREE:
+			# Park the material so this node stops consuming shader instance slots.
+			if material != null:
+				_savedMaterial = material
+				material       = null
 
 
 func _exit_tree() -> void:
@@ -118,3 +149,14 @@ func _entryPixel(toPixel: Vector2, direction: Vector2i) -> Vector2:
 	if   direction.y < 0: ey =  Globals.ZONE_PIXEL_HEIGHT + Globals.TILE_SIZE * 0.5
 	elif direction.y > 0: ey = -Globals.TILE_SIZE * 0.5
 	return Vector2(ex, ey)
+
+func setBorderState(chosenStyle: ESpriteBorderStyle ) -> void:
+	lastSetBorderStyle = chosenStyle;
+	if is_inside_tree() and material != null:
+		set_instance_shader_parameter("border_state", lastSetBorderStyle)
+
+func onHovered() -> void:
+	set_instance_shader_parameter("border_state", ESpriteBorderStyle.mouse_over)
+
+func onUnhovered() -> void:
+	set_instance_shader_parameter("border_state", lastSetBorderStyle)

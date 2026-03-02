@@ -2,15 +2,29 @@
 
 [ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_twwuj"]
 [ext_resource type="SpriteFrames" uid="uid://cs3bdfs75a7ib" path="res://spriteframes/default_character.tres" id="2_0dqb0"]
+[ext_resource type="Shader" uid="uid://bq72yxsr6cank" path="res://shaders/character_outline.gdshader" id="2_u22ac"]
 [ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="3_u22ac"]
 [ext_resource type="Script" uid="uid://ceow7ubw3uq76" path="res://entities/components/mover_component.gd" id="4_lvaaw"]
 [ext_resource type="Script" uid="uid://v5ppikna2ils" path="res://entities/components/mark_component.gd" id="5_twwuj"]
 [ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="6_bmpbl"]
+[ext_resource type="Script" uid="uid://cjlfpp7wxv0j4" path="res://entities/components/mouseable_component.gd" id="8_lvaaw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
+shader = ExtResource("2_u22ac")
+shader_parameter/colorHasLootMin = Color(1, 1, 1, 0.5058824)
+shader_parameter/colorHasLootMax = Color(1, 1, 1, 0.7058824)
+shader_parameter/colorMouseOverMin = Color(0, 0.5411765, 1, 1)
+shader_parameter/colorMouseOverMax = Color(0, 1, 1, 1)
+shader_parameter/colorObservantMin = Color(0, 0, 0, 1)
+shader_parameter/colorObservantMax = Color(0, 0, 0, 1)
+shader_parameter/colorHostileMin = Color(0, 0, 0, 1)
+shader_parameter/colorHostileMax = Color(0, 0, 0, 1)
 
 [node name="mark" type="Node2D" unique_id=967847664]
 script = ExtResource("1_twwuj")
 
 [node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1394865929]
+material = SubResource("ShaderMaterial_lvaaw")
 sprite_frames = ExtResource("2_0dqb0")
 animation = &"idle_right"
 autoplay = "idle_right"
@@ -25,3 +39,6 @@ script = ExtResource("5_twwuj")
 
 [node name="bumpableComponent" type="Node" parent="." unique_id=112233445]
 script = ExtResource("6_bmpbl")
+
+[node name="mouseableComponent" type="Node" parent="." unique_id=1581467770]
+script = ExtResource("8_lvaaw")

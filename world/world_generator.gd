@@ -35,6 +35,8 @@ static func generateWorld() -> void:
 	Globals.STARTING_ZONE    = Globals.ZONE_GRID_WIDTH  * (Globals.ZONE_GRID_HEIGHT / 2) \
 							 + Globals.ZONE_GRID_WIDTH  / 2
 
+	_initZoneAStar()
+
 	MapManager.zones.resize(Globals.ZONE_COUNT)
 	for i in Globals.ZONE_COUNT:
 		var zone          := Zone.new()
@@ -46,6 +48,71 @@ static func generateWorld() -> void:
 
 	var gateZones := _buildPerimeterWall()
 	_buildDirtPaths(gateZones)
+
+
+# ── Zone AStar ──────────────────────────────────────────────────────────────────
+
+# Configures the zone-level AStar grid.  Must be called after grid dimensions
+# are set in generateWorld().  Each cell is one zone; diagonal movement disabled.
+static func _initZoneAStar() -> void:
+	MapManager.zoneAStar.region        = Rect2i(0, 0, Globals.ZONE_GRID_WIDTH, Globals.ZONE_GRID_HEIGHT)
+	MapManager.zoneAStar.cell_size     = Vector2(1, 1)
+	MapManager.zoneAStar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	MapManager.zoneAStar.update()
+
+
+# Converts a zone ID to its grid position in the AStar grid.
+static func _zoneIdToGrid(zoneId: int) -> Vector2i:
+	return Vector2i(zoneId % Globals.ZONE_GRID_WIDTH, zoneId / Globals.ZONE_GRID_WIDTH)
+
+
+# Converts a Vector2i movement direction to the ZoneEdge it entered from.
+# e.g. moving East (1,0) means we entered via the West edge.
+static func _directionToEntryEdge(dir: Vector2i) -> Zone.EZoneEdge:
+	match dir:
+		Vector2i( 0, -1): return Zone.EZoneEdge.South  # moved North → entered from South
+		Vector2i( 0,  1): return Zone.EZoneEdge.North  # moved South → entered from North
+		Vector2i( 1,  0): return Zone.EZoneEdge.West   # moved East  → entered from West
+		Vector2i(-1,  0): return Zone.EZoneEdge.East   # moved West  → entered from East
+	return Zone.EZoneEdge.Center
+
+
+# Converts a Vector2i movement direction to the ZoneEdge we are exiting through.
+# e.g. moving East (1,0) means we leave via the East edge.
+static func _directionToExitEdge(dir: Vector2i) -> Zone.EZoneEdge:
+	match dir:
+		Vector2i( 0, -1): return Zone.EZoneEdge.North
+		Vector2i( 0,  1): return Zone.EZoneEdge.South
+		Vector2i( 1,  0): return Zone.EZoneEdge.East
+		Vector2i(-1,  0): return Zone.EZoneEdge.West
+	return Zone.EZoneEdge.Center
+
+
+# Traces an AStar path between two zones and draws a dirtalized trail through
+# every zone along the route.  The start zone gets Center→exit, the end zone
+# gets entry→Center, and every intermediate zone gets entry→exit.
+static func dirtalizeZonePath(startZoneId: int, endZoneId: int, radius: int) -> void:
+	var path := MapManager.zoneAStar.get_point_path(
+		_zoneIdToGrid(startZoneId), _zoneIdToGrid(endZoneId))
+	if path.is_empty():
+		return
+
+	for i in path.size():
+		var gridPos := Vector2i(int(path[i].x), int(path[i].y))
+		var zoneId  := gridPos.y * Globals.ZONE_GRID_WIDTH + gridPos.x
+
+		var entryEdge := Zone.EZoneEdge.Center
+		var exitEdge  := Zone.EZoneEdge.Center
+
+		if i > 0:
+			var prevGrid := Vector2i(int(path[i - 1].x), int(path[i - 1].y))
+			entryEdge    = _directionToEntryEdge(gridPos - prevGrid)
+
+		if i < path.size() - 1:
+			var nextGrid := Vector2i(int(path[i + 1].x), int(path[i + 1].y))
+			exitEdge     = _directionToExitEdge(nextGrid - gridPos)
+
+		dirtalizePathInZone(zoneId, entryEdge, exitEdge, radius)
 
 
 # ── Wall construction ───────────────────────────────────────────────────────────
@@ -171,34 +238,76 @@ static func _placeWestGate() -> int:
 
 # ── Dirt paths ──────────────────────────────────────────────────────────────────
 
-# Draws a drunken dirt path across each gate zone from its centerCenter to the
-# edge opposite the gate, so there is a visible trail leading through the zone.
+# Connects the four gate zones with dirtalized paths in clockwise order:
+# north → east → south → west → north.
+# After all paths are drawn, scores every zone by its distance from the
+# nearest dirtalized zone.
 static func _buildDirtPaths(gateZones: Dictionary) -> void:
 	var radius := 2
+	dirtalizeZonePath(gateZones["north"], gateZones["east"],  radius)
+	dirtalizeZonePath(gateZones["east"],  gateZones["south"], radius)
+	dirtalizeZonePath(gateZones["south"], gateZones["west"],  radius)
+	dirtalizeZonePath(gateZones["west"],  gateZones["north"], radius)
+	_determineZoneWilderness()
 
-	var northZone := MapManager.getZone(gateZones["north"]) as Zone
-	if northZone:
-		var z := gateZones["north"] as int
-		dirtalizeLine(Vector3i(northZone.centerCenter.x, northZone.centerCenter.y, z),
-					  Vector3i(northZone.southCenter.x,  northZone.southCenter.y,  z), radius)
 
-	var southZone := MapManager.getZone(gateZones["south"]) as Zone
-	if southZone:
-		var z := gateZones["south"] as int
-		dirtalizeLine(Vector3i(southZone.centerCenter.x, southZone.centerCenter.y, z),
-					  Vector3i(southZone.northCenter.x,  southZone.northCenter.y,  z), radius)
+# Multi-source BFS from every dirtalized zone (wildernessScore == 0).
+# Each step away from a dirtalized zone increments the wilderness score by 1.
+# Zones unreachable from any path keep their default score of 99.
+static func _determineZoneWilderness() -> void:
+	var queue: Array[int] = []
+	for zone: Zone in MapManager.zones:
+		if zone.wildernessScore == 0:
+			queue.append(zone.id)
 
-	var eastZone := MapManager.getZone(gateZones["east"]) as Zone
-	if eastZone:
-		var z := gateZones["east"] as int
-		dirtalizeLine(Vector3i(eastZone.centerCenter.x, eastZone.centerCenter.y, z),
-					  Vector3i(eastZone.westCenter.x,   eastZone.westCenter.y,   z), radius)
+	var cardinals := [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
+	var head      := 0
+	while head < queue.size():
+		var zoneId := queue[head]
+		head       += 1
+		var zone   := MapManager.getZone(zoneId)
+		for dir: Vector2i in cardinals:
+			var neighborId := Globals.getAdjacentZoneId(zoneId, dir)
+			if neighborId == -1:
+				continue
+			var neighbor := MapManager.getZone(neighborId)
+			if neighbor == null or neighbor.wildernessScore != 99:
+				continue
+			neighbor.wildernessScore = zone.wildernessScore + 1
+			queue.append(neighborId)
 
-	var westZone := MapManager.getZone(gateZones["west"]) as Zone
-	if westZone:
-		var z := gateZones["west"] as int
-		dirtalizeLine(Vector3i(westZone.centerCenter.x, westZone.centerCenter.y, z),
-					  Vector3i(westZone.eastCenter.x,   westZone.eastCenter.y,   z), radius)
+
+# Draws a drunken dirt path between two named edge points in a zone.
+# Half the time the path goes directly from start to end.
+# The other half it routes via the zone's centerCenter, producing an L-shaped trail.
+static func dirtalizePathInZone(zoneId: int, from: Zone.EZoneEdge, to: Zone.EZoneEdge, radius: int) -> void:
+	var zone := MapManager.getZone(zoneId) as Zone
+	if zone == null:
+		return
+
+	zone.wildernessScore = 0
+
+	var startPos := _resolveZoneEdge(zone, from)
+	var endPos   := _resolveZoneEdge(zone, to)
+	var startV3  := Vector3i(startPos.x, startPos.y, zoneId)
+	var endV3    := Vector3i(endPos.x,   endPos.y,   zoneId)
+
+	if randf() < 0.5:
+		dirtalizeLine(startV3, endV3, radius)
+	else:
+		var centerV3 := Vector3i(zone.centerCenter.x, zone.centerCenter.y, zoneId)
+		dirtalizeLine(startV3, centerV3, radius)
+		dirtalizeLine(centerV3, endV3, radius)
+
+
+static func _resolveZoneEdge(zone: Zone, edge: Zone.EZoneEdge) -> Vector2i:
+	match edge:
+		Zone.EZoneEdge.North:   return zone.northCenter
+		Zone.EZoneEdge.South:   return zone.southCenter
+		Zone.EZoneEdge.East:    return zone.eastCenter
+		Zone.EZoneEdge.West:    return zone.westCenter
+		Zone.EZoneEdge.Center:  return zone.centerCenter
+	return zone.centerCenter
 
 
 # ── Procedural decoration ───────────────────────────────────────────────────────

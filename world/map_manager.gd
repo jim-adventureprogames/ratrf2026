@@ -281,20 +281,24 @@ func _spawnEntityFromPrefab(prefabName: String, worldPos: Vector3i) -> void:
 # Applies any data-driven visual variants to a freshly instantiated entity.
 # Currently: picks a random SpriteFrames for mark entities.
 func applySpawnVariant(entity: Entity) -> void:
-	var isMark := false
 	var spriteComp: AnimatedSprite2D = null
+	var isMark:  bool = false
+	var isGuard: bool = false
 	for child in entity.get_children():
-		if child is MarkComponent:
-			isMark = true
 		if child is AnimatedSprite2D:
 			spriteComp = child
+		if child is MarkComponent:
+			isMark = true
+		if child is GuardComponent:
+			isGuard = true
 
-	if not isMark or spriteComp == null:
-		return
-	if npcSettings.markSpriteFrames.is_empty():
+	if spriteComp == null:
 		return
 
-	spriteComp.sprite_frames = npcSettings.markSpriteFrames[randi() % npcSettings.markSpriteFrames.size()]
+	if isMark and not npcSettings.markSpriteFrames.is_empty():
+		spriteComp.sprite_frames = npcSettings.markSpriteFrames[randi() % npcSettings.markSpriteFrames.size()]
+	elif isGuard and not npcSettings.guardSpriteFrames.is_empty():
+		spriteComp.sprite_frames = npcSettings.guardSpriteFrames[randi() % npcSettings.guardSpriteFrames.size()]
 
 
 func _applyLayerData(csv: String, layerName: String, width: int, height: int, topLeft: Vector3i) -> void:

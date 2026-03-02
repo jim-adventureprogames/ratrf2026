@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://chfcho1oklluj"]
+
+[ext_resource type="PackedScene" uid="uid://cfdg5e1es4cpv" path="res://hud/zone_mm_object.tscn" id="1_1esvt"]
+[ext_resource type="Script" uid="uid://i8m2yre1ogbv" path="res://hud/hud_minimap.gd" id="1_wv2lu"]
+
+[node name="HUD_MiniMap" type="Control" unique_id=546947764 node_paths=PackedStringArray("gridMM")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wv2lu")
+gridMM = NodePath("gridMM")
+prefabZoneMMObject = ExtResource("1_1esvt")
+colorDepthMin = Color(0, 0.81960785, 0, 1)
+colorDepthMax = Color(0, 0.23137255, 0, 1)
+colorPlayerLocation = Color(0.85490197, 0.42352942, 0, 1)
+
+[node name="gridMM" type="GridContainer" parent="." unique_id=257521973]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
