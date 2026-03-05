@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://c5fnpdc3aoc12"]
+
+[ext_resource type="Texture2D" uid="uid://dfccx1jow5d5e" path="res://textures/loots.png" id="1_p24rj"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_c4vei"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jti6a"]
+atlas = ExtResource("1_p24rj")
+region = Rect2(48, 24, 12, 12)
+
+[resource]
+script = ExtResource("2_c4vei")
+archetypeName = "fox_black"
+friendlyName = "itemname_fox_black"
+flavorText = "flavor_fox_black"
+value = 100
+image = SubResource("AtlasTexture_jti6a")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

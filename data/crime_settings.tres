@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CrimeSettings" format=3 uid="uid://c6phk6x0r1fcm"]
+
+[ext_resource type="Script" uid="uid://bmtxgspnx5enl" path="res://data/crime_settings.gd" id="1_b625m"]
+
+[resource]
+script = ExtResource("1_b625m")
+defaultCrimeRadiusByAudacity = Dictionary[int, int]({
+0: 8,
+1: 6,
+2: 4,
+3: 3,
+4: 2
+})
+metadata/_custom_type_script = "uid://bmtxgspnx5enl"

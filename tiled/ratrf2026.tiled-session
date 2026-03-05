@@ -7,12 +7,75 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "building_shop_10x10_01.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 59.18181818181817,
+                "y": 69.36363636363637
+            }
+        },
+        "building_shop_8x8_01.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 36.272727272727266,
+                "y": 69.36363636363637
+            }
+        },
         "building_tables_chairs_01.tmx": {
             "scale": 5.5,
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 12.545454545454547,
                 "y": 69.54545454545453
+            }
+        },
+        "entrance_gate_east.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 4,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 62.125,
+                "y": 41.125
+            }
+        },
+        "entrance_gate_north.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 8.619270833333333,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 47.9738957036679,
+                "y": 47.97389570366791
+            }
+        },
+        "entrance_gate_south.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 23.909090909090914,
+                "y": 55.18181818181819
+            }
+        },
+        "entrance_gate_west.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 4,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 62.125,
+                "y": 41.125
             }
         }
     },

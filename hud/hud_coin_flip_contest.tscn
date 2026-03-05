@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://38njbd7gy4ct"]
+
+[ext_resource type="Script" uid="uid://8lpy42ciyvyg" path="res://hud/hud_coin_flip_contest.gd" id="1_k1byd"]
+[ext_resource type="PackedScene" uid="uid://cyn1jopws85xq" path="res://hud/flip_coin.tscn" id="2_k1byd"]
+[ext_resource type="Texture2D" uid="uid://ceudt1thncoi1" path="res://textures/ui/9slice_filligree.png" id="3_y7lhx"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="4_7x8vg"]
+[ext_resource type="Texture2D" uid="uid://gl0rdciv5l3u" path="res://textures/ui/9slice_brown_button.png" id="5_kwkw8"]
+[ext_resource type="PackedScene" uid="uid://cmdrotcdpsl40" path="res://hud/coin_result_control.tscn" id="6_7x8vg"]
+
+[node name="HUD_CoinFlipContest" type="Control" unique_id=914739355 node_paths=PackedStringArray("hboxResults", "txtChallenge", "txtStat", "txtScore", "txtLucky", "btnFlip")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_k1byd")
+prefabCoin = ExtResource("2_k1byd")
+prefabResult = ExtResource("6_7x8vg")
+hboxResults = NodePath("bgStats2/HBoxContainer")
+txtChallenge = NodePath("bgStats2/txtChallenge")
+txtStat = NodePath("bgStats2/txtStat")
+txtScore = NodePath("bgStats2/txtScore")
+txtLucky = NodePath("bgStats2/txtLucky")
+btnFlip = NodePath("bgStats2/panelButton_Flip/btnFlip")
+
+[node name="bgStats" type="TextureRect" parent="." unique_id=719368651]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="bgStats2" type="NinePatchRect" parent="." unique_id=144377829]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 143.0
+offset_right = 241.0
+offset_bottom = 239.0
+texture = ExtResource("3_y7lhx")
+patch_margin_left = 19
+patch_margin_top = 20
+patch_margin_right = 19
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="txtChallenge" type="RichTextLabel" parent="bgStats2" unique_id=1563102306]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 13.0
+offset_right = 231.0
+offset_bottom = 33.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 8
+text = "Talk your way out of trouble."
+horizontal_alignment = 1
+
+[node name="lblStat" type="RichTextLabel" parent="bgStats2" unique_id=275541533]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 42.0
+offset_right = 31.0
+offset_bottom = 47.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "Stat:"
+
+[node name="txtStat" type="RichTextLabel" parent="bgStats2" unique_id=1632484763]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 42.0
+offset_right = 81.0
+offset_bottom = 47.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "Fast talk"
+
+[node name="panelButton_Flip" type="PanelContainer" parent="bgStats2" unique_id=133281749]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.0
+offset_top = -26.0
+offset_right = 36.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="bgStats2/panelButton_Flip" unique_id=551734469]
+layout_mode = 2
+texture = ExtResource("5_kwkw8")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnFlip" type="Button" parent="bgStats2/panelButton_Flip" unique_id=1576999292]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/font_size = 8
+text = "flip!"
+flat = true
+
+[node name="lblScore" type="RichTextLabel" parent="bgStats2" unique_id=662702710]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 48.0
+offset_right = 37.0
+offset_bottom = 53.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "Score:"
+scroll_active = false
+
+[node name="txtScore" type="RichTextLabel" parent="bgStats2" unique_id=1752483431]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 48.0
+offset_right = 49.0
+offset_bottom = 53.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "3"
+
+[node name="lblLucky" type="RichTextLabel" parent="bgStats2" unique_id=997521255]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 54.0
+offset_right = 37.0
+offset_bottom = 59.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "Lucky:"
+scroll_active = false
+
+[node name="txtLucky" type="RichTextLabel" parent="bgStats2" unique_id=1646552105]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 54.0
+offset_right = 49.0
+offset_bottom = 59.0
+theme = ExtResource("4_7x8vg")
+theme_override_font_sizes/normal_font_size = 4
+text = "0
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="bgStats2" unique_id=808632750]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 0
+offset_left = 79.0
+offset_top = 37.0
+offset_right = 235.0
+offset_bottom = 61.0
+theme_override_constants/separation = 4

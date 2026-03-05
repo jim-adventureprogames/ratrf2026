@@ -9,11 +9,16 @@ static func summon() -> HUD_Main:
 @export var btnDebugStart: Button
 @export var inventoryGrid:  InventoryGrid
 @export var txtTime:        Label
+@export var txtCoin:        Label
+@export var tooltipPopup:   TooltipPopup
 
 
 func _ready() -> void:
 	_instance = self
 	btnDebugStart.pressed.connect(_OnDebugStartPressed)
+	inventoryGrid.tooltipPopup = tooltipPopup
+	if tooltipPopup != null:
+		tooltipPopup.hide()
 
 
 func _exit_tree() -> void:
@@ -40,6 +45,18 @@ func _updateTimeDisplay() -> void:
 
 func showInventory(inventory: InventoryComponent) -> void:
 	inventoryGrid.populate(inventory)
+	if inventory.coinChanged.is_connected(_updateCoinDisplay):
+		inventory.coinChanged.disconnect(_updateCoinDisplay)
+	inventory.coinChanged.connect(_updateCoinDisplay)
+	_updateCoinDisplay(inventory.getCoin())
+
+
+func _updateCoinDisplay(amount: int) -> void:
+	if txtCoin == null:
+		return
+	var dollars := amount / 100
+	var cents   := amount % 100
+	txtCoin.text = "$%d.%02d" % [dollars, cents]
 
 
 const _FLOATING_DISPLAY := preload("res://hud/floating_display.tscn")

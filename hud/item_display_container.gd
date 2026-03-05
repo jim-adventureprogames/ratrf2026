@@ -9,6 +9,39 @@ extends TextureRect
 
 var _currentItem: Item = null
 
+# Seconds of continuous hover required before item_hovered fires.
+const HOVER_DELAY := 0.5
+
+# Emitted after the hover delay if the cursor is still over a filled slot.
+signal item_hovered(item: Item, canvas_pos: Vector2)
+# Emitted immediately when the cursor leaves, regardless of delay state.
+signal item_unhovered()
+
+# True while the cursor is inside this control waiting for the delay to expire.
+var _hoverPending: bool = false
+
+
+func _ready() -> void:
+	mouse_entered.connect(_onMouseEntered)
+	mouse_exited.connect(_onMouseExited)
+
+
+func _onMouseEntered() -> void:
+	if _currentItem == null:
+		return
+	_hoverPending = true
+	get_tree().create_timer(HOVER_DELAY).timeout.connect(_onHoverTimerExpired)
+
+
+func _onMouseExited() -> void:
+	_hoverPending = false
+	item_unhovered.emit()
+
+
+func _onHoverTimerExpired() -> void:
+	if _hoverPending and _currentItem != null:
+		item_hovered.emit(_currentItem, get_global_rect().position)
+
 
 # Assigns an item and refreshes the display.
 func setItem(item: Item) -> void:

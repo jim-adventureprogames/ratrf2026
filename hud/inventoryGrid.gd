@@ -5,7 +5,8 @@ extends GridContainer
 @export var maxHeight:           int        = 6
 @export var itemContainerPrefab: PackedScene
 
-var _inventory: InventoryComponent
+var _inventory:    InventoryComponent
+var tooltipPopup:  TooltipPopup
 
 
 func _ready() -> void:
@@ -30,7 +31,9 @@ func populate(inventory: InventoryComponent) -> void:
 
 
 # Rebuilds all slots from the current inventory state.
-# Called automatically when itemsChanged fires; also safe to call directly.
+# Items with a valid gridSlotIndex are placed at that slot; items without one
+# fill the first available gap.  This preserves drag-and-drop arrangement
+# across any itemsChanged refresh.
 func refresh() -> void:
 	for child in get_children():
 		child.queue_free()
@@ -38,21 +41,44 @@ func refresh() -> void:
 	var items      := _inventory.getItems()
 	var totalSlots := maxWidth * maxHeight
 
+	# Build a sparse slot map from items that already know where they live.
+	var slotMap: Dictionary = {}   # int → Item
+	var unslotted: Array    = []
+	for item: Item in items:
+		if item.gridSlotIndex >= 0 and item.gridSlotIndex < totalSlots \
+				and not slotMap.has(item.gridSlotIndex):
+			slotMap[item.gridSlotIndex] = item
+		else:
+			unslotted.append(item)
+
+	# Fill slots in order, using pinned items first and spilling unslotted into gaps.
+	var gapIdx := 0
 	for i in totalSlots:
 		var slot := itemContainerPrefab.instantiate() as ItemDisplayContainer
 		add_child(slot)
-		if i < items.size():
-			slot.setItem(items[i])
+		if slotMap.has(i):
+			slot.setItem(slotMap[i])
+		elif gapIdx < unslotted.size():
+			slot.setItem(unslotted[gapIdx])
+			gapIdx += 1
 		else:
 			slot.clearItem()
+		if tooltipPopup != null:
+			slot.item_hovered.connect(tooltipPopup.showForItem)
+			slot.item_unhovered.connect(tooltipPopup.hide)
 
 
-# Rebuilds the inventory's item order from the current slot display state.
-# Called after every drag-and-drop to keep the data in sync with the UI.
+# Rebuilds the inventory's item order from the current slot display state and
+# stamps each item's gridSlotIndex so refresh() can restore the arrangement.
+# Called after every drag-and-drop to keep data in sync with the UI.
 func syncToInventory() -> void:
 	if _inventory == null:
 		return
 	var newOrder: Array = []
-	for child in get_children():
-		newOrder.append(child.getItem())  # null for empty slots, filtered in reorderItems
+	for i in get_child_count():
+		var slot := get_child(i) as ItemDisplayContainer
+		var item := slot.getItem()
+		if item != null:
+			item.gridSlotIndex = i
+		newOrder.append(item)  # null for empty slots, filtered in reorderItems
 	_inventory.reorderItems(newOrder)

@@ -23,10 +23,21 @@ var _weights:     Array[int]    = []
 var _totalWeight: int           = 0
 
 
-func _addEntry(result: String, weight: int) -> void:
+# Adds a new weighted entry to this table at runtime.
+# _totalWeight is kept incrementally so no full recalculation is needed.
+func addEntry(result: String, weight: int) -> void:
 	_entries.append(result)
 	_weights.append(weight)
 	_totalWeight += weight
+
+
+# Convenience: adds an entry to a named table by registry lookup.
+static func addEntryToTable(tableName: String, result: String, weight: int) -> void:
+	var table := _tables.get(tableName) as RandomTable
+	if table == null:
+		push_error("RandomTable.addEntryToTable: no table named '%s'" % tableName)
+		return
+	table.addEntry(result, weight)
 
 
 # Picks a weighted-random entry.
@@ -140,4 +151,4 @@ static func _loadFile(path: String) -> void:
 				key    = trimmed.left(sep)
 				weight = trimmed.right(trimmed.length() - sep - 2).strip_edges().to_int()
 			if weight > 0:
-				currentTable._addEntry(key, weight)
+				currentTable.addEntry(key, weight)

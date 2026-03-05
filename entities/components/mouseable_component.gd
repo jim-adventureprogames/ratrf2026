@@ -17,6 +17,13 @@ func onAttached() -> void:
 
 	_area.mouse_entered.connect(entity.onHovered)
 	_area.mouse_exited.connect(entity.onUnhovered)
+	_area.input_event.connect(_onInputEvent)
+
+
+func _onInputEvent(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			entity.onDebugPrint()
 
 
 func onDetached() -> void:

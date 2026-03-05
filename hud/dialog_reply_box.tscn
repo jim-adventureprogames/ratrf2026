@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://dc8vgpgcry1rg"]
+
+[ext_resource type="Script" uid="uid://dvb7m4aelxud" path="res://hud/dialog_reply_box.gd" id="1_6hals"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="1_qofl4"]
+[ext_resource type="Texture2D" uid="uid://s8us78y8l82t" path="res://textures/ui/dialog_reply_bg.png" id="2_fcog0"]
+
+[node name="replyBox" type="Control" unique_id=2107131781 node_paths=PackedStringArray("imgBG", "txtReply")]
+custom_minimum_size = Vector2(184, 6)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 184.0
+offset_bottom = 6.0
+size_flags_horizontal = 8
+script = ExtResource("1_6hals")
+imgBG = NodePath("imgBg")
+txtReply = NodePath("txtReply")
+
+[node name="imgBg" type="TextureRect" parent="." unique_id=782230289]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 0
+offset_right = 184.0
+offset_bottom = 6.0
+mouse_filter = 2
+texture = ExtResource("2_fcog0")
+expand_mode = 2
+
+[node name="txtReply" type="RichTextLabel" parent="." unique_id=332786117]
+custom_minimum_size = Vector2(184, 6)
+layout_mode = 0
+offset_right = 184.0
+offset_bottom = 6.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_filter = 2
+theme = ExtResource("1_qofl4")
+theme_override_font_sizes/normal_font_size = 4
+bbcode_enabled = true
+text = "I didn't do it"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 2

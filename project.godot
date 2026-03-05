@@ -22,6 +22,8 @@ GameManager="*uid://cvqy1jwskgxk6"
 MapManager="*uid://dsbkwc1x0ml2l"
 DialogueManager="*uid://c3rodes2l3gxb"
 DialogueStateManager="*uid://bb8cxu6ukdvtu"
+CrimeManager="*uid://c7326risvgenb"
+ChallengeManager="*res://gamesystems/challenge_manager.gd"
 Console="*uid://ouiu5xh1cs8n"
 
 [console]
@@ -43,7 +45,7 @@ enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/console/
 [internationalization]
 
 locale/translations=PackedStringArray("res://strings/ratrf_stringtables.en.translation")
-locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue")
+locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue", "res://dialogue/guard_dialog.dialogue")
 
 [rendering]
 

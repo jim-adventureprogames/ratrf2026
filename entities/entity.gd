@@ -1,8 +1,15 @@
 class_name Entity
 extends Node2D
 
-# Assigned by MapManager.registerEntity(). -1 until registered.
+static var _nextId: int = 0
+
+# Unique ID assigned at construction time.
 var entityId: int = -1
+
+
+func _init() -> void:
+	entityId    = Entity._nextId
+	Entity._nextId += 1
 
 # x/y = tile coordinates within the zone, z = zone ID.
 var worldPosition: Vector3i = Vector3i.ZERO
@@ -77,3 +84,23 @@ func onUnhovered() -> void:
 	for c in components.values():
 		if c.has_method("onUnhovered"):
 			c.onUnhovered()
+
+
+func onDebugPrint() -> void:
+	print("--- %s (id %d) ---" % [name, entityId])
+	print("  worldPosition: %s" % str(worldPosition))
+	for c in components.values():
+		if c.has_method("onDebugPrint"):
+			c.onDebugPrint()
+
+
+func onHardDetectCrime(event: CrimeEvent) -> void:
+	for c in components.values():
+		if c.has_method("onHardDetectCrime"):
+			c.onHardDetectCrime(event)
+
+
+func onSoftDetectCrime(event: CrimeEvent) -> void:
+	for c in components.values():
+		if c.has_method("onSoftDetectCrime"):
+			c.onSoftDetectCrime(event)

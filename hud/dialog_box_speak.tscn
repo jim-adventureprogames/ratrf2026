@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://xlkbp1nxcpvb"]
+
+[ext_resource type="Texture2D" uid="uid://cjd51lj48wc27" path="res://textures/ui/dialog_bg.png" id="1_k63hn"]
+[ext_resource type="Script" uid="uid://bac4jdolum66m" path="res://hud/dialog_box_speak.gd" id="1_pucel"]
+[ext_resource type="Texture2D" uid="uid://bka2g43uhy5wq" path="res://textures/ui/dialog_character_frame.png" id="2_pucel"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="3_bo3hb"]
+[ext_resource type="Script" uid="uid://g32um0mltv5d" path="res://addons/dialogue_manager/dialogue_label.gd" id="5_bo3hb"]
+
+[node name="dialogBox_Speak" type="Control" unique_id=1699272967 node_paths=PackedStringArray("imgCharacter", "txtName", "txtMessage")]
+custom_minimum_size = Vector2(1, 1)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -319.0
+offset_bottom = -239.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pucel")
+imgCharacter = NodePath("MarginContainer/MarginContainer2/HBoxContainer/imgFrame/imgCharacter")
+txtName = NodePath("MarginContainer/MarginContainer2/HBoxContainer/VBoxContainer/txtName")
+txtMessage = NodePath("MarginContainer/MarginContainer2/HBoxContainer/VBoxContainer/txtMessage")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1905679732]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="9patchBG" type="NinePatchRect" parent="MarginContainer" unique_id=1335191495]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+texture = ExtResource("1_k63hn")
+region_rect = Rect2(0, 0, 240, 48)
+patch_margin_left = 43
+patch_margin_top = 9
+patch_margin_right = 9
+patch_margin_bottom = 9
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer" unique_id=344224550]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer2" unique_id=1105811637]
+layout_mode = 2
+
+[node name="imgFrame" type="TextureRect" parent="MarginContainer/MarginContainer2/HBoxContainer" unique_id=2016259921]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("2_pucel")
+stretch_mode = 2
+
+[node name="imgCharacter" type="TextureRect" parent="MarginContainer/MarginContainer2/HBoxContainer/imgFrame" unique_id=1624032024]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 38.0
+offset_bottom = 38.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer2/HBoxContainer" unique_id=504990500]
+layout_mode = 2
+
+[node name="txtName" type="RichTextLabel" parent="MarginContainer/MarginContainer2/HBoxContainer/VBoxContainer" unique_id=181510733]
+custom_minimum_size = Vector2(184, 8)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("3_bo3hb")
+theme_override_font_sizes/normal_font_size = 8
+bbcode_enabled = true
+text = "NPC NAME"
+fit_content = true
+scroll_active = false
+shortcut_keys_enabled = false
+
+[node name="txtMessage" type="RichTextLabel" parent="MarginContainer/MarginContainer2/HBoxContainer/VBoxContainer" unique_id=617478776]
+custom_minimum_size = Vector2(184, 26)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("3_bo3hb")
+theme_override_font_sizes/normal_font_size = 4
+bbcode_enabled = true
+text = "[color=red]Words[/color] to tell a [rainbow]story[/rainbow]"
+fit_content = true
+scroll_active = false
+script = ExtResource("5_bo3hb")
+skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex")
+metadata/_custom_type_script = "uid://g32um0mltv5d"

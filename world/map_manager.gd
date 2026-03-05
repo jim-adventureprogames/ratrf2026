@@ -7,7 +7,7 @@ extends Node
 var zones: Array[Zone] = []
 
 var entityRegistry: Dictionary = {}   # int → Entity
-var nextEntityId:   int = 0
+var waypointRegistry: Dictionary = {}   # int → PathWaypoint
 var currentZoneId:  int = -1
 
 # Populated by stampTmx whenever an object carries a "spawn" property.
@@ -119,8 +119,6 @@ func registerEntity(entity: Entity) -> void:
 	# Ensure components are wired up even if the entity was never added to the
 	# scene tree (e.g. entities spawned in zones the player hasn't visited yet).
 	entity._initialize()
-	entity.entityId  = nextEntityId
-	nextEntityId    += 1
 	entityRegistry[entity.entityId] = entity
 	var tile := getTileAt(entity.worldPosition)
 	if tile:
@@ -260,6 +258,9 @@ func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
 					"objectgroup":
 						inSpawnGroup = false
 
+	# Tiles may have changed — rebuild the zone's pathfinding graph.
+	buildZoneAStarGraph(topLeft.z)
+
 
 func _spawnEntityFromPrefab(prefabName: String, worldPos: Vector3i) -> void:
 	var scenePath := "res://entity_prefabs/" + prefabName + ".tscn"
@@ -359,6 +360,70 @@ func fillWallRect(start: Vector2i, end: Vector2i, zoneId: int, color: MapDataInf
 			var isBottomEdge := tileBelow == null or tileBelow.wall == Tile.EMPTY_TILE
 			if isBottomEdge:
 				tile.wall = capTileId
+
+
+# ── Waypoints ──────────────────────────────────────────────────────────────────
+
+# Registers a waypoint in the global registry and in its zone's list.
+func registerWaypoint(wp: PathWaypoint) -> void:
+	waypointRegistry[wp.id] = wp
+	var zone := getZone(wp.zoneId)
+	if zone:
+		zone.waypoints.append(wp)
+
+
+# Returns the waypoint with the given ID, or null if not found.
+func getWaypoint(wpId: int) -> PathWaypoint:
+	return waypointRegistry.get(wpId) as PathWaypoint
+
+
+# ── Pathfinding ────────────────────────────────────────────────────────────────
+
+# Returns true if the tile at the given position should block movement in the
+# pathfinding graph.  Matches the static-geometry checks in testDestinationTile
+# (entities are dynamic and are NOT encoded into the graph).
+func _isTileSolid(tile: Tile) -> bool:
+	if tile == null:
+		return true
+	if tile.wall != Tile.EMPTY_TILE:
+		return true
+	if tile.ground in mapInfo.wallTileIds:
+		return true
+	return false
+
+
+# Builds (or fully rebuilds) the AStarGrid2D for a single zone from its
+# current tile data.  Safe to call multiple times — always produces a correct
+# graph for the tiles as they stand right now.
+func buildZoneAStarGraph(zoneId: int) -> void:
+	var zone := getZone(zoneId)
+	if zone == null:
+		return
+
+	if zone.astar == null:
+		zone.astar               = AStarGrid2D.new()
+		zone.astar.region        = Rect2i(0, 0, Globals.ZONE_WIDTH_TILES, Globals.ZONE_HEIGHT_TILES)
+		zone.astar.cell_size     = Vector2(1, 1)
+		zone.astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+
+	# update() resets all solid flags and re-initialises the grid from the
+	# region/cell_size properties, so we always start from a clean slate.
+	zone.astar.update()
+
+	for y in Globals.ZONE_HEIGHT_TILES:
+		for x in Globals.ZONE_WIDTH_TILES:
+			if _isTileSolid(zone.getTile(x, y)):
+				zone.astar.set_point_solid(Vector2i(x, y), true)
+
+
+# Updates a single tile's solid state in its zone's graph without a full
+# rebuild.  Use this for individual runtime tile changes (e.g. a door opening).
+func refreshAStarTile(worldPos: Vector3i) -> void:
+	var zone := getZone(worldPos.z)
+	if zone == null or zone.astar == null:
+		return
+	var tile := getTileAt(worldPos)
+	zone.astar.set_point_solid(Vector2i(worldPos.x, worldPos.y), _isTileSolid(tile))
 
 
 # ── Movement validation ─────────────────────────────────────────────────────────

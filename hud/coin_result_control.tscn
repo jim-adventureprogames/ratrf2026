@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://cmdrotcdpsl40"]
+
+[ext_resource type="Texture2D" uid="uid://mowomy2po3yx" path="res://textures/ui/flip_result_tracker.png" id="1_05p8i"]
+[ext_resource type="Script" uid="uid://coin_result_ctrl" path="res://hud/coin_result_control.gd" id="2_ctrl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71bt3"]
+atlas = ExtResource("1_05p8i")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7apg7"]
+atlas = ExtResource("1_05p8i")
+region = Rect2(48, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b80q5"]
+atlas = ExtResource("1_05p8i")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lisru"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_71bt3")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7apg7")
+}],
+"loop": true,
+"name": &"fail",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b80q5")
+}],
+"loop": true,
+"name": &"success",
+"speed": 5.0
+}]
+
+[node name="coinResultControl" type="Control" unique_id=630623237 node_paths=PackedStringArray("imgResults")]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("2_ctrl")
+imgResults = NodePath("imgResults")
+
+[node name="imgResults" type="AnimatedSprite2D" parent="." unique_id=2119338752]
+position = Vector2(12, 12)
+sprite_frames = SubResource("SpriteFrames_lisru")
+autoplay = "default"

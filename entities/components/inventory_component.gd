@@ -2,6 +2,7 @@ class_name InventoryComponent
 extends EntityComponent
 
 signal itemsChanged
+signal coinChanged(newAmount: int)
 
 # Maximum number of item stacks this inventory can hold. 0 = unlimited.
 @export var maxItems: int = 0
@@ -17,15 +18,18 @@ func getCoin() -> int:
 
 func setCoin(amount: int) -> void:
 	_coinPurse = max(0, amount)
+	coinChanged.emit(_coinPurse)
 
 func addCoin(amount: int) -> void:
 	_coinPurse += amount
+	coinChanged.emit(_coinPurse)
 
 # Deducts amount and returns true. Returns false without deducting if insufficient funds.
 func removeCoin(amount: int) -> bool:
 	if _coinPurse < amount:
 		return false
 	_coinPurse -= amount
+	coinChanged.emit(_coinPurse)
 	return true
 
 func canAfford(amount: int) -> bool:
@@ -61,7 +65,7 @@ func hasItem(archetypeName: String) -> bool:
 # Returns the number of items that could NOT be placed (0 = everything fit).
 func addItem(item: Item) -> int:
 	var data      := ItemData.getByArchetype(item.archetypeName)
-	var maxStack  := data.maxStackCount if data else 99
+	var maxStack  := 1 if (data and data.bUnique) else (data.maxStackCount if data else 99)
 	var remaining := item.count
 
 	# Fill existing stacks of the same archetype up to their cap.
@@ -83,6 +87,7 @@ func addItem(item: Item) -> int:
 			return remaining  # inventory full — caller handles the leftovers
 		var newStack := Item.new(item.archetypeName, mini(remaining, maxStack))
 		_items.append(newStack)
+		GameManager.registerItem(newStack)
 		remaining -= newStack.count
 
 	itemsChanged.emit()
@@ -108,5 +113,6 @@ func removeItem(archetypeName: String, count: int = 1) -> bool:
 	existing.count -= count
 	if existing.count <= 0:
 		_items.erase(existing)
+		GameManager.unregisterItem(existing)
 	itemsChanged.emit()
 	return true

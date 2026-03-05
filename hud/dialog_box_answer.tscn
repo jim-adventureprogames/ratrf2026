@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://fals4kb48uw6"]
+
+[ext_resource type="Script" uid="uid://bmxa4jhbe7e54" path="res://hud/dialog_box_answer.gd" id="1_h1e46"]
+[ext_resource type="Texture2D" uid="uid://cjd51lj48wc27" path="res://textures/ui/dialog_bg.png" id="1_mbliv"]
+[ext_resource type="Texture2D" uid="uid://bka2g43uhy5wq" path="res://textures/ui/dialog_character_frame.png" id="2_h1e46"]
+[ext_resource type="PackedScene" uid="uid://dc8vgpgcry1rg" path="res://hud/dialog_reply_box.tscn" id="3_8lako"]
+
+[node name="dialogBox_Answer" type="Control" unique_id=1699272967 node_paths=PackedStringArray("imgCharacter", "vboxReplies")]
+custom_minimum_size = Vector2(1, 1)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -319.0
+offset_bottom = -239.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h1e46")
+imgCharacter = NodePath("MarginContainer/MarginContainer2/HBoxContainer/imgFrame/imgCharacter")
+replyPrefab = ExtResource("3_8lako")
+vboxReplies = NodePath("MarginContainer/MarginContainer2/HBoxContainer/vboxOrganizeStuff/vboxReplies")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1905679732]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="9patchBG" type="NinePatchRect" parent="MarginContainer" unique_id=1335191495]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+texture = ExtResource("1_mbliv")
+region_rect = Rect2(0, 0, 240, 48)
+patch_margin_left = 43
+patch_margin_top = 9
+patch_margin_right = 9
+patch_margin_bottom = 9
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer" unique_id=344224550]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer2" unique_id=1105811637]
+layout_mode = 2
+
+[node name="vboxOrganizeStuff" type="VBoxContainer" parent="MarginContainer/MarginContainer2/HBoxContainer" unique_id=504990500]
+layout_mode = 2
+
+[node name="spacingcontrol lol" type="Control" parent="MarginContainer/MarginContainer2/HBoxContainer/vboxOrganizeStuff" unique_id=1331200260]
+custom_minimum_size = Vector2(184, 6)
+layout_mode = 2
+
+[node name="vboxReplies" type="VBoxContainer" parent="MarginContainer/MarginContainer2/HBoxContainer/vboxOrganizeStuff" unique_id=1072454920]
+layout_mode = 2
+
+[node name="imgFrame" type="TextureRect" parent="MarginContainer/MarginContainer2/HBoxContainer" unique_id=2016259921]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("2_h1e46")
+stretch_mode = 2
+
+[node name="imgCharacter" type="TextureRect" parent="MarginContainer/MarginContainer2/HBoxContainer/imgFrame" unique_id=1624032024]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 38.0
+offset_bottom = 38.0

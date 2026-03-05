@@ -35,6 +35,8 @@ func tryMove(direction: Vector2i) -> bool:
 	if target.z < 0:
 		state = EState.Bump
 		movementBlocked.emit(direction)
+		if not entity.is_inside_tree():
+			state = EState.Idle
 		return false
 	var moveResult := MapManager.testDestinationTile(target, bCanBumpThings)
 	if moveResult != Globals.EMoveTestResult.OK:
@@ -42,6 +44,8 @@ func tryMove(direction: Vector2i) -> bool:
 		if moveResult == Globals.EMoveTestResult.Bumpable:
 			_triggerBumpablesAt(target)
 		movementBlocked.emit(direction)
+		if not entity.is_inside_tree():
+			state = EState.Idle
 		return false
 	commitMove(direction, target)
 	return true
@@ -75,6 +79,10 @@ func commitMove(direction: Vector2i, target: Vector3i) -> void:
 		newTile.entities.append(entity)
 
 	state = EState.Moving
+	if not entity.is_inside_tree():
+		# Off-screen entity — no SpriteComponent tween will call setMovingComplete(),
+		# so reset immediately so the entity can act next turn.
+		state = EState.Idle
 
 	if bZoneChange:
 		var isPlayer := entity.getComponent(&"PlayerInputComponent") != null

@@ -4,8 +4,9 @@
 [ext_resource type="Script" uid="uid://s8576nc4pgyj" path="res://hud/hud_main.gd" id="1_y6pgg"]
 [ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="4_46uo4"]
 [ext_resource type="PackedScene" uid="uid://br36q3ycvgdft" path="res://hud/inventory_grid.tscn" id="5_y5v5q"]
+[ext_resource type="PackedScene" uid="uid://2dy478qi6ptv" path="res://hud/tooltip_popup.tscn" id="6_tipop"]
 
-[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime")]
+[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime", "txtCoin", "tooltipPopup")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,6 +17,8 @@ script = ExtResource("1_y6pgg")
 btnDebugStart = NodePath("imgBG/btnDebugStart")
 inventoryGrid = NodePath("InventoryGrid")
 txtTime = NodePath("imgBG/lblTime/txtTime")
+txtCoin = NodePath("imgBG/lblCoin/txtCoin")
+tooltipPopup = NodePath("TooltipPopup")
 
 [node name="imgBG" type="TextureRect" parent="." unique_id=99211727]
 layout_mode = 0
@@ -52,6 +55,25 @@ offset_bottom = 5.0
 theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
 text = "99:99"
+
+[node name="lblCoin" type="Label" parent="imgBG" unique_id=185066904]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 157.0
+offset_right = 26.0
+offset_bottom = 162.0
+theme = ExtResource("4_46uo4")
+theme_override_font_sizes/font_size = 4
+text = "coin:"
+
+[node name="txtCoin" type="Label" parent="imgBG/lblCoin" unique_id=206874202]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 42.0
+offset_bottom = 5.0
+theme = ExtResource("4_46uo4")
+theme_override_font_sizes/font_size = 4
+text = "$9999.99"
 
 [node name="lblStamina" type="Label" parent="imgBG" unique_id=1235735465]
 layout_mode = 0
@@ -91,6 +113,25 @@ theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
 text = "100"
 
+[node name="lblFun" type="Label" parent="imgBG" unique_id=283135781]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 150.0
+offset_right = 26.0
+offset_bottom = 155.0
+theme = ExtResource("4_46uo4")
+theme_override_font_sizes/font_size = 4
+text = "FUN:"
+
+[node name="txtFun" type="Label" parent="imgBG/lblFun" unique_id=543536539]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 42.0
+offset_bottom = 5.0
+theme = ExtResource("4_46uo4")
+theme_override_font_sizes/font_size = 4
+text = "9999"
+
 [node name="InventoryGrid" parent="." unique_id=1499663633 instance=ExtResource("5_y5v5q")]
 layout_mode = 0
 offset_left = 246.0
@@ -99,3 +140,9 @@ offset_right = 316.0
 offset_bottom = 233.0
 maxWidth = 4
 maxHeight = 4
+
+[node name="TooltipPopup" parent="." unique_id=638177246 instance=ExtResource("6_tipop")]
+custom_minimum_size = Vector2(170, 36)
+layout_mode = 1
+offset_right = -150.0
+offset_bottom = -168.0

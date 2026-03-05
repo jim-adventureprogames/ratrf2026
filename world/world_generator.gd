@@ -6,7 +6,11 @@ extends RefCounted
 # How many tiles inset from each zone edge the perimeter wall sits.
 # A value of 4 means the wall tile is at index 4 (zero-based), leaving
 # tiles 0-3 as an outer margin and tiles 5+ as interior space.
-const WALL_INSET := 4
+const WALL_INSET      := 4
+
+# How many tiles inward from a zone edge a path waypoint is placed.
+# Keeps waypoints off the very boundary so they land on walkable ground.
+const WAYPOINT_INSET  := 2
 
 # All four gate TMX files are 8×8 tiles.
 const GATE_SIZE := 8
@@ -48,6 +52,11 @@ static func generateWorld() -> void:
 
 	var gateZones := _buildPerimeterWall()
 	_buildDirtPaths(gateZones)
+
+	# Build tile-level A* graphs for every zone now that all tile data is final.
+	# Interior zones that received no fillWallRect or stampTmx calls are covered here.
+	for i in Globals.ZONE_COUNT:
+		MapManager.buildZoneAStarGraph(i)
 
 
 # ── Zone AStar ──────────────────────────────────────────────────────────────────
@@ -97,6 +106,8 @@ static func dirtalizeZonePath(startZoneId: int, endZoneId: int, radius: int) -> 
 	if path.is_empty():
 		return
 
+	var prevExitWp: PathWaypoint = null
+
 	for i in path.size():
 		var gridPos := Vector2i(int(path[i].x), int(path[i].y))
 		var zoneId  := gridPos.y * Globals.ZONE_GRID_WIDTH + gridPos.x
@@ -112,7 +123,16 @@ static func dirtalizeZonePath(startZoneId: int, endZoneId: int, radius: int) -> 
 			var nextGrid := Vector2i(int(path[i + 1].x), int(path[i + 1].y))
 			exitEdge     = _directionToExitEdge(nextGrid - gridPos)
 
-		dirtalizePathInZone(zoneId, entryEdge, exitEdge, radius)
+		var zoneWaypoints := dirtalizePathInZone(zoneId, entryEdge, exitEdge, radius)
+		var entryWp := zoneWaypoints.get("entry") as PathWaypoint
+		var exitWp  := zoneWaypoints.get("exit")  as PathWaypoint
+
+		# Stitch the cross-zone link: previous zone's exit → this zone's entry.
+		if prevExitWp != null and entryWp != null:
+			prevExitWp.nextId = entryWp.id
+			entryWp.prevId    = prevExitWp.id
+
+		prevExitWp = exitWp
 
 
 # ── Wall construction ───────────────────────────────────────────────────────────
@@ -249,6 +269,8 @@ static func _buildDirtPaths(gateZones: Dictionary) -> void:
 	dirtalizeZonePath(gateZones["south"], gateZones["west"],  radius)
 	dirtalizeZonePath(gateZones["west"],  gateZones["north"], radius)
 	_determineZoneWilderness()
+	for zone: Zone in MapManager.zones:
+		buildZonePatrolRoute(zone.id)
 
 
 # Multi-source BFS from every dirtalized zone (wildernessScore == 0).
@@ -277,15 +299,81 @@ static func _determineZoneWilderness() -> void:
 			queue.append(neighborId)
 
 
+# Returns the tile position for a waypoint on the given edge, stepped
+# WAYPOINT_INSET tiles inward so it sits on walkable ground, not the boundary.
+# Center edge needs no inset — it's already in the middle of the zone.
+static func _waypointPosition(zone: Zone, edge: Zone.EZoneEdge) -> Vector2i:
+	var p := _resolveZoneEdge(zone, edge)
+	match edge:
+		Zone.EZoneEdge.North:  return Vector2i(p.x, p.y + WAYPOINT_INSET)
+		Zone.EZoneEdge.South:  return Vector2i(p.x, p.y - WAYPOINT_INSET)
+		Zone.EZoneEdge.West:   return Vector2i(p.x + WAYPOINT_INSET, p.y)
+		Zone.EZoneEdge.East:   return Vector2i(p.x - WAYPOINT_INSET, p.y)
+		_:                     return p  # Center: no inset
+
+
+# Builds a closed patrol loop for a single zone using only edges that already
+# have a dirt path running through them.  No new dirtalization is performed.
+# Zones with no dirtalized edges get no waypoints — that's intentional.
+#
+# Center is always inserted between consecutive edge stops so the route reads
+# Edge → Center → Edge → Center → …  This keeps guards moving through the
+# middle of the zone rather than cutting straight between edges.
+# Center entries in dirtalizedEdges are skipped — the interleaved center
+# waypoint covers them.
+static func buildZonePatrolRoute(zoneId: int) -> void:
+	var zone := MapManager.getZone(zoneId) as Zone
+	if zone == null or zone.dirtalizedEdges.is_empty():
+		return
+
+	# Collect the cardinal edge positions, ignoring Center (handled below).
+	var edgePositions: Array[Vector2i] = []
+	for edge in zone.dirtalizedEdges:
+		if edge != Zone.EZoneEdge.Center:
+			edgePositions.append(_waypointPosition(zone, edge))
+
+	if edgePositions.is_empty():
+		return
+
+	# Build the interleaved position list: Edge, Center, Edge, Center, …
+	var centerPos := zone.centerCenter
+	var positions: Array[Vector2i] = []
+	for pos in edgePositions:
+		positions.append(pos)
+		positions.append(centerPos)
+
+	var wps: Array[PathWaypoint] = []
+	for pos in positions:
+		var wp         := PathWaypoint.new(pos, zoneId)
+		wp.bPatrolLoop  = true
+		wps.append(wp)
+		MapManager.registerWaypoint(wp)
+
+	for i in wps.size():
+		var curr := wps[i]
+		var next := wps[(i + 1) % wps.size()]
+		curr.nextId = next.id
+		next.prevId = curr.id
+
+
 # Draws a drunken dirt path between two named edge points in a zone.
 # Half the time the path goes directly from start to end.
 # The other half it routes via the zone's centerCenter, producing an L-shaped trail.
-static func dirtalizePathInZone(zoneId: int, from: Zone.EZoneEdge, to: Zone.EZoneEdge, radius: int) -> void:
+# Returns a Dictionary { "entry": PathWaypoint, "exit": PathWaypoint } so the
+# caller can stitch cross-zone prevId/nextId links.
+static func dirtalizePathInZone(zoneId: int, from: Zone.EZoneEdge, to: Zone.EZoneEdge, radius: int) -> Dictionary:
 	var zone := MapManager.getZone(zoneId) as Zone
 	if zone == null:
-		return
+		return {}
 
 	zone.wildernessScore = 0
+
+	# Record which edges this path uses so patrol routes can be built later.
+	# Center is included — guards on start/end zones should walk to the center too.
+	if not zone.dirtalizedEdges.has(from):
+		zone.dirtalizedEdges.append(from)
+	if not zone.dirtalizedEdges.has(to):
+		zone.dirtalizedEdges.append(to)
 
 	var startPos := _resolveZoneEdge(zone, from)
 	var endPos   := _resolveZoneEdge(zone, to)
@@ -298,6 +386,18 @@ static func dirtalizePathInZone(zoneId: int, from: Zone.EZoneEdge, to: Zone.EZon
 		var centerV3 := Vector3i(zone.centerCenter.x, zone.centerCenter.y, zoneId)
 		dirtalizeLine(startV3, centerV3, radius)
 		dirtalizeLine(centerV3, endV3, radius)
+
+	# Place waypoints WAYPOINT_INSET tiles inward from each edge so they land
+	# on walkable ground.  Connect them within the zone, then return them so
+	# dirtalizeZonePath can stitch the cross-zone chain.
+	var entryWp := PathWaypoint.new(_waypointPosition(zone, from), zoneId)
+	var exitWp  := PathWaypoint.new(_waypointPosition(zone, to),   zoneId)
+	entryWp.nextId = exitWp.id
+	exitWp.prevId  = entryWp.id
+	MapManager.registerWaypoint(entryWp)
+	MapManager.registerWaypoint(exitWp)
+
+	return { "entry": entryWp, "exit": exitWp }
 
 
 static func _resolveZoneEdge(zone: Zone, edge: Zone.EZoneEdge) -> Vector2i:

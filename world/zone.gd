@@ -10,6 +10,18 @@ enum EZoneEdge { North, South, East, West, Center }
 # Flat 1D array of tiles; index with (y * ZONE_WIDTH_TILES + x)
 var tiles: Array[Tile] = []
 
+# Path waypoints added when dirtalization runs through this zone.
+var waypoints: Array[PathWaypoint] = []
+
+# Which edges (including Center) have had a dirt path run through them.
+# Populated by WorldGenerator.dirtalizePathInZone(); used to build patrol routes.
+var dirtalizedEdges: Array[Zone.EZoneEdge] = []
+
+# Tile-level pathfinding graph for this zone.
+# Built by MapManager.buildZoneAStarGraph() after generation and after any
+# stampTmx call.  Null until first built.
+var astar: AStarGrid2D = null
+
 # How untouched this zone feels.  Starts at 99 (fully wild).
 # Set to 0 when a dirt path runs through the zone, then re-scored by
 # WorldGenerator._determineZoneWilderness() as BFS distance from the

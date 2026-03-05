@@ -3,9 +3,10 @@ extends AnimatedSprite2D
 
 const BUMP_DURATION := 0.06
 
-var entity:         Entity
-var activeTween:    Tween
-var _savedMaterial: Material
+var entity:           Entity
+var activeTween:      Tween
+var _savedMaterial:   Material
+var _hasEnteredTree:  bool = false
 
 enum ESpriteBorderStyle 
 {
@@ -31,23 +32,32 @@ func _initialize() -> void:
 		material       = null
 
 
+func _enter_tree() -> void:
+	# Restore the material now that this node will actually be rendered.
+	if _savedMaterial != null:
+		material       = _savedMaterial
+		_savedMaterial = null
+		set_instance_shader_parameter("border_state", lastSetBorderStyle)
+	if entity != null and _hasEnteredTree:
+		# Re-entering the scene tree after remove_child — re-run onAttached so
+		# mover signals and sprite position are restored.
+		# Deferred so siblings finish _enter_tree and _ready before onAttached runs.
+		onAttached.call_deferred()
+
+
 func _ready() -> void:
+	if _hasEnteredTree:
+		return
+	_hasEnteredTree = true
 	_initialize()
 
 
 func _notification(what: int) -> void:
-	match what:
-		NOTIFICATION_ENTER_TREE:
-			# Restore the material now that this node will actually be rendered.
-			if _savedMaterial != null:
-				material       = _savedMaterial
-				_savedMaterial = null
-				set_instance_shader_parameter("border_state", lastSetBorderStyle)
-		NOTIFICATION_EXIT_TREE:
-			# Park the material so this node stops consuming shader instance slots.
-			if material != null:
-				_savedMaterial = material
-				material       = null
+	if what == NOTIFICATION_EXIT_TREE:
+		# Park the material so this node stops consuming shader instance slots.
+		if material != null:
+			_savedMaterial = material
+			material       = null
 
 
 func _exit_tree() -> void:
@@ -67,11 +77,16 @@ func onDetached() -> void:
 		activeTween.kill()
 		activeTween = null
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
-	if mover and mover.state != MoverComponent.EState.Idle:
-		# Tween was killed mid-flight — snap to the actual tile position and
-		# reset mover state so the entity is ready to act next turn.
-		entity.position = MoverComponent.tileToPixel(entity.worldPosition)
-		mover.setMovingComplete()
+	if mover:
+		if mover.movementCommitted.is_connected(onMovementCommitted):
+			mover.movementCommitted.disconnect(onMovementCommitted)
+		if mover.movementBlocked.is_connected(onMovementBlocked):
+			mover.movementBlocked.disconnect(onMovementBlocked)
+		if mover.state != MoverComponent.EState.Idle:
+			# Tween was killed mid-flight — snap to the actual tile position and
+			# reset mover state so the entity is ready to act next turn.
+			entity.position = MoverComponent.tileToPixel(entity.worldPosition)
+			mover.setMovingComplete()
 
 
 func onMovementCommitted(from: Vector2, to: Vector2, bZoneChange: bool, newZoneId: int, direction: Vector2i) -> void:

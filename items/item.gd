@@ -1,14 +1,25 @@
 class_name Item
 extends RefCounted
 
+static var _nextId: int = 0
+
+# Unique ID assigned at construction time.
+var itemId: int = -1
+
 # The archetype key that links this instance to its ItemData.
 var archetypeName: String = ""
 
 # How many of this item this stack represents.
 var count: int = 1
 
+# The last slot index this item occupied in an InventoryGrid (-1 = unassigned).
+# Written by InventoryGrid.syncToInventory() and used by refresh() to restore position.
+var gridSlotIndex: int = -1
+
 
 func _init(archetype: String, stackCount: int = 1) -> void:
+	itemId        = Item._nextId
+	Item._nextId += 1
 	archetypeName = archetype
 	count         = stackCount
 
@@ -44,3 +55,19 @@ func getImage() -> Texture2D:
 	if data == null:
 		return null
 	return data.image
+
+
+# Returns true if this item is unique — never stacks, one per slot.
+func isUnique() -> bool:
+	var data := ItemData.getByArchetype(archetypeName)
+	if data == null:
+		return false
+	return data.bUnique
+
+
+# Returns the quality tier of this item (1 = base).
+func getTier() -> int:
+	var data := ItemData.getByArchetype(archetypeName)
+	if data == null:
+		return 1
+	return data.tier

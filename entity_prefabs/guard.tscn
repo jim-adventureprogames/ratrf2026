@@ -8,6 +8,8 @@
 [ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="7_asyb2"]
 [ext_resource type="Script" uid="uid://cjlfpp7wxv0j4" path="res://entities/components/mouseable_component.gd" id="8_fhn7o"]
 [ext_resource type="Script" uid="uid://6kjh1mxj0jv1" path="res://entities/components/guard_component.gd" id="8_hnfn3"]
+[ext_resource type="Script" uid="uid://8jv4i3osxpvq" path="res://entities/components/path_walking_component.gd" id="9_syc37"]
+[ext_resource type="Script" uid="uid://brvs0licd288f" path="res://entities/components/crime_detection_component.gd" id="10_n6ufw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
 shader = ExtResource("2_syc37")
@@ -237,3 +239,11 @@ script = ExtResource("8_fhn7o")
 [node name="GuardComponent" type="Node" parent="." unique_id=1985209151]
 script = ExtResource("8_hnfn3")
 metadata/_custom_type_script = "uid://6kjh1mxj0jv1"
+
+[node name="PathWalkingComponent" type="Node" parent="." unique_id=104077219]
+script = ExtResource("9_syc37")
+
+[node name="CrimeDetectionComponent" type="Node" parent="." unique_id=1549764652]
+script = ExtResource("10_n6ufw")
+softDetectionBonus = 4.0
+metadata/_custom_type_script = "uid://brvs0licd288f"

@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dpo3a4rktqrx"]
+
+[ext_resource type="Script" uid="uid://1qn34tyu5c3a" path="res://hud/hud_dialog.gd" id="1_see1w"]
+[ext_resource type="PackedScene" uid="uid://fals4kb48uw6" path="res://hud/dialog_box_answer.tscn" id="2_u6wc8"]
+[ext_resource type="PackedScene" uid="uid://xlkbp1nxcpvb" path="res://hud/dialog_box_speak.tscn" id="3_01qg7"]
+
+[node name="HUD_Dialog" type="Control" unique_id=550095634 node_paths=PackedStringArray("dboxSpeak", "dboxAnswer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_see1w")
+dboxSpeak = NodePath("dialogBox_Speak")
+dboxAnswer = NodePath("dialogBox_Answer")
+
+[node name="dialogBox_Answer" parent="." unique_id=1699272967 instance=ExtResource("2_u6wc8")]
+layout_mode = 1
+offset_top = 100.0
+offset_bottom = -139.0
+
+[node name="dialogBox_Speak" parent="." unique_id=1849188798 instance=ExtResource("3_01qg7")]
+layout_mode = 1
+offset_top = 37.0
+offset_bottom = -202.0

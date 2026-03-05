@@ -6,7 +6,4 @@ random_test_table:
     
 mark_loot_table_01:
     data:
-        coin,(1-300):   20
-        tamagotchi:   10
-        fox_gemerald: 1
-        pog_slammer:      10
+        coin,(1-300):   100

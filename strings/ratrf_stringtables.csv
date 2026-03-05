@@ -1,1 +1,53 @@
 keys,en
+itemname_cloves,Djingus Clove Sticks
+itemname_dog_sunscreen,Dog Sunscreen
+itemname_fake_id,Fake Fake ID
+itemname_fox_black,Fox Dye
+itemname_fox_blue,Fox Sapphirino
+itemname_fox_green,Fox Gemerald
+itemname_fox_red,Fox Rubicant
+itemname_fox_white,Fox Perler
+itemname_garbagepail,Vintage Gutterchild Trading Card
+itemname_lipgloss,Durian Lip Gloss
+itemname_nail_clippers,Steampunk Nail Clippers
+itemname_pog_slammer,Pog Slammer
+itemname_quarters,Arcade-Ready Quarters
+itemname_tamagotchi,Tamugacheen
+itemname_wallet_chain,Wallet Chain
+,
+flavor_cloves,The D is not silent.
+flavor_dog_sunscreen,For their cute little noses and bald spots!
+flavor_fake_id,You can't get in trouble because it's not a Real Fake ID?
+flavor_fox_black,"Worthless card from a silly game, collect all five."
+flavor_fox_blue,"Worthless card from a silly game, collect all five."
+flavor_fox_green,"Worthless card from a silly game, collect all five."
+flavor_fox_red,"Worthless card from a silly game, collect all five."
+flavor_fox_white,"Worthless card from a silly game, collect all five."
+flavor_garbagepail,"A vintage 80s treasure, both mint and gross at the same time."
+flavor_lipgloss,Bold fashion or self defense?
+flavor_nail_clippers,Like regular nail clippers but obnoxious.
+flavor_pog_slammer,"Radical design, weighted for victory."
+flavor_quarters,Specially designed for quick continues and indicating who got next.
+flavor_tamagotchi,"This one will live forever, right? Right!?"
+flavor_wallet_chain,Did you also get the wallet?
+,
+,
+bark_crime_suspect_01,hmm...
+bark_crime_suspect_02,Something feels off...
+bark_crime_suspect_03,Better watch this guy...
+,
+bark_investigate_end,"Back to patrolling, I guess."
+,
+bark_crime_hard_detect_01,"[color=red]Stop, criminal![/color]"
+,
+,
+stat_charm_name,Charm
+stat_fasttalk_name,Fast Talk
+stat_haggle_name,Haggle
+stat_lockpick_name,Lockpick
+,
+,
+challenge_fasttalk_guard,Talk your way out of trouble
+challenge_haggle,Haggle for a better deal
+challenge_lockpick,Pick the lock
+challenge_charm,Seduce the target

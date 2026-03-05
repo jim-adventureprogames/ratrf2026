@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://ci07dx2bub8lh" path="res://main.gd" id="1_main"]
 [ext_resource type="TileSet" uid="uid://tileset00001" path="res://textures/world_tileset.tres" id="3_tileset"]
 [ext_resource type="PackedScene" uid="uid://buif2cv1tpj8w" path="res://hud/hud_main.tscn" id="4_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://dpo3a4rktqrx" path="res://hud/hud_dialog.tscn" id="4_272bh"]
 [ext_resource type="Script" uid="uid://b0v1353g01cda" path="res://world/world_tilemap.gd" id="4_worldscript"]
 [ext_resource type="PackedScene" uid="uid://chfcho1oklluj" path="res://hud/hud_mini_map.tscn" id="5_lquwl"]
+[ext_resource type="PackedScene" uid="uid://38njbd7gy4ct" path="res://hud/hud_coin_flip_contest.tscn" id="6_coinflip"]
 
 [node name="Main" type="Node2D" unique_id=1621069194]
 script = ExtResource("1_main")
@@ -24,6 +26,13 @@ tile_set = ExtResource("3_tileset")
 
 [node name="EntityLayer" type="Node2D" parent="." unique_id=222333444]
 
+[node name="HUD_Dialog" parent="." unique_id=550095634 instance=ExtResource("4_272bh")]
+visible = false
+offset_right = 320.0
+offset_bottom = 240.0
+
 [node name="HUD_Main" parent="." unique_id=1639213077 instance=ExtResource("4_1bvp3")]
 
 [node name="HUD_MiniMap" parent="." unique_id=546947764 instance=ExtResource("5_lquwl")]
+
+[node name="HUD_CoinFlipContest" parent="." unique_id=112233445 instance=ExtResource("6_coinflip")]

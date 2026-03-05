@@ -1,0 +1,19 @@
+~ capture_player
+% Guard: I caught you red-handed, you miserable pickpocket!
+% Guard: Got you, thief! No more ruining people's days of big fun and overpriced food for you!
+% Guard: Stop right there, I saw what you did! 
+% Guard: The only theft I'll allow on my watch is at the turkey leg booth.
+% Guard: Thought you co
+uld get away with it, did you?
+- Wait, let me explain...
+	set DialogueStateManager.dialogResult = "challenge:fast_talk_guard"
+	=> END
+- Perhaps we could talk to {{DialogueStateManager.nameToDrop}} about this? [if DialogueStateManager.checkNameDrop() == true]
+	Guard: Ah... I see. That won't be necessary. I get it. You're off the hook this time, but just this once!
+	- It won't happen again.
+		set DialogueStateManager.dialogResult = "great_success"
+		=> END
+- Yeah you got me. I give up.
+	set DialogueStateManager.dialogResult = "gameover:caught"
+	=> END
+=> END

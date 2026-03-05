@@ -10,6 +10,8 @@ region = Rect2(36, 12, 12, 12)
 [resource]
 script = ExtResource("1_l24rp")
 archetypeName = "pog_slammer"
+friendlyName = "itemname_pog_slammer"
+flavorText = "flavor_pog_slammer"
 value = 10
 image = SubResource("AtlasTexture_jti6a")
 metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

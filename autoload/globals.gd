@@ -14,6 +14,13 @@ enum EFacing {
 	Left,
 }
 
+enum ERogueStat {
+	Charm,
+	FastTalk,
+	Haggle,
+	Lockpick,
+}
+
 const TILE_SIZE              := 12
 const TILESET_WIDTH_TILES    := 23   # world.png is 276px wide  (276 / 12)
 # TILESET_HEIGHT_TILES is intentionally absent — derived at runtime from the
@@ -40,6 +47,7 @@ func _ready() -> void:
 	initializeInputActions()
 	RandomTable._loadAllTables()
 	ItemData.loadAll()
+	ItemData.populateTierIntoTable(1, "mark_loot_table_01")
 
 
 # Defines all movement input actions at runtime.
@@ -119,3 +127,17 @@ func _oppositeZoneEdge(edge: Zone.EZoneEdge) -> Zone.EZoneEdge:
 		Zone.EZoneEdge.East:   return Zone.EZoneEdge.West
 		Zone.EZoneEdge.West:   return Zone.EZoneEdge.East
 	return Zone.EZoneEdge.Center
+
+
+# Shakes a Control by snapping it to rapid random offsets within 'radius' px,
+# then returning it to its original position when the duration expires.
+static func shakeControl(control: Control, radius: float, duration: float) -> void:
+	var origin   := control.position
+	var steps    := maxi(int(duration / 0.04), 2)
+	var interval := duration / steps
+	var tween    := control.create_tween()
+	for i in steps:
+		var offset := Vector2(randf_range(-radius, radius), randf_range(-radius, radius))
+		tween.tween_callback(func(): control.position = origin + offset)
+		tween.tween_interval(interval)
+	tween.tween_callback(func(): control.position = origin)

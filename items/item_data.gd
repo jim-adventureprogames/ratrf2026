@@ -21,6 +21,19 @@ extends Resource
 # Coin value of this item.
 @export var value: int = 0
 
+# Quality tier — 1 is base quality, higher values indicate better items.
+@export var tier: int = 1:
+	set(value):
+		tier = max(1, value)
+		emit_changed()
+
+# Relative probability weight used when this item is added to a loot table.
+@export var dropWeight: int = 10
+
+# When true, this item never stacks and each instance occupies its own slot.
+# Takes precedence over maxStackCount.
+@export var bUnique: bool = false
+
 # Maximum number of this item that can share a single inventory slot.
 @export var maxStackCount: int = 99
 
@@ -60,3 +73,11 @@ static func getByArchetype(archetypeName: String) -> ItemData:
 	if data == null:
 		push_error("ItemData: no archetype registered for '%s'" % archetypeName)
 	return data
+
+
+# Adds every item of the given tier to a named RandomTable with the supplied weight.
+# Call after both ItemData.loadAll() and RandomTable tables are loaded.
+static func populateTierIntoTable(tier: int, tableName: String) -> void:
+	for data: ItemData in _registry.values():
+		if data.tier == tier:
+			RandomTable.addEntryToTable(tableName, data.archetypeName, data.dropWeight)

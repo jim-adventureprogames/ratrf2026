@@ -1,0 +1,170 @@
+[gd_scene format=3 uid="uid://2dy478qi6ptv"]
+
+[ext_resource type="Texture2D" uid="uid://ceudt1thncoi1" path="res://textures/ui/9slice_filligree.png" id="1_av003"]
+[ext_resource type="Script" uid="uid://ryeofp02uiax" path="res://hud/tooltip_popup.gd" id="1_iyj82"]
+[ext_resource type="PackedScene" uid="uid://cpljr20q7mbyv" path="res://hud/item_display_container.tscn" id="2_7lj78"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="3_iyj82"]
+[ext_resource type="Script" uid="uid://bg601iwn7hv85" path="res://hud/item_tier_display.gd" id="4_7u1ki"]
+[ext_resource type="Texture2D" uid="uid://dmfmfk3isnv41" path="res://textures/ui/item_tier_stars.png" id="5_7lj78"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iyj82"]
+atlas = ExtResource("5_7lj78")
+region = Rect2(0, 0, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7u1ki"]
+atlas = ExtResource("5_7lj78")
+region = Rect2(8, 0, 8, 8)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l3d4a"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iyj82")
+}],
+"loop": true,
+"name": &"off",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7u1ki")
+}],
+"loop": true,
+"name": &"on",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_i68xo"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iyj82")
+}],
+"loop": true,
+"name": &"off",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7u1ki")
+}],
+"loop": true,
+"name": &"on",
+"speed": 5.0
+}]
+
+[node name="TooltipPopup" type="Control" unique_id=357100814 node_paths=PackedStringArray("itemBox", "itemTierDisplay", "txtName", "txtFlavor", "txtValue")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_iyj82")
+itemBox = NodePath("MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer/ItemDisplayContainer")
+itemTierDisplay = NodePath("MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay")
+txtName = NodePath("MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer/txtName")
+txtFlavor = NodePath("MarginContainer/MarginContainer2/VBoxContainer/txtFlavor")
+txtValue = NodePath("MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/txtValue")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1318374489]
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 0
+offset_right = 170.0
+offset_bottom = 50.0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer" unique_id=1758144127]
+layout_mode = 2
+texture = ExtResource("1_av003")
+patch_margin_left = 24
+patch_margin_top = 24
+patch_margin_right = 24
+patch_margin_bottom = 24
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer" unique_id=803652224]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer2" unique_id=1923462696]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer2/VBoxContainer" unique_id=391047047]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+
+[node name="ItemDisplayContainer" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer" unique_id=1917912905 instance=ExtResource("2_7lj78")]
+layout_mode = 2
+stretch_mode = 2
+
+[node name="txtName" type="Label" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer" unique_id=525622754]
+custom_minimum_size = Vector2(128, 14)
+layout_mode = 2
+theme = ExtResource("3_iyj82")
+theme_override_font_sizes/font_size = 8
+text = "Durian Sunscreen"
+
+[node name="txtFlavor" type="Label" parent="MarginContainer/MarginContainer2/VBoxContainer" unique_id=874305220]
+custom_minimum_size = Vector2(128, 8)
+layout_mode = 2
+theme = ExtResource("3_iyj82")
+text = "One line so funny"
+autowrap_mode = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/MarginContainer2/VBoxContainer" unique_id=1300183289]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="itemTierDisplay" type="HBoxContainer" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2" unique_id=879762233 node_paths=PackedStringArray("starSprites")]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 0
+script = ExtResource("4_7u1ki")
+starSprites = [NodePath("Control/star01"), NodePath("Control2/star02"), NodePath("Control3/star03")]
+
+[node name="Control" type="Control" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay" unique_id=1947164953]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+
+[node name="star01" type="AnimatedSprite2D" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay/Control" unique_id=1273910099]
+sprite_frames = SubResource("SpriteFrames_l3d4a")
+animation = &"off"
+autoplay = "off"
+centered = false
+
+[node name="Control2" type="Control" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay" unique_id=1867877902]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+
+[node name="star02" type="AnimatedSprite2D" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay/Control2" unique_id=305677614]
+sprite_frames = SubResource("SpriteFrames_i68xo")
+animation = &"off"
+autoplay = "off"
+centered = false
+
+[node name="Control3" type="Control" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay" unique_id=1214829986]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+
+[node name="star03" type="AnimatedSprite2D" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2/itemTierDisplay/Control3" unique_id=2092850542]
+sprite_frames = SubResource("SpriteFrames_i68xo")
+animation = &"off"
+autoplay = "off"
+centered = false
+
+[node name="txtValue" type="Label" parent="MarginContainer/MarginContainer2/VBoxContainer/HBoxContainer2" unique_id=2030483745]
+custom_minimum_size = Vector2(48, 8)
+layout_mode = 2
+size_flags_horizontal = 10
+theme = ExtResource("3_iyj82")
+theme_override_font_sizes/font_size = 4
+text = "$999.99"
+vertical_alignment = 2
+autowrap_mode = 3
