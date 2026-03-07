@@ -4,6 +4,9 @@ enum EGamePhase {
 	Player,
 	Monster,
 	EndOfTurnCleanup,
+	Dialog,
+	CoinChallenge,
+	Merchant,
 }
 
 enum EGameState {
@@ -22,6 +25,10 @@ enum EApproachRating {
 	Smooth,   # rear diagonal (135° off front)
 	Perfect,  # directly behind the mark
 }
+
+# Emitted to reset every guard's alert state and cancel any pursuit.
+# Connect GuardComponents on registration; they handle their own cleanup.
+signal cancelGuardAlert
 
 # Set by main.gd before startGame() is called.
 var entityLayer: Node2D
@@ -49,6 +56,7 @@ func _ready() -> void:
 	Console.add_command("test_inventory", _cmdTestInventory, [], 0, "Fills the inventory grid with random loot from mark_loot_table_01.")
 	Console.add_command("test_coin_flip", _cmdTestCoinFlip, ["string"], 0, "Launches N coins (default 3) with random heads/tails results.")
 	Console.add_command("test_dialog", _cmdTestDialog, [], 0, "Opens a test dialog between the player and a nearby guard.")
+	Console.add_command("reset_game", _cmdResetGame, [], 0, "Tears down the current game and returns to the main menu.")
 
 
 func getEntityByID(id: int) -> Entity:
@@ -67,7 +75,8 @@ func getItemByID(id: int) -> Item:
 	return itemRegistry.get(id, null)
 
 
-const _FLOATING_SHOUT := preload("res://hud/floating_shout.tscn")
+const _FLOATING_SHOUT    := preload("res://hud/floating_shout.tscn")
+const _RED_INFO_ARROW    := preload("res://hud/red_information_arrow.tscn")
 
 func spawnBark(entity: Entity, message: String, shoutType: FloatingShout.EShoutType,
 				 lifetime: float = 3.0) -> void:
@@ -78,6 +87,16 @@ func spawnBark(entity: Entity, message: String, shoutType: FloatingShout.EShoutT
 	shout.setShoutType(shoutType);
 
 
+func spawnInformationArrow(entitySource: Entity, entityTarget: Entity,
+		moveDuration: float, waitDuration: float) -> void:
+	var hud := HUD_Main.summon()
+	if hud == null:
+		return
+	var arrow := _RED_INFO_ARROW.instantiate() as RedInformationArrow
+	hud.add_child(arrow)
+	arrow.launch(entitySource, entityTarget, moveDuration, waitDuration)
+
+
 func startGame() -> void:
 	if timeKeeper == null:
 		timeKeeper = TimeKeeper.new()
@@ -85,6 +104,8 @@ func startGame() -> void:
 	spawnPlayer()
 	_spawnDebugMarks()
 	_spawnDebugGuards()
+	_spawnFencesAtGates()
+	AudioManager.summon().setMusicState(AudioManager.EMusicState.Normal)
 	print("GameManager: %d entities registered." % MapManager.entityRegistry.size())
 	HUDMiniMap.summon().populate();
 	HUDMiniMap.summon().setPlayerZone(playerEntity.worldPosition.z);
@@ -152,6 +173,34 @@ func _spawnDebugGuards() -> void:
 		_spawnGuardInZone(packed, zone.id)
 
 
+func _spawnFencesAtGates() -> void:
+	var packed := load("res://entity_prefabs/npc_fence.tscn") as PackedScene
+	if packed == null:
+		push_error("GameManager: could not load npc_fence.tscn")
+		return
+	for zoneId: int in MapManager.gateZoneIds:
+		_spawnFenceInZone(packed, zoneId)
+
+
+func _spawnFenceInZone(packed: PackedScene, zoneId: int) -> void:
+	var inset    := WorldGenerator.WALL_INSET + 1
+	var attempts := 0
+	while attempts < 200:
+		attempts += 1
+		var x        := randi_range(inset, Globals.ZONE_WIDTH_TILES  - 1 - inset)
+		var y        := randi_range(inset, Globals.ZONE_HEIGHT_TILES - 1 - inset)
+		var worldPos := Vector3i(x, y, zoneId)
+		if MapManager.testDestinationTile(worldPos, false) != Globals.EMoveTestResult.OK:
+			continue
+		var fence := packed.instantiate() as Entity
+		if fence == null:
+			return
+		fence.worldPosition = worldPos
+		TmxStamper.applySpawnVariant(fence)
+		MapManager.registerEntity(fence)
+		return
+
+
 func _spawnGuardInZone(packed: PackedScene, zoneId: int) -> void:
 	var inset    := WorldGenerator.WALL_INSET + 1
 	var attempts := 0
@@ -166,7 +215,7 @@ func _spawnGuardInZone(packed: PackedScene, zoneId: int) -> void:
 		if guard == null:
 			return
 		guard.worldPosition = worldPos
-		MapManager.applySpawnVariant(guard)
+		TmxStamper.applySpawnVariant(guard)
 		MapManager.registerEntity(guard)
 		var guardComp := guard.getComponent(&"GuardComponent") as GuardComponent
 		if guardComp:
@@ -189,7 +238,7 @@ func _spawnDebugMarksInZone(packed: PackedScene, zoneId: int, count: int) -> voi
 		if mark == null:
 			continue
 		mark.worldPosition = worldPos
-		MapManager.applySpawnVariant(mark)
+		TmxStamper.applySpawnVariant(mark)
 		MapManager.registerEntity(mark)
 		spawned += 1
 
@@ -197,14 +246,115 @@ func _spawnDebugMarksInZone(packed: PackedScene, zoneId: int, count: int) -> voi
 # ── Player actions ───────────────────────────────────────────────────────────
 
 func onDialogueFinished(result: String) -> void:
-	var splitsies = result.split(":");
+	var splitsies = result.split(":")
 	match splitsies[0]:
 		"challenge":
-			ChallengeManager.BeginChallenge(splitsies[1]);
+			ChallengeManager.BeginChallenge(splitsies[1])
 		"gameover":
-			pass
-		
-	pass
+			if( splitsies.size() > 1 ):
+				goToGameOver(splitsies[1]);
+			else:
+				goToGameOver("defeated");	
+		"end_guard_alert":
+			cancelGuardAlert.emit();
+		"merchant":
+			if( splitsies[1] == "sell" ):
+				_targetMerchant.onBeginTransactionSellToMe(playerEntity.getComponent(&"InventoryComponent"))
+
+
+# ── Game over / reset ─────────────────────────────────────────────────────────
+
+# Entry point for ending a run.  Closes any open HUDs, ensures the tree is
+# unpaused, and sets the GameOver state.
+#
+# For now this immediately calls resetForNewGame().  In the future, insert a
+# game-over screen here (show score, cause of death, etc.) and let the player
+# dismiss it before calling resetForNewGame().
+func goToGameOver(reason: String) -> void:
+	gameState = EGameState.GameOver
+
+	# Guarantee nothing is holding the game paused when we arrive here.
+	get_tree().paused = false
+
+	# Close the dialogue box if a conversation was in progress when the run ended.
+	var dialog := HUDDialog.summon()
+	if dialog != null and dialog.visible:
+		HUDDialog.turnOff()
+
+	# Hide the coin flip challenge if one was open.
+	var challenge := HUDCoinFlipContest.summon()
+	challenge.turnOff();
+
+	# TODO: show a game-over screen and await player input before resetting.
+	# For now, reset immediately.
+	resetForNewGame()
+
+
+# Tears down every piece of per-run state and returns to the main menu so the
+# player can start a fresh game without restarting the application.
+#
+# ORDER MATTERS — follow this sequence when adding new systems:
+#   1. Close / hide any HUDs that have their own state (dialog, challenge, etc.)
+#   2. Reset HUD_Main so the start button is visible again.
+#   3. Destroy world data (MapManager) — this queue_frees all entity nodes.
+#   4. Null / clear GameManager's own per-run references.
+#   5. Reset the time keeper.
+#   6. Reset other autoload managers (ChallengeManager, etc.).
+#   7. Set phase + state back to defaults.
+#
+# Add new per-run state here as the game grows (score, objectives, buffs, etc.).
+func resetForNewGame() -> void:
+	# Belt-and-suspenders: make sure nothing is paused going into the reset.
+	get_tree().paused = false
+
+	# Reset the main HUD to its pre-game layout (start button visible, labels blank).
+	var hud := HUD_Main.summon()
+	if hud:
+		hud.resetForNewGame()
+
+	# Destroy all world data and free every entity node (player + NPCs).
+	# This is the heaviest step — zone data, tile arrays, and all entity nodes
+	# are released here.
+	MapManager.resetForNewGame()
+
+	# Null our own reference to the player; the node was queue_freed above.
+	playerEntity = null
+
+	# Clear AI lists — the component objects were freed with their entities.
+	aiComponents.clear()
+	pendingAIComponents.clear()
+
+	# Any in-flight delay tweens belong to the previous game loop; drop them.
+	_gameDelayingTweens.clear()
+
+	# Items are owned by entity inventories which were freed above.
+	itemRegistry.clear()
+
+	# Reset the clock to the start of the faire day.
+	if timeKeeper:
+		timeKeeper.resetForNewGame()
+
+	# Drop dialogue references so nothing accidentally continues an old conversation.
+	_activeDialogResource = null
+	_activeDialogSpeaker  = null
+
+	# Reset challenge difficulty escalation and any mid-flight challenge state.
+	ChallengeManager.resetForNewGame()
+
+	# Clear chase mode so guards don't resume pursuit on the next game.
+	CrimeManager.summon().resetForNewGame()
+
+	# Return the game loop to its resting state.
+	currentPhase = EGamePhase.Player
+	gameState    = EGameState.MainMenu
+
+
+func _cmdResetGame() -> void:
+	if gameState == EGameState.MainMenu:
+		Console.print_warning("reset_game: already at main menu.")
+		return
+	resetForNewGame()
+	Console.print_line("reset_game: world torn down, back to main menu.")
 
 
 func _cmdTestCoinFlip(textCount: String = "3") -> void:
@@ -223,17 +373,16 @@ func _cmdTestCoinFlip(textCount: String = "3") -> void:
 var _activeDialogResource: DialogueResource
 var _activeDialogSpeaker:  Entity
 
+var _targetMerchant : MerchantComponent;
+
 
 func HandleGuardApprehendPlayer(guard: Entity, player: Entity) -> void:
 	if HUDDialog.summon() == null:
 		return
-	_activeDialogResource = load("res://dialogue/guard_dialog.dialogue")
-	_activeDialogSpeaker  = guard
-	DialogueStateManager.resetForNewDialog()
-	get_tree().paused = true
-	HUDDialog.turnOn()
-	_advanceDialog("capture_player")
 
+	AudioManager.summon().setMusicState(AudioManager.EMusicState.Tension)
+	ChallengeManager.setTargetEntity("guard", guard)
+	spawnDialog("guard_dialog", "capture_player", guard)
 
 func _cmdTestDialog() -> void:
 	if playerEntity == null:
@@ -254,15 +403,24 @@ func _cmdTestDialog() -> void:
 	if guard == null:
 		Console.print_warning("test_dialog: no guard found in the current zone.")
 		return
+		
+	spawnDialog("guard_dialog", "capture_player", guard);
 
-	_activeDialogResource = load("res://dialogue/guard_dialog.dialogue")
-	_activeDialogSpeaker  = guard
+func setTargetMerchant(merchant: MerchantComponent) -> void:
+	_targetMerchant = merchant;
+	
+func getTargetMerchant() -> MerchantComponent:
+	return _targetMerchant;
+	
+func spawnDialog(dialogArchetype: String, dialogKey: String, speaker: Entity) -> void:
+	
+	var path = "res://dialogue/" + dialogArchetype + ".dialogue";
+	_activeDialogResource = load(path)
+	_activeDialogSpeaker  = speaker
 	DialogueStateManager.resetForNewDialog()
-	get_tree().paused     = true
 	HUDDialog.turnOn()
-	_advanceDialog("start")
-
-
+	_advanceDialog(dialogKey)
+	
 # Async dialogue loop — gets the next line, presents it, then hooks the
 # appropriate signal to advance again when the player is ready.
 func _advanceDialog(key: String) -> void:
@@ -271,7 +429,6 @@ func _advanceDialog(key: String) -> void:
 
 	if line == null:
 		HUDDialog.turnOff()
-		get_tree().paused = false
 		onDialogueFinished(DialogueStateManager.getResultFromLastDialog())
 		return
 
@@ -467,11 +624,16 @@ func _parseCoinAmount(coinResult: String) -> int:
 func registerAIComponent(ai: AIBehaviorComponent) -> void:
 	if not aiComponents.has(ai):
 		aiComponents.append(ai)
+	# Guards subscribe to the broadcast alert-cancel signal.
+	if ai is GuardComponent and not cancelGuardAlert.is_connected(ai.onCancelAlert):
+		cancelGuardAlert.connect(ai.onCancelAlert)
 
 
 func unregisterAIComponent(ai: AIBehaviorComponent) -> void:
 	aiComponents.erase(ai)
 	pendingAIComponents.erase(ai)
+	if ai is GuardComponent and cancelGuardAlert.is_connected(ai.onCancelAlert):
+		cancelGuardAlert.disconnect(ai.onCancelAlert)
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
@@ -496,6 +658,11 @@ func delayNextPhaseForSeconds(time: float) -> void:
 	tween.tween_interval(time)
 	_gameDelayingTweens.append(tween)
 
+func setGamePhase(newPhase: EGamePhase) -> void:
+	currentPhase = newPhase;
+
+func getGamePhase() -> EGamePhase:
+	return currentPhase;
 
 func _processMainGameplay(_delta: float) -> void:
 	for tween in _gameDelayingTweens:
@@ -529,8 +696,9 @@ func _processPlayerPhase() -> void:
 
 func _onPlayerTurnTaken() -> void:
 	# Snapshot all AIs into the pending list for this turn.
-	pendingAIComponents = aiComponents.duplicate()
-	currentPhase = EGamePhase.Monster
+	if( currentPhase == EGamePhase.Player ): 
+		pendingAIComponents = aiComponents.duplicate()
+		currentPhase = EGamePhase.Monster
 
 
 func _onPlayerZoneChanged(newZoneId: int) -> void:
@@ -547,16 +715,20 @@ func _processMonsterPhase() -> void:
 			pendingAIComponents.remove_at(i)
 		i -= 1
 
-	if pendingAIComponents.is_empty():
+	if pendingAIComponents.is_empty() and currentPhase == EGamePhase.Monster :
 		currentPhase = EGamePhase.EndOfTurnCleanup
 
 
 func _processEndOfTurnCleanup() -> void:
 	for entity: Entity in MapManager.entityRegistry.values():
 		entity.onEndOfTurn()
+	# Chase-mode alert decay runs after all entities have reported sightings.
+	CrimeManager.summon().onEndOfTurn()
 	timeKeeper.advanceTurn()
-	currentPhase = EGamePhase.Player
+	
+	if currentPhase == EGamePhase.EndOfTurnCleanup: 
+		currentPhase = EGamePhase.Player
 
 func getPlayerComponent() -> PlayerCharacterComponent:
-	return playerEntity.getComponent("&PlayerCharacterComponent") as PlayerCharacterComponent;
+	return playerEntity.getComponent(&"PlayerCharacterComponent") as PlayerCharacterComponent;
 	

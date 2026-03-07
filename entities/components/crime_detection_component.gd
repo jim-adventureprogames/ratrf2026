@@ -31,21 +31,21 @@ func _onCrimeRegistered(event: CrimeEvent) -> void:
 	var hardRange := event.detectionRadius
 	var softRange := event.detectionRadius + softDetectionBonus
 
-	print(tag, " dist=%.1f hardRange=%.1f softRange=%.1f" % [distance, hardRange, softRange])
+	#print(tag, " dist=%.1f hardRange=%.1f softRange=%.1f" % [distance, hardRange, softRange])
 
 	if distance > softRange:
-		print(tag, " out of range — no detect")
+		#print(tag, " out of range — no detect")
 		return
 
 	var bFacing := _isFacingToward(crimePos)
-	print(tag, " in range — facing=%s" % bFacing)
+	#print(tag, " in range — facing=%s" % bFacing)
 
 	# Hard detect requires being within range AND facing toward the crime.
 	if distance <= hardRange and bFacing:
-		print(tag, " HARD DETECT")
+		#print(tag, " HARD DETECT")
 		entity.onHardDetectCrime(event)
 	else:
-		print(tag, " SOFT DETECT")
+		#print(tag, " SOFT DETECT")
 		entity.onSoftDetectCrime(event)
 
 

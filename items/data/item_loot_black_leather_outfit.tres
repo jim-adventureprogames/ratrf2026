@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://e23kvjt1tde2"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_mb5xy"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_wqw5k"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_owy26"]
+atlas = ExtResource("1_mb5xy")
+region = Rect2(48, 0, 12, 12)
+
+[resource]
+script = ExtResource("2_wqw5k")
+archetypeName = "black_leather_outfit"
+friendlyName = "itemname_black_leather_outfit"
+flavorText = "flavor_black_leather_outfit"
+value = 85
+tier = 2
+image = SubResource("AtlasTexture_owy26")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

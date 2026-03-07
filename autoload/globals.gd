@@ -15,7 +15,7 @@ enum EFacing {
 }
 
 enum ERogueStat {
-	Charm,
+	Carouse,
 	FastTalk,
 	Haggle,
 	Lockpick,
@@ -48,6 +48,7 @@ func _ready() -> void:
 	RandomTable._loadAllTables()
 	ItemData.loadAll()
 	ItemData.populateTierIntoTable(1, "mark_loot_table_01")
+	ItemData.populateTierIntoTable(2, "clothing_loot_table_01")
 
 
 # Defines all movement input actions at runtime.

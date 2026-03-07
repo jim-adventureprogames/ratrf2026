@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://doyoqovo5n3iy"]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_t7wk6"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="2_au822"]
+[ext_resource type="Texture2D" uid="uid://brkya5bu0rj1y" path="res://textures/bumpable_props.png" id="3_au822"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="4_cndk3"]
+[ext_resource type="Script" uid="uid://cda1f7buk6c4j" path="res://entities/components/readable_sign_component.gd" id="5_au822"]
+[ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="6_rtueq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rtueq"]
+atlas = ExtResource("3_au822")
+region = Rect2(0, 0, 12, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_east"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rtueq")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="deco_sign_dialogue" type="Node2D" unique_id=308907529]
+script = ExtResource("1_t7wk6")
+
+[node name="blocksMovementComponent" type="Node" parent="." unique_id=1061695321]
+script = ExtResource("2_au822")
+
+[node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1796178668]
+sprite_frames = SubResource("SpriteFrames_east")
+autoplay = "default"
+script = ExtResource("4_cndk3")
+
+[node name="ReadableSignComponent" type="Node" parent="." unique_id=1390916396]
+script = ExtResource("5_au822")
+metadata/_custom_type_script = "uid://cda1f7buk6c4j"
+
+[node name="BumpableComponent" type="Node" parent="." unique_id=1561921802]
+script = ExtResource("6_rtueq")
+metadata/_custom_type_script = "uid://bdljpwf0iq30o"

@@ -38,6 +38,13 @@ func getDayProgress() -> float:
 	return clampf((_turnsTaken * numberOfSecondsInTurn) / totalSeconds, 0.0, 1.0)
 
 
+# Resets all time state to the start of a new game day.
+# Call this before generating a new world so the clock begins at gameStartHour.
+func resetForNewGame() -> void:
+	_turnsTaken       = 0
+	_lastHalfHourSlot = 0
+
+
 # Current game time as a 24-hour "HH:MM" string (e.g. "13:45").
 func getTimeString() -> String:
 	var elapsed        := _turnsTaken * numberOfSecondsInTurn

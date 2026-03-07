@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://b0wslwaxasv0d"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_1284k"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_kt0n6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cpy54"]
+atlas = ExtResource("1_1284k")
+region = Rect2(60, 12, 12, 12)
+
+[resource]
+script = ExtResource("2_kt0n6")
+archetypeName = "peasant_dress_02"
+friendlyName = "itemname_peasant_dress_02"
+flavorText = "flavor_peasant_dress_02"
+value = 50
+tier = 2
+image = SubResource("AtlasTexture_cpy54")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

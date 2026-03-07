@@ -15,6 +15,10 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://djbwnokudga8"
+
 [autoload]
 
 Globals="*res://autoload/globals.gd"
@@ -24,7 +28,10 @@ DialogueManager="*uid://c3rodes2l3gxb"
 DialogueStateManager="*uid://bb8cxu6ukdvtu"
 CrimeManager="*uid://c7326risvgenb"
 ChallengeManager="*res://gamesystems/challenge_manager.gd"
+TutorialManager="*uid://cwy02hgjhm25h"
+AudioManager="*res://audio/scripts/audio_manager.gd"
 Console="*uid://ouiu5xh1cs8n"
+RetailManager="*res://autoload/retail_manager.gd"
 
 [console]
 
@@ -45,7 +52,7 @@ enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/console/
 [internationalization]
 
 locale/translations=PackedStringArray("res://strings/ratrf_stringtables.en.translation")
-locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue", "res://dialogue/guard_dialog.dialogue")
+locale/translations_pot_files=PackedStringArray("res://dialogue/test_jibba.dialogue", "res://dialogue/guard_dialog.dialogue", "res://dialogue/fence_dialog.dialogue", "res://dialogue/vendor_dialog.dialogue", "res://dialogue/sign_dialog.dialogue")
 
 [rendering]
 

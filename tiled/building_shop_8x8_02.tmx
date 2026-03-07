@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="12" tileheight="12" infinite="0" nextlayerid="6" nextobjectid="14">
+ <tileset firstgid="1" source="world.tsx"/>
+ <layer id="1" name="ground" width="8" height="8">
+  <data encoding="csv">
+97,97,97,97,97,97,97,97,
+97,97,96,96,96,96,96,97,
+97,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,97,
+97,96,96,96,96,96,96,97,
+97,97,97,97,97,97,97,97
+</data>
+ </layer>
+ <layer id="2" name="ground_decoration" width="8" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="wall" width="8" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,68,0,0,0,0,68,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,68,0,0,0,0,68,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="wall_decoration" width="8" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="5" name="objects">
+  <object id="1" name="spawn_chest_clothing" x="29.6364" y="33.8181">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="2" name="spawn_chest_clothing" x="65.4545" y="69.0909">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="spawn_chest_clothing" x="65.8182" y="33.6363">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="4" name="spawn_chest_clothing" x="29.8181" y="68.3636">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="chest_clothing_shop"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="5" name="spawn_merchant" x="43.0909" y="44.5454">
+   <properties>
+    <property name="prefab" value="npc_shop_vendor"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="6" name="spawn_guard_waypoint" x="5.45455" y="9.45455">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="7" name="spawn_guard_waypoint" x="91.2723" y="9.45454">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" name="spawn_guard_waypoint" x="5.81819" y="93.6368">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="9" name="spawn_guard_waypoint" x="89.8178" y="92.9089">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" name="spawn_sign" x="17.8182" y="21.2727">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="deco_sign_dialogue"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="11" name="spawn_sign" x="78.3636" y="20.7273">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="deco_sign_dialogue"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="12" name="spawn_sign" x="77.6364" y="81.0909">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="deco_sign_dialogue"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="13" name="spawn_sign" x="16.9091" y="81.0909">
+   <properties>
+    <property name="merchant_target" value="npc_shop_vendor"/>
+    <property name="prefab" value="deco_sign_dialogue"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>

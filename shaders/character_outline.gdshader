@@ -12,6 +12,9 @@ uniform vec4 colorObservantMax : source_color;
 uniform vec4 colorHostileMin : source_color;
 uniform vec4 colorHostileMax : source_color;
 
+uniform vec4 colorMerchantMin : source_color;
+uniform vec4 colorMerchantMax : source_color;
+
 /*
 see sprite_component.gd to keep up to date.
 enum ESpriteBorderStyle 
@@ -20,6 +23,7 @@ enum ESpriteBorderStyle
 	has_loot = 1,
 	observant = 2,
 	hostile = 3,
+	is_merchant = 4,
 	mouse_over = 999
 }
 */
@@ -42,6 +46,8 @@ vec4 getBorderColor() {
 		return getSinWave( colorObservantMin, colorObservantMax, 2.0f);
 	if( border_state == 3 )
 		return getSinWave( colorHostileMin, colorHostileMax, 1.0f);
+	if( border_state == 4 )
+		return getSinWave( colorMerchantMin, colorMerchantMax, 1.0f);
 	if( border_state == 999)
 		return getSinWave( colorMouseOverMin, colorMouseOverMax, 2.0f);
 		

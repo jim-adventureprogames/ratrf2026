@@ -40,4 +40,4 @@ func showForItem(item: Item, canvasPos: Vector2) -> void:
 # Places the inner container near canvasPos.
 # TODO: replace with proper dynamic positioning once size reporting is sorted.
 func _positionNear(_canvasPos: Vector2) -> void:
-	global_position = Vector2(48, 48)
+	global_position = Vector2(24,132)

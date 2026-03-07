@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="12" tileheight="12" infinite="0" nextlayerid="6" nextobjectid="11">
+ <tileset firstgid="1" source="world.tsx"/>
+ <layer id="1" name="ground" width="12" height="12">
+  <data encoding="csv">
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,97,97,97,97,97,97,97,97,97,97
+</data>
+ </layer>
+ <layer id="2" name="ground_decoration" width="12" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,255,256,257,0,
+0,0,0,0,0,0,0,0,254,255,256,0,
+0,0,0,0,0,0,0,0,254,255,256,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="wall" width="12" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,280,281,282,0,0,0,0,0,0,0,0,
+0,303,304,305,0,0,0,283,284,285,0,0,
+0,0,0,0,0,0,0,306,307,308,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,280,281,282,0,0,0,0,0,0,
+0,0,0,303,304,305,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,283,284,285,0,0,0,0,280,281,282,0,
+0,306,307,308,0,0,0,0,303,304,305,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="wall_decoration" width="12" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="5" name="objects">
+  <object id="6" name="spawn_guard_waypoint" x="5.45455" y="9.45455">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="7" name="spawn_guard_waypoint" x="138" y="9.27273">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" name="spawn_guard_waypoint" x="5.81818" y="141.818">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="9" name="spawn_guard_waypoint" x="139.273" y="140.909">
+   <properties>
+    <property name="spawn" value="waypoint"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" name="spawn_campfire" x="113.455" y="81.6364">
+   <properties>
+    <property name="prefab" value="deco_campfire"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>

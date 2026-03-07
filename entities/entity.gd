@@ -104,3 +104,12 @@ func onSoftDetectCrime(event: CrimeEvent) -> void:
 	for c in components.values():
 		if c.has_method("onSoftDetectCrime"):
 			c.onSoftDetectCrime(event)
+
+
+# Called by MapManager.stampTmx() after all entities in a stamp have been
+# spawned and registered.  Dispatches to every component so they can
+# cross-reference sibling entities using the shared stampedEntities list.
+func postStampCleanup(stampedEntities: Array[Entity], properties: Dictionary) -> void:
+	for c in components.values():
+		if c.has_method("onPostStampCleanup"):
+			c.onPostStampCleanup(stampedEntities, properties)

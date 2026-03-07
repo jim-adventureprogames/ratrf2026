@@ -3,17 +3,24 @@
 % Guard: Got you, thief! No more ruining people's days of big fun and overpriced food for you!
 % Guard: Stop right there, I saw what you did! 
 % Guard: The only theft I'll allow on my watch is at the turkey leg booth.
-% Guard: Thought you co
-uld get away with it, did you?
+% Guard: Thought you could get away with it, did you?
 - Wait, let me explain...
 	set DialogueStateManager.dialogResult = "challenge:fast_talk_guard"
 	=> END
 - Perhaps we could talk to {{DialogueStateManager.nameToDrop}} about this? [if DialogueStateManager.checkNameDrop() == true]
 	Guard: Ah... I see. That won't be necessary. I get it. You're off the hook this time, but just this once!
 	- It won't happen again.
-		set DialogueStateManager.dialogResult = "great_success"
+		set DialogueStateManager.dialogResult = "end_guard_alert"
 		=> END
 - Yeah you got me. I give up.
 	set DialogueStateManager.dialogResult = "gameover:caught"
 	=> END
 => END
+
+~ let_player_go
+% Guard: Ah, hahah, I see! What a comical mix up! No worries sir, on your way.
+% Guard: ... well that makes perfect sense. What a fool I was! Good day, enjoy the faire!
+% Guard: That's just plausible enough to stop me from having to do work. I'm in.
+- Thank you kindly sirrah.
+	set DialogueStateManager.dialogResult = "end_guard_alert"
+	

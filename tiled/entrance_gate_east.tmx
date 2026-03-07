@@ -52,13 +52,13 @@
  <objectgroup id="5" name="spawn">
   <object id="2" name="spawn_pennant" x="89.5" y="21.9773">
    <properties>
-    <property name="prefab" value="deco_pennant"/>
+    <property name="prefab" value="deco_pennant_east"/>
    </properties>
    <point/>
   </object>
   <object id="4" name="spawn_pennant" x="90.5" y="81.4091">
    <properties>
-    <property name="prefab" value="deco_pennant"/>
+    <property name="prefab" value="deco_pennant_east"/>
    </properties>
    <point/>
   </object>

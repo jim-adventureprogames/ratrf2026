@@ -5,8 +5,15 @@ extends GridContainer
 @export var maxHeight:           int        = 6
 @export var itemContainerPrefab: PackedScene
 
+# Bubbled up from any slot in this grid when the player right-clicks a filled slot.
+signal item_right_clicked(item: Item)
+
 var _inventory:    InventoryComponent
 var tooltipPopup:  TooltipPopup
+
+# Optional predicate: assign a Callable(item: Item) -> bool before populating.
+# Slots whose item returns true will be drawn at 50 % opacity.
+var shouldDimItem: Callable = Callable()
 
 
 func _ready() -> void:
@@ -58,14 +65,17 @@ func refresh() -> void:
 		add_child(slot)
 		if slotMap.has(i):
 			slot.setItem(slotMap[i])
+			slot.setDimmed(shouldDimItem.is_valid() and shouldDimItem.call(slotMap[i]))
 		elif gapIdx < unslotted.size():
 			slot.setItem(unslotted[gapIdx])
+			slot.setDimmed(shouldDimItem.is_valid() and shouldDimItem.call(unslotted[gapIdx]))
 			gapIdx += 1
 		else:
 			slot.clearItem()
 		if tooltipPopup != null:
 			slot.item_hovered.connect(tooltipPopup.showForItem)
 			slot.item_unhovered.connect(tooltipPopup.hide)
+		slot.item_right_clicked.connect(item_right_clicked.emit)
 
 
 # Rebuilds the inventory's item order from the current slot display state and

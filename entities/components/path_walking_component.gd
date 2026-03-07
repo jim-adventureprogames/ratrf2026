@@ -60,6 +60,9 @@ func _advanceToNextWaypoint() -> void:
 
 
 # Builds the A* path from the entity's current tile to the current waypoint.
+# If the waypoint is unreachable (A* returns no path and entity is not already
+# there), sets currentWaypointId to -1 so callers fail cleanly instead of
+# looping.
 func _computePath() -> void:
 	_pathTiles.clear()
 	_pathTargetIndex = 0
@@ -68,12 +71,18 @@ func _computePath() -> void:
 		return
 	var wp := MapManager.getWaypoint(currentWaypointId)
 	if wp == null or wp.zoneId != entity.worldPosition.z:
+		currentWaypointId = -1
 		return
 	var zone := MapManager.getZone(entity.worldPosition.z)
 	if zone == null or zone.astar == null:
+		currentWaypointId = -1
 		return
 
 	var fromPos := Vector2i(entity.worldPosition.x, entity.worldPosition.y)
 	var rawPath := zone.astar.get_point_path(fromPos, wp.position)
+	if rawPath.is_empty() and fromPos != wp.position:
+		# Waypoint exists but cannot be reached — give up rather than looping.
+		currentWaypointId = -1
+		return
 	for v: Vector2 in rawPath:
 		_pathTiles.append(Vector2i(int(v.x), int(v.y)))

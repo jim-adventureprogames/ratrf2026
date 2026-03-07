@@ -65,6 +65,25 @@ func takeAction() -> bool:
 
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
+		# If the intended tile is blocked, reroute via A* — unless the block IS
+		# our intended target entity, in which case we walk into it on purpose
+		# (e.g. guard stepping onto the player's tile to trigger apprehension).
+		# Only reroutes within the same zone; cross-zone steps aim at zone
+		# boundaries which are always open.
+		if nextStepTile.z == entity.worldPosition.z \
+				and nextStepTile != Vector3i(-1, -1, -1):
+			var moveResult := MapManager.testDestinationTile(nextStepTile, mover.bCanBumpThings)
+			if moveResult == Globals.EMoveTestResult.Wall \
+					or moveResult == Globals.EMoveTestResult.Entity:
+				var bIsIntendedTarget := false
+				var targetEnt         := getTargetEntity()
+				if targetEnt != null and targetEnt.worldPosition == nextStepTile:
+					bIsIntendedTarget = true
+				if not bIsIntendedTarget:
+					var detourDir := _computeDetourToward(Vector2i(nextStepTile.x, nextStepTile.y))
+					if detourDir != Vector2i.ZERO:
+						nextStepDirection = detourDir
+						nextStepTile      = mover.resolveTargetWorldPosition(detourDir)
 		mover.tryMove(nextStepDirection)
 		actionPoints -= 1
 
@@ -74,9 +93,42 @@ func takeAction() -> bool:
 	return actionPoints <= 0
 
 
+# Uses the zone A* graph to find a one-step detour from this entity's current
+# tile toward targetTile.  Temporarily unblocks both endpoints so A* can route
+# even when the entity or its destination sits on a solid point.
+# Returns Vector2i.ZERO when no path exists.
+func _computeDetourToward(targetTile: Vector2i) -> Vector2i:
+	var zone := MapManager.getZone(entity.worldPosition.z)
+	if zone == null or zone.astar == null:
+		return Vector2i.ZERO
+	var fromPos := Vector2i(entity.worldPosition.x, entity.worldPosition.y)
+	if fromPos == targetTile:
+		return Vector2i.ZERO
+
+	var bFromSolid := zone.astar.is_point_solid(fromPos)
+	var bToSolid   := zone.astar.is_point_solid(targetTile)
+	zone.astar.set_point_solid(fromPos,   false)
+	zone.astar.set_point_solid(targetTile, false)
+	var rawPath := zone.astar.get_point_path(fromPos, targetTile)
+	zone.astar.set_point_solid(fromPos,   bFromSolid)
+	zone.astar.set_point_solid(targetTile, bToSolid)
+
+	if rawPath.size() < 2:
+		return Vector2i.ZERO
+	var nextTile := Vector2i(int(rawPath[1].x), int(rawPath[1].y))
+	return nextTile - fromPos
+
+
 # Called by GameManager at the end of every turn.
 func onEndOfTurn() -> void:
 	actionPoints += 1
+
+
+# Returns the entity this AI is actively trying to reach or interact with,
+# or null if there is no such target.  Override in subclasses so takeAction()
+# can skip rerouting when the blocked tile is the intended destination.
+func getTargetEntity() -> Entity:
+	return null
 
 
 # Examines the world and picks the best action for this turn.

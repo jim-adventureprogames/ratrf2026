@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://b8krkg73f8asa"]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_tdlqi"]
+[ext_resource type="Shader" uid="uid://bq72yxsr6cank" path="res://shaders/character_outline.gdshader" id="2_vxkil"]
+[ext_resource type="SpriteFrames" uid="uid://bepchobe0hudw" path="res://spriteframes/fence_sprite_frames.tres" id="3_ywoxk"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="4_hu0hv"]
+[ext_resource type="Script" uid="uid://ceow7ubw3uq76" path="res://entities/components/mover_component.gd" id="5_aup3x"]
+[ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="6_khwxd"]
+[ext_resource type="Script" uid="uid://cjlfpp7wxv0j4" path="res://entities/components/mouseable_component.gd" id="7_x1jkd"]
+[ext_resource type="Script" uid="uid://comtspau41kqu" path="res://entities/components/merchant_component.gd" id="9_ywoxk"]
+[ext_resource type="Script" uid="uid://brvs0licd288f" path="res://entities/components/crime_detection_component.gd" id="10_03rna"]
+[ext_resource type="AudioStream" uid="uid://b6dqk4y6q2b0l" path="res://audio/sfx/fence_what_are_you_sellin.wav" id="10_lo8wl"]
+[ext_resource type="AudioStream" uid="uid://ccjtkkqesotm6" path="res://audio/sfx/fence_thank_you.wav" id="11_hu0hv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
+shader = ExtResource("2_vxkil")
+shader_parameter/colorHasLootMin = Color(1, 1, 1, 0.5058824)
+shader_parameter/colorHasLootMax = Color(1, 1, 1, 0.7058824)
+shader_parameter/colorMouseOverMin = Color(0, 0.5411765, 1, 1)
+shader_parameter/colorMouseOverMax = Color(0, 1, 1, 1)
+shader_parameter/colorObservantMin = Color(1, 0.37254903, 0, 1)
+shader_parameter/colorObservantMax = Color(1, 0.7607843, 0, 1)
+shader_parameter/colorHostileMin = Color(1, 0, 0, 1)
+shader_parameter/colorHostileMax = Color(0.56078434, 0, 0, 1)
+shader_parameter/colorMerchantMin = Color(0, 1, 0, 1)
+shader_parameter/colorMerchantMax = Color(0, 0.9607843, 0.4392157, 1)
+
+[node name="npc_fence" type="Node2D" unique_id=967847664]
+script = ExtResource("1_tdlqi")
+
+[node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1394865929]
+material = SubResource("ShaderMaterial_lvaaw")
+sprite_frames = ExtResource("3_ywoxk")
+animation = &"idle_down"
+autoplay = "idle_down"
+frame_progress = 0.086227834
+script = ExtResource("4_hu0hv")
+
+[node name="moverComponent" type="Node" parent="." unique_id=224727644]
+script = ExtResource("5_aup3x")
+
+[node name="bumpableComponent" type="Node" parent="." unique_id=112233445]
+script = ExtResource("6_khwxd")
+
+[node name="mouseableComponent" type="Node" parent="." unique_id=1581467770]
+script = ExtResource("7_x1jkd")
+
+[node name="CrimeDetectionComponent" type="Node" parent="." unique_id=1549764652]
+script = ExtResource("10_03rna")
+softDetectionBonus = 4.0
+metadata/_custom_type_script = "uid://brvs0licd288f"
+
+[node name="MerchantComponent" type="Node" parent="." unique_id=222283597]
+script = ExtResource("9_ywoxk")
+bAllowSellTo = true
+dialogFile = "fence_dialog"
+dialogKeyStartVend = "interact_normal"
+dialogKeyWhileAlart = "interact_alart"
+clip_onOpenSell = ExtResource("10_lo8wl")
+clip_onSuccessfulTransaction = ExtResource("11_hu0hv")
+metadata/_custom_type_script = "uid://comtspau41kqu"

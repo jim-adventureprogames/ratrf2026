@@ -1,0 +1,116 @@
+[gd_scene format=3 uid="uid://4n3qf5mpewrl"]
+
+[ext_resource type="Texture2D" uid="uid://go2a6wdh3stc" path="res://textures/ui/9slice_top_bar.png" id="1_3lbws"]
+[ext_resource type="Script" uid="uid://ccdfevorea51m" path="res://hud/hud_options.gd" id="1_mhua3"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="2_up1ah"]
+[ext_resource type="Texture2D" uid="uid://dhuso8r1g0mwv" path="res://textures/ui/buttons_symbols.png" id="3_23axe"]
+[ext_resource type="Texture2D" uid="uid://ceudt1thncoi1" path="res://textures/ui/9slice_filligree.png" id="4_mhua3"]
+[ext_resource type="Texture2D" uid="uid://d13l04x0bpdiq" path="res://textures/ui/slider_grabber.png" id="5_23axe"]
+[ext_resource type="Texture2D" uid="uid://ci5uwggig2uad" path="res://textures/ui/slider_tick.png" id="6_mhua3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4m0w"]
+atlas = ExtResource("3_23axe")
+region = Rect2(0, 0, 12, 12)
+
+[node name="HUD_Options" type="Control" unique_id=2084748686 node_paths=PackedStringArray("btnExit", "sliderMusic", "sliderSFX")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mhua3")
+btnExit = NodePath("imgTopBar/btnExit")
+sliderMusic = NodePath("imgTopBar/imgBG/sliderMusic")
+sliderSFX = NodePath("imgTopBar/imgBG/sliderSFX")
+
+[node name="imgTopBar" type="NinePatchRect" parent="." unique_id=555411380]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 22.0
+offset_right = 166.0
+offset_bottom = 42.0
+texture = ExtResource("1_3lbws")
+region_rect = Rect2(0, 0, 38, 18)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="lblOptions" type="RichTextLabel" parent="imgTopBar" unique_id=1137188721]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 5.0
+offset_right = 93.0
+offset_bottom = 16.0
+theme = ExtResource("2_up1ah")
+theme_override_font_sizes/normal_font_size = 8
+text = "OPTIONS"
+scroll_active = false
+
+[node name="btnExit" type="TextureButton" parent="imgTopBar" unique_id=2051532226]
+layout_mode = 0
+offset_left = 114.0
+offset_top = 4.0
+offset_right = 126.0
+offset_bottom = 16.0
+texture_normal = SubResource("AtlasTexture_h4m0w")
+
+[node name="imgBG" type="NinePatchRect" parent="imgTopBar" unique_id=572140257]
+layout_mode = 0
+offset_top = 20.0
+offset_right = 128.0
+offset_bottom = 166.0
+texture = ExtResource("4_mhua3")
+patch_margin_left = 19
+patch_margin_top = 20
+patch_margin_right = 19
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="lblMusic" type="RichTextLabel" parent="imgTopBar/imgBG" unique_id=970991284]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 22.0
+offset_right = 41.0
+offset_bottom = 28.0
+theme = ExtResource("2_up1ah")
+text = "music:"
+scroll_active = false
+horizontal_alignment = 2
+
+[node name="lblSfx" type="RichTextLabel" parent="imgTopBar/imgBG" unique_id=1303631870]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 38.0
+offset_right = 41.0
+offset_bottom = 44.0
+theme = ExtResource("2_up1ah")
+text = "sfx:"
+scroll_active = false
+horizontal_alignment = 2
+
+[node name="sliderMusic" type="HSlider" parent="imgTopBar/imgBG" unique_id=1949930963]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 16.0
+offset_right = 88.0
+offset_bottom = 32.0
+theme_override_icons/grabber = ExtResource("5_23axe")
+theme_override_icons/tick = ExtResource("6_mhua3")
+step = 10.0
+value = 50.0
+
+[node name="sliderSFX" type="HSlider" parent="imgTopBar/imgBG" unique_id=800712247]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 33.0
+offset_right = 88.0
+offset_bottom = 49.0
+theme_override_icons/grabber = ExtResource("5_23axe")
+theme_override_icons/tick = ExtResource("6_mhua3")
+step = 10.0
+value = 50.0

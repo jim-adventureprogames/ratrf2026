@@ -16,6 +16,8 @@ const HOVER_DELAY := 0.5
 signal item_hovered(item: Item, canvas_pos: Vector2)
 # Emitted immediately when the cursor leaves, regardless of delay state.
 signal item_unhovered()
+# Emitted when the player right-clicks a filled slot.
+signal item_right_clicked(item: Item)
 
 # True while the cursor is inside this control waiting for the delay to expire.
 var _hoverPending: bool = false
@@ -24,6 +26,12 @@ var _hoverPending: bool = false
 func _ready() -> void:
 	mouse_entered.connect(_onMouseEntered)
 	mouse_exited.connect(_onMouseExited)
+
+
+func _gui_input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb and mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed and _currentItem != null:
+		item_right_clicked.emit(_currentItem)
 
 
 func _onMouseEntered() -> void:
@@ -66,6 +74,11 @@ func clearItem() -> void:
 # Returns the currently assigned item, or null if the slot is empty.
 func getItem() -> Item:
 	return _currentItem
+
+
+# Dims the slot to 50 % opacity when true; restores full opacity when false.
+func setDimmed(bDimmed: bool) -> void:
+	modulate.a = 0.5 if bDimmed else 1.0
 
 
 # ── Drag and drop ─────────────────────────────────────────────────────────────

@@ -14,6 +14,7 @@ enum ESpriteBorderStyle
 	has_loot = 1,
 	observant = 2,
 	hostile = 3,
+	is_merchant = 4,
 	mouse_over = 999
 }
 

@@ -68,15 +68,21 @@ func commitMove(direction: Vector2i, target: Vector3i) -> void:
 	var fromPixel   := tileToPixel(entity.worldPosition)
 	var oldZoneId   := entity.worldPosition.z
 
+	var bBlocksPath := entity.getComponent(&"BlocksMovementComponent") != null
+
 	var oldTile := MapManager.getTileAt(entity.worldPosition)
 	if oldTile:
 		oldTile.entities.erase(entity)
+	if bBlocksPath:
+		MapManager.refreshAStarTile(entity.worldPosition)
 
 	entity.worldPosition = target
 
 	var newTile := MapManager.getTileAt(entity.worldPosition)
 	if newTile:
 		newTile.entities.append(entity)
+	if bBlocksPath:
+		MapManager.refreshAStarTile(entity.worldPosition)
 
 	state = EState.Moving
 	if not entity.is_inside_tree():

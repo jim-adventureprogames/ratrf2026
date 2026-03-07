@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://b0v1353g01cda" path="res://world/world_tilemap.gd" id="4_worldscript"]
 [ext_resource type="PackedScene" uid="uid://chfcho1oklluj" path="res://hud/hud_mini_map.tscn" id="5_lquwl"]
 [ext_resource type="PackedScene" uid="uid://38njbd7gy4ct" path="res://hud/hud_coin_flip_contest.tscn" id="6_coinflip"]
+[ext_resource type="PackedScene" uid="uid://bf0fxa1st8015" path="res://hud/hud_sell_to_merchant.tscn" id="7_5vw27"]
+[ext_resource type="PackedScene" uid="uid://4n3qf5mpewrl" path="res://entity_prefabs/hud_options.tscn" id="9_kek77"]
 
 [node name="Main" type="Node2D" unique_id=1621069194]
 script = ExtResource("1_main")
@@ -30,9 +32,20 @@ tile_set = ExtResource("3_tileset")
 visible = false
 offset_right = 320.0
 offset_bottom = 240.0
+mouse_filter = 2
 
 [node name="HUD_Main" parent="." unique_id=1639213077 instance=ExtResource("4_1bvp3")]
 
 [node name="HUD_MiniMap" parent="." unique_id=546947764 instance=ExtResource("5_lquwl")]
+visible = false
+
+[node name="HUD_SellToMerchant" parent="." unique_id=2064225395 instance=ExtResource("7_5vw27")]
+visible = false
+mouse_filter = 2
 
 [node name="HUD_CoinFlipContest" parent="." unique_id=112233445 instance=ExtResource("6_coinflip")]
+offset_right = 320.0
+offset_bottom = 240.0
+
+[node name="HUD_Options" parent="." unique_id=2084748686 instance=ExtResource("9_kek77")]
+visible = false

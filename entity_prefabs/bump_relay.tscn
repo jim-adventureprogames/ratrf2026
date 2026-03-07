@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://dad3npn10ge62"]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_oldoc"]
+[ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="2_puvhv"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="3_wx5xa"]
+[ext_resource type="Script" uid="uid://ccxe6kifkeci6" path="res://entities/components/bump_relay_component.gd" id="4_puvhv"]
+
+[node name="bump_relay" type="Node2D" unique_id=1971658132]
+script = ExtResource("1_oldoc")
+
+[node name="BumpableComponent" type="Node" parent="." unique_id=1743244833]
+script = ExtResource("2_puvhv")
+metadata/_custom_type_script = "uid://bdljpwf0iq30o"
+
+[node name="BlocksMovementComponent" type="Node" parent="." unique_id=2060594271]
+script = ExtResource("3_wx5xa")
+metadata/_custom_type_script = "uid://dq7fkkfn4ythi"
+
+[node name="BumpRelayComponent" type="Node" parent="." unique_id=411140151]
+script = ExtResource("4_puvhv")
+metadata/_custom_type_script = "uid://ccxe6kifkeci6"

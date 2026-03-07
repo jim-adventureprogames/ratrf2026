@@ -10,6 +10,10 @@ var entityRegistry: Dictionary = {}   # int → Entity
 var waypointRegistry: Dictionary = {}   # int → PathWaypoint
 var currentZoneId:  int = -1
 
+# Zone IDs that contain a gate, populated by WorldGenerator after wall placement.
+# Used by GameManager to know where to spawn gate-adjacent NPCs (fences, etc.).
+var gateZoneIds: Array[int] = []
+
 # Populated by stampTmx whenever an object carries a "spawn" property.
 # Key = spawn value (e.g. "player"), value = Array of Vector3i world positions.
 var spawnPoints: Dictionary = {}   # String → Array[Vector3i]
@@ -139,6 +143,47 @@ func unregisterEntity(entity: Entity) -> void:
 	entity.entityId = -1
 
 
+# Tears down all world state in preparation for a new game.
+# Frees every registered entity from the scene tree and clears all data
+# structures.  GameManager.resetForNewGame() calls this before rebuilding the
+# world with generateWorld() + startGame().
+#
+# NOTE: entity.queue_free() is deferred, but GameManager nulls playerEntity
+# immediately, and the new game is not started until at least one frame later
+# (player presses a button), so all nodes will be gone by then.
+#
+# Add new registries / caches here as the game grows.
+func resetForNewGame() -> void:
+	# Free every entity node (player + all NPCs).
+	# The entities are children of GameManager.entityLayer; queue_free removes
+	# them from the scene tree and releases all their child components.
+	for entity: Entity in entityRegistry.values():
+		entity.queue_free()
+	entityRegistry.clear()
+
+	# Discard all zone data.  Zone objects and their Tile arrays are
+	# RefCounted, so clearing the array is enough to release them.
+	zones.clear()
+
+	# Spawn points are repopulated by WorldGenerator.generateWorld() via
+	# stampTmx calls, so they must be cleared before each new world build.
+	spawnPoints.clear()
+
+	# Waypoints are placed by WorldGenerator; clear before regenerating.
+	waypointRegistry.clear()
+
+	# No zone is loaded after a reset.
+	currentZoneId = -1
+
+	# Gate zones are repopulated by WorldGenerator each run.
+	gateZoneIds.clear()
+
+	# Blank the four visual tilemap layers so nothing stale shows on screen
+	# while the new world is being generated.
+	if worldTileMap:
+		worldTileMap.clearAllLayers()
+
+
 func processTurn() -> void:
 	for entity: Entity in entityRegistry.values():
 		entity.onTakeTurn()
@@ -172,158 +217,6 @@ func refreshZoneSceneNodes(zoneId: int) -> void:
 			GameManager.entityLayer.add_child(entity)
 		elif not belongsHere and inScene:
 			GameManager.entityLayer.remove_child(entity)
-
-
-# ── TMX stamping ───────────────────────────────────────────────────────────────
-
-# Parses a .tmx file from res://tiled/ and writes its tile data into the world
-# at the given top-left world position (x, y = tile coords, z = zone ID).
-# Only tiles with a non-zero GID overwrite the destination; zero GIDs are skipped
-# so the underlying zone data shows through.
-func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
-	var path   := "res://tiled/" + tmxName
-	var parser := XMLParser.new()
-	if parser.open(path) != OK:
-		push_error("MapManager.stampTmx: could not open '%s'" % path)
-		return
-
-	# Tile-layer state
-	var currentLayer := ""
-	var layerWidth   := 0
-	var layerHeight  := 0
-	var inData       := false
-
-	# Spawn-layer state — populated across several element events before the
-	# </object> closing tag fires and we finally act on the collected data.
-	var inSpawnGroup  := false
-	var inSpawnObject := false
-	var spawnPixelX   := 0.0
-	var spawnPixelY   := 0.0
-	var spawnPrefab   := ""
-	var spawnTag      := ""
-
-	while parser.read() == OK:
-		match parser.get_node_type():
-
-			XMLParser.NODE_ELEMENT:
-				var tag := parser.get_node_name()
-				match tag:
-					"layer":
-						currentLayer = parser.get_named_attribute_value_safe("name")
-						layerWidth   = int(parser.get_named_attribute_value_safe("width"))
-						layerHeight  = int(parser.get_named_attribute_value_safe("height"))
-						inData       = false
-					"data":
-						inData = true
-					"objectgroup":
-						if parser.get_named_attribute_value_safe("name") == "spawn":
-							inSpawnGroup = true
-					"object":
-						if inSpawnGroup:
-							inSpawnObject = true
-							spawnPixelX   = parser.get_named_attribute_value_safe("x").to_float()
-							spawnPixelY   = parser.get_named_attribute_value_safe("y").to_float()
-							spawnPrefab   = ""
-							spawnTag      = ""
-					"property":
-						# Each <property> is self-closing — read value here directly.
-						if inSpawnObject:
-							var propName := parser.get_named_attribute_value_safe("name")
-							match propName:
-								"prefab": spawnPrefab = parser.get_named_attribute_value_safe("value")
-								"spawn":  spawnTag    = parser.get_named_attribute_value_safe("value")
-
-			XMLParser.NODE_TEXT:
-				if inData and currentLayer != "":
-					_applyLayerData(parser.get_node_data(), currentLayer, layerWidth, layerHeight, topLeft)
-					inData = false
-
-			XMLParser.NODE_ELEMENT_END:
-				match parser.get_node_name():
-					"object":
-						# All properties for this object have been read — act on them.
-						if inSpawnObject:
-							var tileX    := int(spawnPixelX / Globals.TILE_SIZE)
-							var tileY    := int(spawnPixelY / Globals.TILE_SIZE)
-							var worldPos := Vector3i(topLeft.x + tileX, topLeft.y + tileY, topLeft.z)
-							if spawnPrefab != "":
-								_spawnEntityFromPrefab(spawnPrefab, worldPos)
-							if spawnTag != "":
-								if not spawnPoints.has(spawnTag):
-									spawnPoints[spawnTag] = []
-								spawnPoints[spawnTag].append(worldPos)
-						inSpawnObject = false
-						spawnPrefab   = ""
-						spawnTag      = ""
-					"objectgroup":
-						inSpawnGroup = false
-
-	# Tiles may have changed — rebuild the zone's pathfinding graph.
-	buildZoneAStarGraph(topLeft.z)
-
-
-func _spawnEntityFromPrefab(prefabName: String, worldPos: Vector3i) -> void:
-	var scenePath := "res://entity_prefabs/" + prefabName + ".tscn"
-	var packed    := load(scenePath) as PackedScene
-	if packed == null:
-		push_error("MapManager: could not load prefab '%s'" % scenePath)
-		return
-	var entity := packed.instantiate() as Entity
-	if entity == null:
-		push_error("MapManager: scene root is not an Entity in '%s'" % scenePath)
-		return
-	entity.worldPosition = worldPos
-	applySpawnVariant(entity)
-	registerEntity(entity)
-	# Do NOT add to the scene tree here.  refreshZoneSceneNodes() handles
-	# scene presence when the zone containing this entity is loaded.
-
-
-# Applies any data-driven visual variants to a freshly instantiated entity.
-# Currently: picks a random SpriteFrames for mark entities.
-func applySpawnVariant(entity: Entity) -> void:
-	var spriteComp: AnimatedSprite2D = null
-	var isMark:  bool = false
-	var isGuard: bool = false
-	for child in entity.get_children():
-		if child is AnimatedSprite2D:
-			spriteComp = child
-		if child is MarkComponent:
-			isMark = true
-		if child is GuardComponent:
-			isGuard = true
-
-	if spriteComp == null:
-		return
-
-	if isMark and not npcSettings.markSpriteFrames.is_empty():
-		spriteComp.sprite_frames = npcSettings.markSpriteFrames[randi() % npcSettings.markSpriteFrames.size()]
-	elif isGuard and not npcSettings.guardSpriteFrames.is_empty():
-		spriteComp.sprite_frames = npcSettings.guardSpriteFrames[randi() % npcSettings.guardSpriteFrames.size()]
-
-
-func _applyLayerData(csv: String, layerName: String, width: int, height: int, topLeft: Vector3i) -> void:
-	var tokens := csv.split(",", false)
-	var col    := 0
-	var row    := 0
-	for token: String in tokens:
-		var trimmed := token.strip_edges()
-		if trimmed.is_empty():
-			continue
-		var gid       := int(trimmed)
-		var tileIndex := Tile.EMPTY_TILE if gid == 0 else gid - 1
-		var worldPos  := Vector3i(topLeft.x + col, topLeft.y + row, topLeft.z)
-		var tile      := getTileAt(worldPos)
-		if tile:
-			match layerName:
-				"ground":            tile.ground           = tileIndex
-				"ground_decoration": tile.groundDecoration = tileIndex
-				"wall":              tile.wall             = tileIndex
-				"wall_decoration":   tile.wallDecoration   = tileIndex
-		col += 1
-		if col >= width:
-			col  = 0
-			row += 1
 
 
 # ── Procedural decoration ──────────────────────────────────────────────────────
@@ -379,9 +272,9 @@ func getWaypoint(wpId: int) -> PathWaypoint:
 
 # ── Pathfinding ────────────────────────────────────────────────────────────────
 
-# Returns true if the tile at the given position should block movement in the
-# pathfinding graph.  Matches the static-geometry checks in testDestinationTile
-# (entities are dynamic and are NOT encoded into the graph).
+# Returns true if the tile should block movement in the pathfinding graph.
+# Checks static geometry AND any entity currently occupying the tile that
+# carries a BlocksMovementComponent, so banners, racks, etc. are respected.
 func _isTileSolid(tile: Tile) -> bool:
 	if tile == null:
 		return true
@@ -389,6 +282,9 @@ func _isTileSolid(tile: Tile) -> bool:
 		return true
 	if tile.ground in mapInfo.wallTileIds:
 		return true
+	for entity: Entity in tile.entities:
+		if entity.getComponent(&"BlocksMovementComponent") != null:
+			return true
 	return false
 
 
@@ -424,6 +320,58 @@ func refreshAStarTile(worldPos: Vector3i) -> void:
 		return
 	var tile := getTileAt(worldPos)
 	zone.astar.set_point_solid(Vector2i(worldPos.x, worldPos.y), _isTileSolid(tile))
+
+
+# ── Building placement ──────────────────────────────────────────────────────────
+
+# Returns the top-left tile position of the first clear rectangle found in the
+# zone, or Vector2i(-1, -1) if no space exists.  "Clear" means every tile has
+# no wall, no paved-ground tile, and no dirt-path ground decoration.
+# Candidates are shuffled so placements vary between runs.
+#
+# faireBounds constrains the search to a sub-region of the zone (tile coords,
+# inclusive).  Pass Rect2i(0,0,0,0) to search the full zone.
+# WorldGenerator uses this to exclude tiles outside the perimeter wall.
+func findClearRectInZone(zoneId: int, rectWidth: int, rectHeight: int,
+		faireBounds: Rect2i = Rect2i(0, 0, 0, 0)) -> Vector2i:
+	var bFullZone := faireBounds.size == Vector2i.ZERO
+	var minX := 0                                       if bFullZone else faireBounds.position.x
+	var minY := 0                                       if bFullZone else faireBounds.position.y
+	var maxX := Globals.ZONE_WIDTH_TILES  - rectWidth   if bFullZone else faireBounds.end.x - rectWidth
+	var maxY := Globals.ZONE_HEIGHT_TILES - rectHeight  if bFullZone else faireBounds.end.y - rectHeight
+	var candidates: Array[Vector2i] = []
+	for y in range(minY, maxY + 1):
+		for x in range(minX, maxX + 1):
+			candidates.append(Vector2i(x, y))
+	candidates.shuffle()
+	for topLeft: Vector2i in candidates:
+		if _isRectClearForBuilding(topLeft.x, topLeft.y, zoneId, rectWidth, rectHeight):
+			return topLeft
+	return Vector2i(-1, -1)
+
+
+func _isRectClearForBuilding(x: int, y: int, zoneId: int, w: int, h: int) -> bool:
+	for ty in range(y, y + h):
+		for tx in range(x, x + w):
+			if not _isTileClearForBuilding(getTileAt(Vector3i(tx, ty, zoneId))):
+				return false
+	return true
+
+
+func _isTileClearForBuilding(tile: Tile) -> bool:
+	if tile == null:
+		return false
+	if tile.bReserved:
+		return false
+	if tile.wall != Tile.EMPTY_TILE:
+		return false
+	if tile.ground in mapInfo.wallTileIds:
+		return false
+	# Reject tiles that have been dirtalized into a path.
+	for entry: TileDecorationEntry in grassSettings.dirtDecorations:
+		if tile.groundDecoration == entry.tileId:
+			return false
+	return true
 
 
 # ── Movement validation ─────────────────────────────────────────────────────────

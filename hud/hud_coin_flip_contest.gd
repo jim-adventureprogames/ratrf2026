@@ -46,14 +46,24 @@ var _targetNumber : int = 0;
 func _ready() -> void:
 	_instance = self
 	btnFlip.pressed.connect(_onClickFlip)
-	hide();
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hide()
 
 
 func _exit_tree() -> void:
 	if _instance == self:
 		_instance = null
 
+func turnOff() -> void:
+	_clearCoins()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hide()
 
+func turnOn() -> void:
+	GameManager.setGamePhase(GameManager.EGamePhase.CoinChallenge)
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	show()
+	
 func setChallenge(title: String, stat: Globals.ERogueStat, luckyCoins: int, requiredSuccesses: int) -> void:
 	setRequiredSuccesses(requiredSuccesses)
 	txtChallenge.text = title
@@ -80,7 +90,7 @@ func _onClickFlip() -> void:
 			flip(results)
 		EChallengeFlipState.done:
 			challengeComplete.emit(_bSuccess);
-			hide();
+			turnOff();
 
 
 # Clears the result row and creates one CoinResultControl per required success.
@@ -88,6 +98,7 @@ func setRequiredSuccesses(count: int) -> void:
 	for child in hboxResults.get_children():
 		child.queue_free()
 	_resultControls.clear()
+	_numSuccesses = 0;
 	_targetNumber = count;
 	for i in count:
 		var ctrl := prefabResult.instantiate() as CoinResultControl

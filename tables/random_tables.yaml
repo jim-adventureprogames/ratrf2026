@@ -1,9 +1,12 @@
 random_test_table:
   data:
-    "result one!": 10
-    "result twooo?": 5
-    "result rare!!": 1
-    
+	"result one!": 10
+	"result twooo?": 5
+	"result rare!!": 1
+	
 mark_loot_table_01:
-    data:
-        coin,(1-300):   100
+	data:
+		coin,(1-300):   100
+
+clothing_loot_table_01:
+	data:

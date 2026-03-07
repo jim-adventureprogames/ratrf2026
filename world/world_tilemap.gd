@@ -26,6 +26,16 @@ func _registerAllAtlasTiles() -> void:
 				source.create_tile(coords)
 
 
+# Wipes all four render layers simultaneously.
+# Called by MapManager.resetForNewGame() before the world data is discarded,
+# so the screen is blank while the new world is generated.
+func clearAllLayers() -> void:
+	clear()
+	if groundDecorationLayer: groundDecorationLayer.clear()
+	if wallLayer:             wallLayer.clear()
+	if wallDecorationLayer:   wallDecorationLayer.clear()
+
+
 func loadZone(zoneId: int) -> void:
 	clear()
 	if groundDecorationLayer: groundDecorationLayer.clear()

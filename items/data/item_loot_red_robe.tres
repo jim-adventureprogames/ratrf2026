@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://y3588qxo5j85"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_j7gi3"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_28c57"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fpjyo"]
+atlas = ExtResource("1_j7gi3")
+region = Rect2(24, 0, 12, 12)
+
+[resource]
+script = ExtResource("2_28c57")
+archetypeName = "red_robe"
+friendlyName = "itemname_red_robe"
+flavorText = "flavor_red_robe"
+value = 65
+tier = 2
+image = SubResource("AtlasTexture_fpjyo")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

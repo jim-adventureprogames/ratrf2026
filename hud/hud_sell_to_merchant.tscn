@@ -1,0 +1,183 @@
+[gd_scene format=3 uid="uid://bf0fxa1st8015"]
+
+[ext_resource type="Script" uid="uid://b06mpa1ky71l4" path="res://hud/hud_sell_to_merchant.gd" id="1_4gb2b"]
+[ext_resource type="Texture2D" uid="uid://bxwl1pml814c0" path="res://textures/ui/border_sell_to_merchant.png" id="1_openi"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="2_ixne6"]
+[ext_resource type="Texture2D" uid="uid://gl0rdciv5l3u" path="res://textures/ui/9slice_brown_button.png" id="3_70oay"]
+
+[node name="HUD_SellToMerchant" type="Control" unique_id=2064225395 node_paths=PackedStringArray("txtValue", "txtBonus", "gridSoldItems", "btnSell", "btnCancel", "btnHaggle")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 240.0
+script = ExtResource("1_4gb2b")
+txtValue = NodePath("bgSales/txtValue")
+txtBonus = NodePath("bgSales/txtBonus")
+gridSoldItems = NodePath("bgSales/gridSoldItems")
+btnSell = NodePath("bgSales/panelButton_Sell/btnSell")
+btnCancel = NodePath("bgSales/panelButton_Cancel/btnCancel")
+btnHaggle = NodePath("bgSales/panelButton_Haggle/btnHaggle")
+
+[node name="bgSales" type="TextureRect" parent="." unique_id=102466789]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_openi")
+
+[node name="lblSelling" type="RichTextLabel" parent="bgSales" unique_id=1308011473]
+layout_mode = 0
+offset_left = 37.0
+offset_top = 7.0
+offset_right = 210.0
+offset_bottom = 19.0
+theme = ExtResource("2_ixne6")
+theme_override_font_sizes/normal_font_size = 8
+bbcode_enabled = true
+text = "What are ya' sellin'?"
+
+[node name="lblValue" type="RichTextLabel" parent="bgSales" unique_id=1060370001]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 28.0
+offset_right = 229.0
+offset_bottom = 34.0
+theme = ExtResource("2_ixne6")
+bbcode_enabled = true
+text = "Total Value"
+
+[node name="txtValue" type="RichTextLabel" parent="bgSales" unique_id=1211182921]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 35.0
+offset_right = 229.0
+offset_bottom = 41.0
+theme = ExtResource("2_ixne6")
+bbcode_enabled = true
+text = "$999.99"
+
+[node name="gridSoldItems" type="GridContainer" parent="bgSales" unique_id=950912015]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 21.0
+offset_right = 104.0
+offset_bottom = 107.0
+
+[node name="lblBonus" type="RichTextLabel" parent="bgSales" unique_id=1378186904]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 47.0
+offset_right = 229.0
+offset_bottom = 53.0
+theme = ExtResource("2_ixne6")
+bbcode_enabled = true
+text = "Modifier"
+
+[node name="txtBonus" type="RichTextLabel" parent="bgSales" unique_id=116528621]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 55.0
+offset_right = 229.0
+offset_bottom = 61.0
+theme = ExtResource("2_ixne6")
+bbcode_enabled = true
+text = "+20% "
+
+[node name="txtHaggle" type="RichTextLabel" parent="bgSales" unique_id=1539195365]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 80.0
+offset_right = 219.0
+offset_bottom = 86.0
+theme = ExtResource("2_ixne6")
+bbcode_enabled = true
+text = "skill: x"
+
+[node name="panelButton_Sell" type="PanelContainer" parent="bgSales" unique_id=1814174830]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = -24.0
+offset_right = 100.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="bgSales/panelButton_Sell" unique_id=1176962209]
+layout_mode = 2
+texture = ExtResource("3_70oay")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnSell" type="Button" parent="bgSales/panelButton_Sell" unique_id=1256461390]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("2_ixne6")
+text = "sell"
+flat = true
+
+[node name="panelButton_Cancel" type="PanelContainer" parent="bgSales" unique_id=1398781440]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -24.0
+offset_right = 54.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="bgSales/panelButton_Cancel" unique_id=128954738]
+layout_mode = 2
+texture = ExtResource("3_70oay")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnCancel" type="Button" parent="bgSales/panelButton_Cancel" unique_id=994502442]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("2_ixne6")
+text = "cancel"
+flat = true
+
+[node name="panelButton_Haggle" type="PanelContainer" parent="bgSales" unique_id=1420719461]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = -55.0
+offset_right = 100.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="bgSales/panelButton_Haggle" unique_id=627829782]
+layout_mode = 2
+texture = ExtResource("3_70oay")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnHaggle" type="Button" parent="bgSales/panelButton_Haggle" unique_id=1621941486]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("2_ixne6")
+text = "Haggle"
+flat = true

@@ -1,0 +1,21 @@
+~ interact_normal
+Vendor: I am a vendor I sell meat.
+- I would like to buy some things.
+	set DialogueStateManager.dialogResult = "merchant:buy" 
+	=> END
+- I would like to sell some things.
+	Vendor: That's my job. I sell things. I do not buy things. But you can probably find someone to sell to, keep an eye out.
+	- Ah, uh, ok!
+	=> interact_normal
+- Catch you later.
+	set DialogueStateManager.dialogResult = "close" 
+	=> END
+			
+=> END
+
+~ interact_alart
+Vendor: You seem popular right now, maybe come back when there's less sweaty guards chasing you.
+- Gotta go!
+	set DialogueStateManager.dialogResult = "close"
+	=> END
+=> END

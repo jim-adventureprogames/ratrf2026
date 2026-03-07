@@ -1,0 +1,4 @@
+~ read_sign
+Sign: {{DialogueStateManager.activeSignInformation}}
+- (close)
+=> END

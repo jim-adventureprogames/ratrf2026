@@ -26,6 +26,12 @@ func _enter_tree() -> void:
 	updateSpriteBorderByBehavior()
 
 
+func getTargetEntity() -> Entity:
+	if behaviorFlags & EBehaviorFlags.chasing_entity:
+		return currentState.data.get("target", null) as Entity
+	return null
+
+
 func onDebugPrint() -> void:
 	super()
 	print("    alertLevel: %.2f" % alertLevel)
@@ -53,6 +59,15 @@ func onEndOfTurn() -> void:
 			_stopFollowingEntity()
 
 	bDetectedCrimeThisTurn = false
+
+	# If actively chasing and the player is in sight, keep the chase alert alive.
+	# If this is the first re-sighting after a turn where nobody saw the player,
+	# fire an arrow to signal that the guard has picked up the trail again.
+	if (behaviorFlags & EBehaviorFlags.chasing_entity) and _canSeePlayer():
+		if CrimeManager.summon().reportPlayerSighted():
+			GameManager.spawnInformationArrow(
+					GameManager.playerEntity, entity, ARROW_MOVE_DURATION, ARROW_WAIT_DURATION)
+
 	updateSpriteBorderByBehavior()
 
 
@@ -62,6 +77,7 @@ func onAttached() -> void:
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
 		mover.movementBlocked.connect(_onMovementBlocked)
+		mover.zoneCrossed.connect(_onZoneCrossed)
 
 
 func _onMovementBlocked(direction: Vector2i) -> void:
@@ -77,6 +93,38 @@ func _onMovementBlocked(direction: Vector2i) -> void:
 		if target.getComponent(&"PlayerInputComponent") != null:
 			GameManager.HandleGuardApprehendPlayer(entity, target)
 			return
+
+
+# Called whenever this guard crosses a zone boundary.
+# If we're already chasing the player and just entered their zone,
+# shout to every other guard in the zone so they join the chase.
+func _onZoneCrossed(newZoneId: int) -> void:
+	if not (behaviorFlags & EBehaviorFlags.chasing_entity):
+		return
+	var chaseTarget := currentState.data.get("target", null) as Entity
+	if chaseTarget == null:
+		return
+	# Only raise the alarm if the player is already in this zone.
+	if chaseTarget.worldPosition.z != newZoneId:
+		return
+	_alertGuardsInZone(chaseTarget, newZoneId)
+
+
+# Tells every GuardComponent in zoneId (other than this one) to chase the target.
+func _alertGuardsInZone(target: Entity, zoneId: int) -> void:
+	for other: Entity in MapManager.entityRegistry.values():
+		if other == entity:
+			continue
+		if other.worldPosition.z != zoneId:
+			continue
+		var otherGuard := other.getComponent(&"GuardComponent") as GuardComponent
+		if otherGuard == null:
+			continue
+		# Don't interrupt a guard that's already in hot pursuit of someone.
+		if otherGuard.behaviorFlags & EBehaviorFlags.chasing_entity:
+			continue
+		otherGuard._startChasing(target)
+		GameManager.spawnBark(other, tr("bark_crime_hard_detect_01"), FloatingShout.EShoutType.shout)
 
 
 func onDecideChaseCriminal(criminal: Entity) -> void:
@@ -154,6 +202,7 @@ func decideWhatToDo() -> void:
 			return
 
 	# chasing_entity: close the gap completely and bump the target every turn.
+	# Obstacle rerouting is handled centrally in AIBehaviorComponent.takeAction().
 	if behaviorFlags & EBehaviorFlags.chasing_entity:
 		var chaseTarget := currentState.data.get("target", null) as Entity
 		if chaseTarget == null:
@@ -163,7 +212,7 @@ func decideWhatToDo() -> void:
 			var target := mover.resolveTargetWorldPosition(dir)
 			_faceTowardTile(Vector2i(entity.worldPosition.x, entity.worldPosition.y),
 					Vector2i(entity.worldPosition.x + dir.x, entity.worldPosition.y + dir.y))
-			if target.z >= 0:
+			if dir != Vector2i.ZERO and target.z >= 0:
 				nextStepTile      = target
 				nextStepDirection = dir
 		return
@@ -305,6 +354,11 @@ func _stopFollowingEntity() -> void:
 # Begins relentlessly chasing the target with no time limit.
 # If already chasing, redirects to the new target.
 func _startChasing(target: Entity) -> void:
+	CrimeManager.summon().enterChaseMode()
+	# Arrow and alart bark only fire when the target is the player.
+	if target.getComponent(&"PlayerInputComponent") != null:
+		GameManager.spawnInformationArrow(target, entity, ARROW_MOVE_DURATION, ARROW_WAIT_DURATION)
+		AudioManager.summon().playAlartBark()
 	alertLevel = 1.0
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
@@ -312,9 +366,12 @@ func _startChasing(target: Entity) -> void:
 	if currentState.stateName == &"chasing":
 		currentState.data["target"] = target
 		return
-	var state := BehaviorState.new(&"chasing",
-			(int(behaviorFlags) & ~(EBehaviorFlags.guarding_zone | EBehaviorFlags.following_entity)) \
-			| EBehaviorFlags.chasing_entity)
+	#var state := BehaviorState.new(&"chasing",
+	#		(int(behaviorFlags) & ~(EBehaviorFlags.guarding_zone | EBehaviorFlags.following_entity)) \
+	#		| EBehaviorFlags.chasing_entity)
+	
+	var state := BehaviorState.new(&"chasing", EBehaviorFlags.chasing_entity)
+	
 	state.data["target"] = target
 	# Reset the path walker so patrol picks up fresh if chase ever ends.
 	var pathWalker := entity.getComponent(&"PathWalkingComponent") as PathWalkingComponent
@@ -367,6 +424,61 @@ func _faceTowardTile(from: Vector2i, to: Vector2i) -> void:
 		mover._updateFacing(_cardinalToward(from, to))
 
 
+# Broadcast handler for GameManager.cancelGuardAlert.
+# Immediately zeros alert and cancels any active chase or follow so the guard
+# returns to routine patrol without being able to resume pursuit.
+func onCancelAlert() -> void:
+	alertLevel = 0.0
+	if currentState.stateName == &"chasing":
+		_stopChasing()
+	elif currentState.stateName == &"following":
+		_stopFollowingEntity()
+	elif currentState.stateName == &"investigating":
+		_stopInvestigating(false)  # false = don't print the "found nothing" bark
+	updateSpriteBorderByBehavior()
+
+
+# Returns true when the player is in the same zone, within SIGHT_RANGE tiles,
+# and inside this guard's forward hemisphere (dot product > 0).
+# Full LOS (wall occlusion) is a TODO — proximity + facing is the first pass.
+const SIGHT_RANGE: int = 6
+
+# Durations for the red information arrow that fires toward this guard.
+const ARROW_MOVE_DURATION: float = 0.35
+const ARROW_WAIT_DURATION: float = 1.2
+
+func _canSeePlayer() -> bool:
+	var player := GameManager.playerEntity
+	if player == null:
+		return false
+	# Must share a zone.
+	if player.worldPosition.z != entity.worldPosition.z:
+		return false
+	# Chebyshev distance check (same metric used for following logic).
+	var guardPos  := Vector2i(entity.worldPosition.x, entity.worldPosition.y)
+	var playerPos := Vector2i(player.worldPosition.x,  player.worldPosition.y)
+	var dist      := float(max(abs(playerPos.x - guardPos.x), abs(playerPos.y - guardPos.y)))
+	if dist > SIGHT_RANGE:
+		return false
+	# Facing check — is the player inside the guard's forward hemisphere?
+	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
+	if mover == null:
+		return true  # no facing data; grant sight by default
+	var toPlayer := Vector2(playerPos) - Vector2(guardPos)
+	if toPlayer == Vector2.ZERO:
+		return true  # standing on the player counts as seen
+	var forward := _facingToVector(mover.facing)
+	return forward.dot(toPlayer.normalized()) > 0.0
+
+
+func _facingToVector(f: Globals.EFacing) -> Vector2:
+	match f:
+		Globals.EFacing.Up:   return Vector2( 0, -1)
+		Globals.EFacing.Down: return Vector2( 0,  1)
+		Globals.EFacing.Left: return Vector2(-1,  0)
+		_:                    return Vector2( 1,  0)
+
+
 func onSoftDetectCrime(event: CrimeEvent) -> void:
 	bDetectedCrimeThisTurn = true
 
@@ -374,22 +486,24 @@ func onSoftDetectCrime(event: CrimeEvent) -> void:
 	if alertLevel >= 1.0:
 		return
 
-	alertLevel = min(0.99, alertLevel + 0.2)
+	AudioManager.summon().playRandomGuardGrumble()
+
+	alertLevel = min(0.99, alertLevel + 0.25)
 
 	# Wondering if there's crime going on.
-	if alertLevel <= 0.4:
+	if alertLevel <= 0.35:
 		GameManager.spawnBark(entity, tr("bark_crime_suspect_01"), FloatingShout.EShoutType.think)
 		return
 
 	# Pretty sure something's going on...
-	if alertLevel < 0.7:
+	if alertLevel < 0.65:
 		GameManager.spawnBark(entity, tr("bark_crime_suspect_02"), FloatingShout.EShoutType.think)
 		_startInvestigating(Vector2i(event.location.x, event.location.y))
 		return
 
 	# Alert enough to follow the player
 	GameManager.spawnBark(entity, tr("bark_crime_suspect_03"), FloatingShout.EShoutType.think)
-
+	_startFollowingEntity(GameManager.playerEntity);
 
 func onHardDetectCrime(event: CrimeEvent) -> void:
 	bDetectedCrimeThisTurn = true

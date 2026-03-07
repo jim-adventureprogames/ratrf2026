@@ -13,3 +13,7 @@ var wallDecoration:   int = EMPTY_TILE
 
 # Entities currently occupying this tile (characters, items, interactables, etc.)
 var entities: Array[Entity] = []
+
+# Set after a building TMX is stamped here so subsequent buildings cannot
+# claim the same footprint, even if the tile visually looks like open ground.
+var bReserved: bool = false

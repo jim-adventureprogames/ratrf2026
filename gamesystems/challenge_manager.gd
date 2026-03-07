@@ -21,6 +21,20 @@ func _exit_tree() -> void:
 		_instance = null
 
 
+# Clears all per-run challenge state for a fresh game.
+# challengeSuccessCount tracks escalating difficulty (e.g. guards get harder
+# to talk down each time the player is caught), so it must be wiped on reset.
+#
+# Add any new per-run state here as challenges are expanded.
+func resetForNewGame() -> void:
+	# Cancel any challenge that was mid-flight when the reset was triggered.
+	activeChallengeType = ""
+	targetEntities.clear()
+
+	# Reset difficulty escalation — every playthrough starts fresh.
+	challengeSuccessCount.clear()
+
+
 static func BeginChallenge(challengeType: String) -> void:
 	_instance._beginChallengeInternal(challengeType);
 	pass
@@ -29,17 +43,24 @@ func _beginChallengeInternal(challengeType: String) -> void:
 	var pcc := GameManager.getPlayerComponent();
 	
 	activeChallengeType = challengeType;
+	var requiredSuccess = 1;
 	
 	match activeChallengeType:
 		"fast_talk_guard":
-			var requiredSuccess = _getNumSuccessesRequiredForFastTalkGuard();
+			requiredSuccess = _getNumSuccessesRequiredForFastTalkGuard();
 			_startChallenge("challenge_fasttalk_guard", Globals.ERogueStat.FastTalk, 
-			pcc.getLuckyCoins, requiredSuccess);
+			pcc.getLuckyCoins(), requiredSuccess);
 			
+		"haggle_merchant":
+			var mc = GameManager.getTargetMerchant();
+			requiredSuccess = mc.getHaggleDifficulty();
+			_startChallenge("challenge_haggle", Globals.ERogueStat.Haggle, 
+			pcc.getLuckyCoins(), requiredSuccess);
 			
 				
 
 func _startChallenge(title: String, stat: Globals.ERogueStat, luckyCoins: int, requiredSuccesses: int) -> void:
+	GameManager.setGamePhase(GameManager.EGamePhase.CoinChallenge);
 	var hud := HUDCoinFlipContest.summon()
 	if hud == null:
 		return
@@ -50,11 +71,29 @@ func _startChallenge(title: String, stat: Globals.ERogueStat, luckyCoins: int, r
 
 
 func HandleChallengeComplete(bSuccess: bool) -> void:
-	
+	if( GameManager.getGamePhase() == GameManager.EGamePhase.CoinChallenge):
+		GameManager.setGamePhase(GameManager.EGamePhase.Player);
+
 	if( bSuccess ) :
 		challengeSuccessCount[activeChallengeType] = challengeSuccessCount.get_or_add(activeChallengeType, 1) + 1;
 	
-	
+	match activeChallengeType:
+		"fast_talk_guard":
+			if( bSuccess ):
+				GameManager.cancelGuardAlert.emit();
+				GameManager.spawnDialog("guard_dialog", "let_player_go", targetEntities["guard"])
+			else:
+				GameManager.goToGameOver("caught");
+		
+		"haggle_merchant":
+			var mc = GameManager.getTargetMerchant()
+			if bSuccess:
+				mc.onHaggleSuccess()
+			else:
+				mc.onHaggleFail()
+			HUD_SellToMerchant.summon().applyHaggleResult(mc.haggleMultiplier)
+
+				
 	activeChallengeType = "";
 	targetEntities.clear();
 	pass
@@ -71,3 +110,9 @@ func _cmdTestChallenge() -> void:
 # number go up each time the player gets caught.
 func _getNumSuccessesRequiredForFastTalkGuard() -> int:
 	return 1 + challengeSuccessCount.get_or_add("fast_talk_guard" , 0);
+	
+func clearTargetEntities() -> void:
+	targetEntities.clear();
+		
+func setTargetEntity(key: String, value: Entity) -> void:
+	targetEntities[key] = value;

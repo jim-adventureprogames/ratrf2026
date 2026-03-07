@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dadv80s0y6ys1"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_oglsi"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_dtxpf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q88ik"]
+atlas = ExtResource("1_oglsi")
+region = Rect2(24, 12, 12, 12)
+
+[resource]
+script = ExtResource("2_dtxpf")
+archetypeName = "sparkle_dress_01"
+friendlyName = "itemname_sparkle_dress_01"
+flavorText = "flavor_sparkle_dress_01"
+value = 130
+tier = 2
+image = SubResource("AtlasTexture_q88ik")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

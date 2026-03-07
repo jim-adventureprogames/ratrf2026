@@ -3,9 +3,11 @@ extends Resource
 
 enum EZoneEdge { North, South, East, West, Center }
 
+enum EZoneRegion { North, East, South, West, Center }
+
 @export var id:           int    = 0
 @export var friendlyName: String = ""
-@export var region:       String = ""
+@export var region:       EZoneRegion;
 
 # Flat 1D array of tiles; index with (y * ZONE_WIDTH_TILES + x)
 var tiles: Array[Tile] = []

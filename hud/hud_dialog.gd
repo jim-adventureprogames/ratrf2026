@@ -8,12 +8,18 @@ static func summon() -> HUDDialog:
 
 static func turnOn() -> void:
 	if _instance:
-		_instance.show();
+		_instance.show()
+		#_instance.get_tree().paused = true
 		_instance._animateIn()
+		
+	GameManager.setGamePhase(GameManager.EGamePhase.Dialog);
 
 static func turnOff() -> void:
 	if _instance:
 		_instance._animateOut()
+		
+	if( GameManager.getGamePhase() == GameManager.EGamePhase.Dialog ) :
+		GameManager.setGamePhase(GameManager.EGamePhase.Player);
 
 @export var dboxSpeak:  DialogBox_Speak
 @export var dboxAnswer: DialogBox_Answer
@@ -80,4 +86,5 @@ func _animateOut() -> void:
 			.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN)
 	_activeTween.finished.connect(func():
 		dboxSpeak.hide()
-		dboxAnswer.hide())
+		dboxAnswer.hide()
+		get_tree().paused = false)

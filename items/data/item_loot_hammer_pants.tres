@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://ddtcy7ppv1dd"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_wch8f"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_xxkhh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5cd7"]
+atlas = ExtResource("1_wch8f")
+region = Rect2(72, 12, 12, 12)
+
+[resource]
+script = ExtResource("2_xxkhh")
+archetypeName = "hammer_pants"
+friendlyName = "itemname_hammer_pants"
+flavorText = "flavor_hammer_pants"
+value = 80
+tier = 2
+image = SubResource("AtlasTexture_s5cd7")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

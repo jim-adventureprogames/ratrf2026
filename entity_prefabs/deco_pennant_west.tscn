@@ -1,0 +1,102 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_t0oqi"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="2_qqu3y"]
+[ext_resource type="Texture2D" uid="uid://dxxfcu6lnlvkg" path="res://textures/decoration_objects.png" id="3_t0s4a"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="4_tyqjn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w00"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(0, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w01"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(12, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w02"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(24, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w03"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(36, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w04"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(48, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w05"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(60, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w06"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(72, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w07"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(84, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w08"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(96, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w09"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(108, 36, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w10"]
+atlas = ExtResource("3_t0s4a")
+region = Rect2(120, 36, 12, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_west"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w00")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w01")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w02")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w03")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w04")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w05")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w06")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w07")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w08")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w09")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w10")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="deco_pennant_west" type="Node2D" unique_id=308907531]
+script = ExtResource("1_t0oqi")
+
+[node name="blocksMovementComponent" type="Node" parent="." unique_id=1061695323]
+script = ExtResource("2_qqu3y")
+
+[node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1796178670]
+sprite_frames = SubResource("SpriteFrames_west")
+autoplay = "default"
+script = ExtResource("4_tyqjn")

@@ -3,10 +3,99 @@
 [ext_resource type="Texture2D" uid="uid://cnqm75rne1ssb" path="res://textures/ui/hud_main_bg.png" id="1_xhti2"]
 [ext_resource type="Script" uid="uid://s8576nc4pgyj" path="res://hud/hud_main.gd" id="1_y6pgg"]
 [ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="4_46uo4"]
+[ext_resource type="Texture2D" uid="uid://dfj476ot1bkx3" path="res://textures/ui/buttons_categories.png" id="4_qe1im"]
 [ext_resource type="PackedScene" uid="uid://br36q3ycvgdft" path="res://hud/inventory_grid.tscn" id="5_y5v5q"]
+[ext_resource type="Texture2D" uid="uid://c4attamt4ouwi" path="res://textures/ui/alart_meter_chase.png" id="6_3gfot"]
 [ext_resource type="PackedScene" uid="uid://2dy478qi6ptv" path="res://hud/tooltip_popup.tscn" id="6_tipop"]
+[ext_resource type="Texture2D" uid="uid://s40uus3y0vng" path="res://textures/ui/alart_meter_fill.png" id="7_qe1im"]
 
-[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime", "txtCoin", "tooltipPopup")]
+[sub_resource type="AtlasTexture" id="AtlasTexture_bs236"]
+atlas = ExtResource("4_qe1im")
+region = Rect2(12, 0, 12, 0)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_aroio"]
+load_path = "res://.godot/imported/buttons_categories.png-194b0902422998ab3e86e3790859a1ef.ctex"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e8mk1"]
+atlas = SubResource("CompressedTexture2D_aroio")
+region = Rect2(0, 0, 12, 0)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_eeo1g"]
+load_path = "res://.godot/imported/buttons_categories.png-194b0902422998ab3e86e3790859a1ef.ctex"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e73lc"]
+atlas = SubResource("CompressedTexture2D_eeo1g")
+region = Rect2(24, 0, 12, 0)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g5x2x"]
+atlas = SubResource("CompressedTexture2D_eeo1g")
+region = Rect2(36, 0, 12, 0)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fq80a"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(0, 0, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5n28f"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(72, 0, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wrtl5"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(144, 0, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71bdw"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(216, 0, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ne3k2"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(0, 12, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p5cq1"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(72, 12, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trui5"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(144, 12, 72, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yx8t6"]
+atlas = ExtResource("6_3gfot")
+region = Rect2(216, 12, 72, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bs236"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fq80a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5n28f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wrtl5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_71bdw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ne3k2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p5cq1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_trui5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yx8t6")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime", "txtCoin", "tooltipPopup", "alartMeter", "alartProgressBar", "btnHowToPlay", "btnOptions", "btnMap", "btnStats")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,6 +108,12 @@ inventoryGrid = NodePath("InventoryGrid")
 txtTime = NodePath("imgBG/lblTime/txtTime")
 txtCoin = NodePath("imgBG/lblCoin/txtCoin")
 tooltipPopup = NodePath("TooltipPopup")
+alartMeter = NodePath("AlartMeter")
+alartProgressBar = NodePath("AlartMeter/progressBar")
+btnHowToPlay = NodePath("imgBG/hbox_buttons/btnHowToPlay")
+btnOptions = NodePath("imgBG/hbox_buttons/btnOptions")
+btnMap = NodePath("imgBG/hbox_buttons/btnMap")
+btnStats = NodePath("imgBG/hbox_buttons/btnStats")
 
 [node name="imgBG" type="TextureRect" parent="." unique_id=99211727]
 layout_mode = 0
@@ -132,6 +227,29 @@ theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
 text = "9999"
 
+[node name="hbox_buttons" type="HBoxContainer" parent="imgBG" unique_id=448060073]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 134.0
+offset_right = 75.0
+offset_bottom = 147.0
+
+[node name="btnHowToPlay" type="TextureButton" parent="imgBG/hbox_buttons" unique_id=1520578875]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_bs236")
+
+[node name="btnOptions" type="TextureButton" parent="imgBG/hbox_buttons" unique_id=1568589893]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_e8mk1")
+
+[node name="btnMap" type="TextureButton" parent="imgBG/hbox_buttons" unique_id=98014589]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_e73lc")
+
+[node name="btnStats" type="TextureButton" parent="imgBG/hbox_buttons" unique_id=1304343537]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_g5x2x")
+
 [node name="InventoryGrid" parent="." unique_id=1499663633 instance=ExtResource("5_y5v5q")]
 layout_mode = 0
 offset_left = 246.0
@@ -142,7 +260,30 @@ maxWidth = 4
 maxHeight = 4
 
 [node name="TooltipPopup" parent="." unique_id=638177246 instance=ExtResource("6_tipop")]
+visible = false
 custom_minimum_size = Vector2(170, 36)
 layout_mode = 1
 offset_right = -150.0
 offset_bottom = -168.0
+
+[node name="AlartMeter" type="Control" parent="." unique_id=551734167]
+custom_minimum_size = Vector2(2, 2)
+anchors_preset = 0
+offset_left = 120.0
+offset_right = 122.0
+offset_bottom = 2.0
+
+[node name="imgRunLol" type="AnimatedSprite2D" parent="AlartMeter" unique_id=1389780567]
+position = Vector2(0, 6)
+sprite_frames = SubResource("SpriteFrames_bs236")
+autoplay = "default"
+frame = 5
+frame_progress = 0.20019083
+
+[node name="progressBar" type="TextureProgressBar" parent="AlartMeter" unique_id=1941622552]
+layout_mode = 0
+offset_left = -11.0
+offset_right = 35.0
+offset_bottom = 11.0
+value = 100.0
+texture_progress = ExtResource("7_qe1im")

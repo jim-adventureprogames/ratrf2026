@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bv1ym454tf2xj"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_wuyr4"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_qemc8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ohap"]
+atlas = ExtResource("1_wuyr4")
+region = Rect2(72, 0, 12, 12)
+
+[resource]
+script = ExtResource("2_qemc8")
+archetypeName = "faire_t_shirt_white"
+friendlyName = "itemname_faire_t_shirt_white"
+flavorText = "flavor_faire_t_shirt_white"
+value = 25
+tier = 2
+image = SubResource("AtlasTexture_8ohap")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

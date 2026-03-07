@@ -77,6 +77,16 @@ func onUnhovered() -> void:
 func onDebugPrint() -> void:
 	pass
 
+
 # Called when a new game is started, if the entity happens to be around.
 func onNewGame() -> void:
+	pass
+
+
+# Called after a TMX stamp finishes spawning all its entities.
+# stampedEntities: every Entity created during this stamp call.
+# properties: the custom TMX properties on this entity's object (beyond "prefab").
+# Override to connect to sibling entities — e.g. a BumpRelayComponent finding
+# its target, or a shop owner binding to nearby clothing racks.
+func onPostStampCleanup(stampedEntities: Array[Entity], properties: Dictionary) -> void:
 	pass

@@ -12,11 +12,12 @@ var luckyCoins : int;
 
 func _initialize() -> void:
 	super._initialize()
+	onNewGame();
 	
 	
 func onNewGame() -> void : 
 	luckyCoins = 0;
-	stats.set(Globals.ERogueStat.Charm, 2)
+	stats.set(Globals.ERogueStat.Carouse, 2)
 	stats.set(Globals.ERogueStat.FastTalk, 2)
 	stats.set(Globals.ERogueStat.Haggle, 2)
 	stats.set(Globals.ERogueStat.Lockpick, 2)

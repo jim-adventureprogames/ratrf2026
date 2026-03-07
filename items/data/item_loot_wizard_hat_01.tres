@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://fgh2mwqtk87m"]
+
+[ext_resource type="Texture2D" uid="uid://pht7utvry0e" path="res://textures/loot_clothing.png" id="1_vs7p1"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_ocphz"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_evezj"]
+atlas = ExtResource("1_vs7p1")
+region = Rect2(0, 12, 12, 12)
+
+[resource]
+script = ExtResource("2_ocphz")
+archetypeName = "wizard_hat_01"
+friendlyName = "itemname_wizard_hat_01"
+flavorText = "flavor_wizard_hat_01"
+value = 45
+tier = 2
+image = SubResource("AtlasTexture_evezj")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

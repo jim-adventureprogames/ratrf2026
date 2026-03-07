@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://dg3hyj4p0iei0"]
+
+[ext_resource type="Script" uid="uid://d2430pkfp7vpl" path="res://entities/entity.gd" id="1_ln7rc"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="2_g3atv"]
+[ext_resource type="Texture2D" uid="uid://brkya5bu0rj1y" path="res://textures/bumpable_props.png" id="3_qs53v"]
+[ext_resource type="Script" uid="uid://qjlkgv3bi047" path="res://entities/components/sprite_component.gd" id="4_f011c"]
+[ext_resource type="Script" uid="uid://b3div17q3tmtc" path="res://entities/components/item_rack_component.gd" id="6_ln7rc"]
+[ext_resource type="Script" uid="uid://bdljpwf0iq30o" path="res://entities/components/bumpable_component.gd" id="6_r1m67"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nv4rx"]
+atlas = ExtResource("3_qs53v")
+region = Rect2(12, 0, 12, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_east"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nv4rx")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="chest_clothing_shop" type="Node2D" unique_id=308907529]
+script = ExtResource("1_ln7rc")
+
+[node name="blocksMovementComponent" type="Node" parent="." unique_id=1061695321]
+script = ExtResource("2_g3atv")
+
+[node name="spriteComponent" type="AnimatedSprite2D" parent="." unique_id=1796178668]
+sprite_frames = SubResource("SpriteFrames_east")
+autoplay = "default"
+script = ExtResource("4_f011c")
+
+[node name="BumpableComponent" type="Node" parent="." unique_id=1561921802]
+script = ExtResource("6_r1m67")
+metadata/_custom_type_script = "uid://bdljpwf0iq30o"
+
+[node name="ItemRackComponent" type="Sprite2D" parent="." unique_id=286062309]
+script = ExtResource("6_ln7rc")

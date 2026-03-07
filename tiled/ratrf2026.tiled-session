@@ -3,34 +3,90 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "building_stage_12x12_01.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
+        "area_campers_12x12_01.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 65.45454545454545,
+                "y": 90.45454545454544
+            }
+        },
         "building_shop_10x10_01.tmx": {
             "expandedObjectLayers": [
                 5
             ],
             "scale": 5.5,
-            "selectedLayer": 2,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 59.18181818181817,
-                "y": 69.36363636363637
+                "x": 41.45454545454545,
+                "y": 81.36363636363637
+            }
+        },
+        "building_shop_5x4_food_01.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 40.72727272727273,
+                "y": -12.454545454545453
             }
         },
         "building_shop_8x8_01.tmx": {
             "scale": 5.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 36.272727272727266,
+                "x": 47.63636363636364,
                 "y": 69.36363636363637
+            }
+        },
+        "building_shop_8x8_02.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 41.45454545454545,
+                "y": 81.36363636363637
+            }
+        },
+        "building_shop_8x8_03.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 41.45454545454545,
+                "y": 48.09090909090909
+            }
+        },
+        "building_stage_12x12_01.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 5.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 41.45454545454545,
+                "y": 81.36363636363637
             }
         },
         "building_tables_chairs_01.tmx": {
             "scale": 5.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 12.545454545454547,
+                "x": 12.454545454545453,
                 "y": 69.54545454545453
             }
         },
@@ -41,7 +97,7 @@
             "scale": 4,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 62.125,
+                "x": 72,
                 "y": 41.125
             }
         },
@@ -52,7 +108,7 @@
             "scale": 8.619270833333333,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 47.9738957036679,
+                "x": 48.03190525107258,
                 "y": 47.97389570366791
             }
         },
@@ -63,7 +119,7 @@
             "scale": 5.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 23.909090909090914,
+                "x": 15.818181818181813,
                 "y": 55.18181818181819
             }
         },
@@ -74,9 +130,13 @@
             "scale": 4,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 62.125,
+                "x": 51,
                 "y": 41.125
             }
+        },
+        "world.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 3
         }
     },
     "last.imagePath": "E:/projects/ratrf2026/textures",
@@ -86,10 +146,28 @@
     "map.tileWidth": 12,
     "map.width": 8,
     "openFiles": [
+        "building_shop_5x4_food_01.tmx",
+        "area_campers_12x12_01.tmx",
+        "building_shop_8x8_03.tmx",
+        "building_shop_8x8_01.tmx",
+        "building_stage_12x12_01.tmx"
     ],
     "project": "ratrf2026.tiled-project",
     "recentFiles": [
+        "building_shop_5x4_food_01.tmx",
+        "area_campers_12x12_01.tmx",
+        "building_shop_8x8_03.tmx",
+        "building_shop_8x8_01.tmx",
+        "building_stage_12x12_01.tmx",
+        "building_shop_8x8_02.tmx",
+        "entrance_gate_east.tmx",
+        "entrance_gate_west.tmx",
+        "entrance_gate_south.tmx",
+        "entrance_gate_north.tmx",
+        "world.tsx",
+        "building_shop_10x10_01.tmx"
     ],
+    "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 12,

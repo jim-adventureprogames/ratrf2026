@@ -7,7 +7,7 @@ itemname_fox_blue,Fox Sapphirino
 itemname_fox_green,Fox Gemerald
 itemname_fox_red,Fox Rubicant
 itemname_fox_white,Fox Perler
-itemname_garbagepail,Vintage Gutterchild Trading Card
+itemname_garbagepail,Gutterchild Trading Card
 itemname_lipgloss,Durian Lip Gloss
 itemname_nail_clippers,Steampunk Nail Clippers
 itemname_pog_slammer,Pog Slammer
@@ -36,12 +36,12 @@ bark_crime_suspect_01,hmm...
 bark_crime_suspect_02,Something feels off...
 bark_crime_suspect_03,Better watch this guy...
 ,
-bark_investigate_end,"Back to patrolling, I guess."
+bark_investigate_end,It was nothing. Right?
 ,
 bark_crime_hard_detect_01,"[color=red]Stop, criminal![/color]"
 ,
 ,
-stat_charm_name,Charm
+stat_carouse_name,Carouse
 stat_fasttalk_name,Fast Talk
 stat_haggle_name,Haggle
 stat_lockpick_name,Lockpick
@@ -50,4 +50,4 @@ stat_lockpick_name,Lockpick
 challenge_fasttalk_guard,Talk your way out of trouble
 challenge_haggle,Haggle for a better deal
 challenge_lockpick,Pick the lock
-challenge_charm,Seduce the target
+challenge_carouse,Seduce the target

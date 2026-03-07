@@ -7,3 +7,7 @@ extends Resource
 @export_range(3, 20) var zoneGridMaxWidth:  int = 10
 @export_range(3, 20) var zoneGridMinHeight: int = 7
 @export_range(3, 20) var zoneGridMaxHeight: int = 10
+
+
+@export var roadsideBuildingArray : Array[PackedScene];
+@export var emptyAreaBuildingArray: Array[PackedScene];

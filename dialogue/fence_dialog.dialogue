@@ -1,0 +1,26 @@
+~ interact_normal
+Fence: Maybe you can and me can do some business here friend?
+- Let's get to work! [if DialogueStateManager.checkTutorial("fence") == true]
+	set DialogueStateManager.dialogResult = "merchant:sell" 
+	=> END
+- What do you have in mind? [if DialogueStateManager.checkTutorial("fence") != true]
+	Fence: You and me are part of the same ecosystem pal. You take things, I buy things, you get money, everybody wins.
+	- Not everybody.
+		Fence: Not everybody, no.
+		- Do you sell things as well?
+			Fence: Probably not. I'm just here to help you move your ill gotten goods along.
+			- Got it. 
+				do DialogueStateManager.advanceTutorial("fence")
+				=> interact_normal
+- Catch you later.
+	set DialogueStateManager.dialogResult = "close" 
+	=> END
+			
+=> END
+
+~ interact_alart
+Fence: What the hell are you doing!? The guards are after you! I don't know you, get away from me.
+- Oh yeah right oops. 
+	set DialogueStateManager.dialogResult = "close"
+	=> END
+=> END
