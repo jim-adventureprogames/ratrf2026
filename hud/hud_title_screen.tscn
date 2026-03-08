@@ -1,0 +1,146 @@
+[gd_scene format=3 uid="uid://dln6qbb62w6ub"]
+
+[ext_resource type="Script" uid="uid://cmpcb5lt20abc" path="res://hud/hud_title_screen.gd" id="1_tylth"]
+[ext_resource type="Texture2D" uid="uid://d3euuyyg8epuh" path="res://textures/ui/title_logo.png" id="2_14sc6"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="3_cjk8a"]
+[ext_resource type="Texture2D" uid="uid://gl0rdciv5l3u" path="res://textures/ui/9slice_brown_button.png" id="4_lw6dw"]
+
+[node name="HUD_TitleScreen" type="Control" unique_id=2030260242 node_paths=PackedStringArray("btnStartGame", "btnHowToPlay", "btnOptions", "btnCredits", "lblCopyright")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tylth")
+btnStartGame = NodePath("VBoxContainer/panelButton_NewGame/btnNewGame")
+btnHowToPlay = NodePath("VBoxContainer/panelButton_HowToPlay/btnHowToPlay")
+btnOptions = NodePath("VBoxContainer/panelButton_Options/btnOptions")
+btnCredits = NodePath("VBoxContainer/panelButton_Credits/btnCredits")
+lblCopyright = NodePath("lblInfo")
+
+[node name="bgColor" type="ColorRect" parent="." unique_id=934592905]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 240.0
+color = Color(0.09019608, 0.09019608, 0.09019608, 1)
+
+[node name="imgTitle" type="TextureRect" parent="." unique_id=570220171]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 12.0
+offset_right = 250.0
+offset_bottom = 96.0
+texture = ExtResource("2_14sc6")
+
+[node name="lblInfo" type="RichTextLabel" parent="." unique_id=1019737095]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 204.0
+offset_right = 308.0
+offset_bottom = 236.0
+theme = ExtResource("3_cjk8a")
+text = "7DRL 2026 - 28 Feb - 7 March
+
+Incomplete :( but still playable!
+
+Adventurepro Games LLC (c) : twitch.tv/adventureprojim"
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=292890851]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -128.0
+offset_right = 48.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="panelButton_NewGame" type="PanelContainer" parent="VBoxContainer" unique_id=914415133]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="VBoxContainer/panelButton_NewGame" unique_id=1038854458]
+layout_mode = 2
+texture = ExtResource("4_lw6dw")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnNewGame" type="Button" parent="VBoxContainer/panelButton_NewGame" unique_id=500636693]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("3_cjk8a")
+theme_override_font_sizes/font_size = 8
+text = "New Game"
+flat = true
+
+[node name="panelButton_HowToPlay" type="PanelContainer" parent="VBoxContainer" unique_id=485722914]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="VBoxContainer/panelButton_HowToPlay" unique_id=214327493]
+layout_mode = 2
+texture = ExtResource("4_lw6dw")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnHowToPlay" type="Button" parent="VBoxContainer/panelButton_HowToPlay" unique_id=88954201]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("3_cjk8a")
+theme_override_font_sizes/font_size = 8
+text = "how to play"
+flat = true
+
+[node name="panelButton_Options" type="PanelContainer" parent="VBoxContainer" unique_id=304182446]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="VBoxContainer/panelButton_Options" unique_id=2010514428]
+layout_mode = 2
+texture = ExtResource("4_lw6dw")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnOptions" type="Button" parent="VBoxContainer/panelButton_Options" unique_id=1863756176]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("3_cjk8a")
+theme_override_font_sizes/font_size = 8
+text = "Options
+"
+flat = true
+
+[node name="panelButton_Credits" type="PanelContainer" parent="VBoxContainer" unique_id=1246795951]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="VBoxContainer/panelButton_Credits" unique_id=12566759]
+layout_mode = 2
+texture = ExtResource("4_lw6dw")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnCredits" type="Button" parent="VBoxContainer/panelButton_Credits" unique_id=1935890214]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("3_cjk8a")
+theme_override_font_sizes/font_size = 8
+text = "Credits
+
+"
+flat = true

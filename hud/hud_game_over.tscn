@@ -1,0 +1,134 @@
+[gd_scene format=3 uid="uid://cxoy7hu2qkdxp"]
+
+[ext_resource type="Script" uid="uid://djiua7opm1rqe" path="res://hud/hud_game_over.gd" id="1_sp1y7"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="2_gjtes"]
+[ext_resource type="Texture2D" uid="uid://gl0rdciv5l3u" path="res://textures/ui/9slice_brown_button.png" id="3_iyslh"]
+
+[node name="HUD_GameOver" type="Control" unique_id=110819815 node_paths=PackedStringArray("btnMainMenu", "txtFinalScore", "txtReason", "txtTurnsPlayed", "txtFun", "txtMoney")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sp1y7")
+btnMainMenu = NodePath("panelButton_MainMenu/btnMainMenu")
+txtFinalScore = NodePath("lblFinalScore/txtFinalScore")
+txtReason = NodePath("txtReason")
+txtTurnsPlayed = NodePath("lblTurnsPlayed/txtTurnsPlayed")
+txtFun = NodePath("lblFun/txtFun")
+txtMoney = NodePath("lblMoney/txtMoney")
+
+[node name="bgColor" type="ColorRect" parent="." unique_id=1003493167]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 240.0
+color = Color(0.09019608, 0.09019608, 0.09019608, 1)
+
+[node name="lblTurnsPlayed" type="Label" parent="." unique_id=152636294]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 67.0
+offset_right = 146.0
+offset_bottom = 75.0
+theme = ExtResource("2_gjtes")
+text = "You enjoyed the ren faire for"
+
+[node name="txtTurnsPlayed" type="Label" parent="lblTurnsPlayed" unique_id=263948336]
+layout_mode = 0
+offset_left = 120.0
+offset_right = 286.0
+offset_bottom = 8.0
+theme = ExtResource("2_gjtes")
+text = "999999 turns (3 hours 12 minutes)"
+
+[node name="lblFun" type="Label" parent="." unique_id=600048697]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 102.0
+offset_right = 80.0
+offset_bottom = 110.0
+theme = ExtResource("2_gjtes")
+text = "FUN enjoyed:"
+
+[node name="txtFun" type="Label" parent="lblFun" unique_id=940492002]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 0
+offset_left = 57.0
+offset_right = 87.0
+offset_bottom = 8.0
+theme = ExtResource("2_gjtes")
+text = "999999 "
+
+[node name="lblMoney" type="Label" parent="." unique_id=1895728735]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 109.0
+offset_right = 80.0
+offset_bottom = 117.0
+theme = ExtResource("2_gjtes")
+text = "CASH acquired:"
+
+[node name="txtMoney" type="Label" parent="lblMoney" unique_id=2062505008]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 0
+offset_left = 57.0
+offset_right = 96.0
+offset_bottom = 8.0
+theme = ExtResource("2_gjtes")
+text = "$999.99"
+
+[node name="txtReason" type="Label" parent="." unique_id=1907969020]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 80.0
+offset_right = 281.0
+offset_bottom = 99.0
+theme = ExtResource("2_gjtes")
+text = "You were caught stealing! The guards took all your money and tossed your ass out."
+autowrap_mode = 3
+
+[node name="lblFinalScore" type="Label" parent="." unique_id=62708833]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 124.0
+offset_right = 87.0
+offset_bottom = 132.0
+theme = ExtResource("2_gjtes")
+theme_override_font_sizes/font_size = 8
+text = "Final Score:"
+
+[node name="txtFinalScore" type="Label" parent="lblFinalScore" unique_id=1377201368]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 0
+offset_left = 99.0
+offset_right = 155.0
+offset_bottom = 9.0
+theme = ExtResource("2_gjtes")
+theme_override_font_sizes/font_size = 8
+text = "12345678"
+
+[node name="panelButton_MainMenu" type="PanelContainer" parent="." unique_id=1395991115]
+layout_mode = 0
+offset_left = 123.0
+offset_top = 177.0
+offset_right = 195.0
+offset_bottom = 194.0
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="panelButton_MainMenu" unique_id=1379461715]
+layout_mode = 2
+texture = ExtResource("3_iyslh")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="btnMainMenu" type="Button" parent="panelButton_MainMenu" unique_id=82732058]
+custom_minimum_size = Vector2(36, 12)
+layout_mode = 2
+theme = ExtResource("2_gjtes")
+theme_override_font_sizes/font_size = 8
+text = "Main Menu
+"
+flat = true

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cohglreafb5u1"]
+
+[ext_resource type="Texture2D" uid="uid://dfccx1jow5d5e" path="res://textures/loots.png" id="1_qr2re"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_4poa4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jti6a"]
+atlas = ExtResource("1_qr2re")
+region = Rect2(12, 36, 12, 12)
+
+[resource]
+script = ExtResource("2_4poa4")
+archetypeName = "nuts"
+friendlyName = "itemname_nuts"
+flavorText = "flavor_nuts"
+value = 1500
+dropWeight = 1
+bConsumable = true
+restoreStamina = 30.0
+image = SubResource("AtlasTexture_jti6a")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

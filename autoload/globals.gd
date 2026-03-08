@@ -64,7 +64,17 @@ func initializeInputActions() -> void:
 	_defineAction("move_up_right",    [KEY_KP_9])
 	_defineAction("move_down_left",   [KEY_KP_1])
 	_defineAction("move_down_right",  [KEY_KP_3])
+	_defineAction("wait_turn",        [KEY_SPACE, KEY_KP_5])
 	_defineAction("toggle_minimap",   [KEY_TAB])
+	_defineMouseAction("mouse_move",  MOUSE_BUTTON_LEFT)
+
+
+func _defineMouseAction(actionName: String, buttonIndex: MouseButton) -> void:
+	if not InputMap.has_action(actionName):
+		InputMap.add_action(actionName)
+	var event              := InputEventMouseButton.new()
+	event.button_index      = buttonIndex
+	InputMap.action_add_event(actionName, event)
 
 
 func _defineAction(actionName: String, keycodes: Array) -> void:

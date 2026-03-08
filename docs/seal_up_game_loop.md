@@ -4,7 +4,7 @@ Mandatory things that have to happen before we're done.
 
 ## HUD_TitleScreen
 
-- Name of game (Rogue at the Ren Faire)
+- label at bottom for copyright and timing and what not.
 - Start Game button
 - How to Play button
 - Options button

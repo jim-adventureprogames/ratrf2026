@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://dum0167tqh0bf"]
+
+[ext_resource type="Script" uid="uid://dgk8dbw3ntkw3" path="res://hud/hud_screen_fader.gd" id="1_x1o74"]
+
+[node name="HUD_ScreenFader" type="Control" unique_id=661410160 node_paths=PackedStringArray("colorRect")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_x1o74")
+colorRect = NodePath("fader")
+
+[node name="fader" type="ColorRect" parent="." unique_id=1157364178]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 240.0
+mouse_filter = 2
+color = Color(0.09019608, 0.09019608, 0.09019608, 1)

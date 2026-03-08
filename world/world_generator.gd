@@ -163,7 +163,7 @@ static func _stampBuildings() -> void:
 	var settings := MapManager.worldSettings
 	for zone: Zone in MapManager.zones:
 		var bRoadside := not zone.dirtalizedEdges.is_empty()
-		var buildingArray: Array[PackedScene] = settings.roadsideBuildingArray \
+		var buildingArray: Array[String] = settings.roadsideBuildingArray \
 				if bRoadside else settings.emptyAreaBuildingArray
 		if buildingArray.is_empty():
 			continue
@@ -174,14 +174,14 @@ static func _stampBuildings() -> void:
 # Tries to place at least one building in the zone (guaranteed attempt by
 # shuffling the full array).  Roadside zones keep filling until no building
 # from the array fits on the first try for every entry consecutively.
-static func _fillZoneWithBuildings(zoneId: int, buildingArray: Array[PackedScene],
+static func _fillZoneWithBuildings(zoneId: int, buildingArray: Array[String],
 		bounds: Rect2i, bRoadside: bool) -> void:
 	# Shuffle and try every building once to land the first guaranteed placement.
-	var shuffled: Array[PackedScene] = buildingArray.duplicate()
+	var shuffled: Array[String] = buildingArray.duplicate()
 	shuffled.shuffle()
 	var placed := 0
-	for building: PackedScene in shuffled:
-		if _stampBuildingInZone(building.resource_path.get_file(), zoneId, bounds):
+	for tmxName: String in shuffled:
+		if _stampBuildingInZone(tmxName, zoneId, bounds):
 			placed += 1
 			break
 
@@ -192,7 +192,7 @@ static func _fillZoneWithBuildings(zoneId: int, buildingArray: Array[PackedScene
 	# failures — at that point the zone is effectively full.
 	var consecutiveFails := 0
 	while consecutiveFails < buildingArray.size():
-		var tmxName := buildingArray[randi() % buildingArray.size()].resource_path.get_file()
+		var tmxName := buildingArray[randi() % buildingArray.size()]
 		if _stampBuildingInZone(tmxName, zoneId, bounds):
 			consecutiveFails = 0
 		else:

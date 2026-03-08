@@ -208,7 +208,18 @@ func decideWhatToDo() -> void:
 		if chaseTarget == null:
 			_stopChasing()
 		else:
-			var dir    := _cardinalTowardEntity(chaseTarget)
+			var dir: Vector2i
+			# If the target is adjacent — including diagonally — step straight at
+			# them so the guard can't get stuck kitty-corner to the player.
+			if chaseTarget.worldPosition.z == entity.worldPosition.z:
+				var dx := chaseTarget.worldPosition.x - entity.worldPosition.x
+				var dy := chaseTarget.worldPosition.y - entity.worldPosition.y
+				if max(abs(dx), abs(dy)) == 1:
+					dir = Vector2i(sign(dx), sign(dy))
+				else:
+					dir = _cardinalTowardEntity(chaseTarget)
+			else:
+				dir = _cardinalTowardEntity(chaseTarget)
 			var target := mover.resolveTargetWorldPosition(dir)
 			_faceTowardTile(Vector2i(entity.worldPosition.x, entity.worldPosition.y),
 					Vector2i(entity.worldPosition.x + dir.x, entity.worldPosition.y + dir.y))
@@ -359,6 +370,7 @@ func _startChasing(target: Entity) -> void:
 	if target.getComponent(&"PlayerInputComponent") != null:
 		GameManager.spawnInformationArrow(target, entity, ARROW_MOVE_DURATION, ARROW_WAIT_DURATION)
 		AudioManager.summon().playAlartBark()
+		FunManager.summon().addFun(2, "guard_alerted");
 	alertLevel = 1.0
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
@@ -496,14 +508,17 @@ func onSoftDetectCrime(event: CrimeEvent) -> void:
 		return
 
 	# Pretty sure something's going on...
-	if alertLevel < 0.65:
+	if alertLevel < 0.5:
 		GameManager.spawnBark(entity, tr("bark_crime_suspect_02"), FloatingShout.EShoutType.think)
 		_startInvestigating(Vector2i(event.location.x, event.location.y))
 		return
 
+	# change to a HardDetect, get caught kid
+	onHardDetectCrime(event);
+
 	# Alert enough to follow the player
-	GameManager.spawnBark(entity, tr("bark_crime_suspect_03"), FloatingShout.EShoutType.think)
-	_startFollowingEntity(GameManager.playerEntity);
+	# GameManager.spawnBark(entity, tr("bark_crime_suspect_03"), FloatingShout.EShoutType.think)
+	# _startFollowingEntity(GameManager.playerEntity);
 
 func onHardDetectCrime(event: CrimeEvent) -> void:
 	bDetectedCrimeThisTurn = true

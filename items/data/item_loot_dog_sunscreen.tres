@@ -12,6 +12,6 @@ script = ExtResource("2_kai6o")
 archetypeName = "dog_sunscreen"
 friendlyName = "itemname_dog_sunscreen"
 flavorText = "flavor_dog_sunscreen"
-value = 10
+value = 150
 image = SubResource("AtlasTexture_jti6a")
 metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

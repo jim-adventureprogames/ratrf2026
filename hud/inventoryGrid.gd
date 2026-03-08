@@ -7,6 +7,12 @@ extends GridContainer
 
 # Bubbled up from any slot in this grid when the player right-clicks a filled slot.
 signal item_right_clicked(item: Item)
+# Bubbled up from any slot immediately when the cursor enters.
+signal item_entered(item: Item)
+# Bubbled up from any slot after the hover delay elapses.
+signal item_hovered(item: Item, canvas_pos: Vector2)
+# Bubbled up from any slot immediately when the cursor leaves.
+signal item_unhovered()
 
 var _inventory:    InventoryComponent
 var tooltipPopup:  TooltipPopup
@@ -75,6 +81,9 @@ func refresh() -> void:
 		if tooltipPopup != null:
 			slot.item_hovered.connect(tooltipPopup.showForItem)
 			slot.item_unhovered.connect(tooltipPopup.hide)
+		slot.item_entered.connect(item_entered.emit)
+		slot.item_hovered.connect(item_hovered.emit)
+		slot.item_unhovered.connect(item_unhovered.emit)
 		slot.item_right_clicked.connect(item_right_clicked.emit)
 
 

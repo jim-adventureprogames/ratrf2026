@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://comtspau41kqu" path="res://entities/components/merchant_component.gd" id="9_2v7an"]
 [ext_resource type="Script" uid="uid://bkq07i0vd4k3a" path="res://entities/components/shop_owner_component.gd" id="10_0ym8c"]
 [ext_resource type="Script" uid="uid://cwfu5aiqsviau" path="res://entities/components/inventory_component.gd" id="11_m6i20"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="12_1b00p"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
 shader = ExtResource("2_0ym8c")
@@ -33,7 +34,7 @@ material = SubResource("ShaderMaterial_lvaaw")
 sprite_frames = ExtResource("3_4t0bn")
 animation = &"idle_down"
 autoplay = "idle_down"
-frame_progress = 0.565001
+frame_progress = 0.27778128
 script = ExtResource("4_1b00p")
 
 [node name="moverComponent" type="Node" parent="." unique_id=224727644]
@@ -65,3 +66,7 @@ metadata/_custom_type_script = "uid://bkq07i0vd4k3a"
 [node name="InventoryComponent" type="Node" parent="." unique_id=1338306732]
 script = ExtResource("11_m6i20")
 metadata/_custom_type_script = "uid://cwfu5aiqsviau"
+
+[node name="BlocksMovementComponent" type="Node" parent="." unique_id=1347637385]
+script = ExtResource("12_1b00p")
+metadata/_custom_type_script = "uid://dq7fkkfn4ythi"

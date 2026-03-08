@@ -8,6 +8,12 @@ extends Resource
 @export var gameStartHour: float = 10.0
 @export var gameEndHour:   float = 18.0
 
+
+# These are the hottest parts of the day
+@export var heatPenaltyStartHour: float = 12.0
+@export var heatPenaltyEndHour:   float = 15.0
+
+
 signal turnAdvanced
 signal halfHourPassed
 
@@ -52,3 +58,38 @@ func getTimeString() -> String:
 	var hours          := int(currentSeconds / 3600) % 24
 	var minutes        := int(fmod(currentSeconds, 3600.0) / 60.0)
 	return "%02d:%02d" % [hours, minutes]
+	
+# Jumps the clock to the given elapsed-seconds value without emitting
+# halfHourPassed — use this for debug time-skips only.
+# Updates _lastHalfHourSlot so no spurious half-hour events fire afterward.
+# Emits turnAdvanced so the HUD refreshes immediately.
+func jumpToElapsedSeconds(elapsed: float) -> void:
+	_turnsTaken       = int(elapsed / numberOfSecondsInTurn)
+	_lastHalfHourSlot = int(elapsed / 1800.0)
+	turnAdvanced.emit()
+
+
+# stamina should last for three hours under normal circumstances, 
+# but if you're being chased you burn it very quickly.
+func getStaminaCostPerRound() -> float:
+	if( CrimeManager.summon().bChaseMode ):
+		return 0.75;
+		
+	var baseCost := (numberOfSecondsInTurn / (3600.0 * 3.0)) * 100.0
+	return baseCost;
+	
+# hydration should cost a full meter (100.0) per hour, twice as much in the hottest 
+# part of the day
+func getHydrationCostPerRound() -> float:
+	# 100 points depleted over one hour = 100 / 3600 points per second,
+	# scaled by how many seconds this turn represents.
+	var baseCost := (numberOfSecondsInTurn / 3600.0) * 100.0
+	return baseCost * getHeatMultiplier()
+
+
+func getHeatMultiplier() -> float:
+	var elapsed     := _turnsTaken * numberOfSecondsInTurn
+	var currentHour := (gameStartHour * 3600.0 + elapsed) / 3600.0
+	if currentHour >= heatPenaltyStartHour and currentHour < heatPenaltyEndHour:
+		return 2.0
+	return 1.0

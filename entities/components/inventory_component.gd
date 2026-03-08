@@ -116,3 +116,14 @@ func removeItem(archetypeName: String, count: int = 1) -> bool:
 		GameManager.unregisterItem(existing)
 	itemsChanged.emit()
 	return true
+
+func is_empty() -> bool:
+	return _items.size() == 0;
+	
+func fill_for_shop(tableName: String) -> void:
+	for i in 10:
+		var result := RandomTable.rollOnTable(tableName)
+		if result.begins_with("coin"):
+			continue
+		
+		addItem(Item.new(result))

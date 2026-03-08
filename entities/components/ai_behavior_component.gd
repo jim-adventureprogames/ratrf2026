@@ -74,16 +74,26 @@ func takeAction() -> bool:
 				and nextStepTile != Vector3i(-1, -1, -1):
 			var moveResult := MapManager.testDestinationTile(nextStepTile, mover.bCanBumpThings)
 			if moveResult == Globals.EMoveTestResult.Wall \
-					or moveResult == Globals.EMoveTestResult.Entity:
+					or moveResult == Globals.EMoveTestResult.Entity \
+					or moveResult == Globals.EMoveTestResult.Bumpable :
 				var bIsIntendedTarget := false
 				var targetEnt         := getTargetEntity()
 				if targetEnt != null and targetEnt.worldPosition == nextStepTile:
 					bIsIntendedTarget = true
-				if not bIsIntendedTarget:
-					var detourDir := _computeDetourToward(Vector2i(nextStepTile.x, nextStepTile.y))
+				if not bIsIntendedTarget and targetEnt != null:
+					var detourDir := _computeDetourToward(Vector2i(targetEnt.worldPosition.x, targetEnt.worldPosition.y))
 					if detourDir != Vector2i.ZERO:
 						nextStepDirection = detourDir
 						nextStepTile      = mover.resolveTargetWorldPosition(detourDir)
+					else:
+						# A* found no path around the obstacle — idle this turn
+						# rather than repeatedly bumping into the wall.
+						nextStepDirection = Vector2i.ZERO
+				elif not bIsIntendedTarget:
+					#we don't have a goal entity to reach, and our next step is blocked.
+					#so we do nothing.
+					nextStepDirection = Vector2i.ZERO
+					
 		mover.tryMove(nextStepDirection)
 		actionPoints -= 1
 

@@ -8,7 +8,13 @@
 [ext_resource type="PackedScene" uid="uid://chfcho1oklluj" path="res://hud/hud_mini_map.tscn" id="5_lquwl"]
 [ext_resource type="PackedScene" uid="uid://38njbd7gy4ct" path="res://hud/hud_coin_flip_contest.tscn" id="6_coinflip"]
 [ext_resource type="PackedScene" uid="uid://bf0fxa1st8015" path="res://hud/hud_sell_to_merchant.tscn" id="7_5vw27"]
+[ext_resource type="PackedScene" uid="uid://vuolbrxha3n2" path="res://hud/hud_buy_from_merchant.tscn" id="8_vivmo"]
 [ext_resource type="PackedScene" uid="uid://4n3qf5mpewrl" path="res://entity_prefabs/hud_options.tscn" id="9_kek77"]
+[ext_resource type="PackedScene" uid="uid://dln6qbb62w6ub" path="res://hud/hud_title_screen.tscn" id="10_4c57u"]
+[ext_resource type="PackedScene" uid="uid://byntmma4po546" path="res://hud/hud_credits.tscn" id="11_efxa6"]
+[ext_resource type="PackedScene" uid="uid://bhg74eydsnif5" path="res://hud/hud_howtoplay.tscn" id="11_w48qg"]
+[ext_resource type="PackedScene" uid="uid://cxoy7hu2qkdxp" path="res://hud/hud_game_over.tscn" id="12_ycdy4"]
+[ext_resource type="PackedScene" uid="uid://dum0167tqh0bf" path="res://hud/hud_screen_fader.tscn" id="13_w48qg"]
 
 [node name="Main" type="Node2D" unique_id=1621069194]
 script = ExtResource("1_main")
@@ -43,9 +49,31 @@ visible = false
 visible = false
 mouse_filter = 2
 
+[node name="HUD_BuyFromMerchant" parent="." unique_id=71635286 instance=ExtResource("8_vivmo")]
+visible = false
+
 [node name="HUD_CoinFlipContest" parent="." unique_id=112233445 instance=ExtResource("6_coinflip")]
+offset_right = 320.0
+offset_bottom = 240.0
+
+[node name="HUD_TitleScreen" parent="." unique_id=2030260242 instance=ExtResource("10_4c57u")]
+visible = false
 offset_right = 320.0
 offset_bottom = 240.0
 
 [node name="HUD_Options" parent="." unique_id=2084748686 instance=ExtResource("9_kek77")]
 visible = false
+
+[node name="HUD_HowToPlay" parent="." unique_id=97840809 instance=ExtResource("11_w48qg")]
+visible = false
+
+[node name="HUD_Credits" parent="." unique_id=409261550 instance=ExtResource("11_efxa6")]
+visible = false
+
+[node name="HUD_GameOver" parent="." unique_id=110819815 instance=ExtResource("12_ycdy4")]
+visible = false
+
+[node name="HUD_ScreenFader" parent="." unique_id=661410160 instance=ExtResource("13_w48qg")]
+visible = false
+offset_right = 320.0
+offset_bottom = 240.0

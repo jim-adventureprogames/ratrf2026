@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bhg74eydsnif5"]
+
+[ext_resource type="Script" uid="uid://dtonu4wmb30wb" path="res://hud/hud_how_to_play.gd" id="1_3p302"]
+[ext_resource type="Texture2D" uid="uid://ceudt1thncoi1" path="res://textures/ui/9slice_filligree.png" id="2_vsvyx"]
+[ext_resource type="Theme" uid="uid://dh3olhywni52l" path="res://themes/theme_tf3_4px.tres" id="3_l8vug"]
+[ext_resource type="Texture2D" uid="uid://dhuso8r1g0mwv" path="res://textures/ui/buttons_symbols.png" id="4_0dbwv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ycens"]
+atlas = ExtResource("4_0dbwv")
+region = Rect2(0, 0, 12, 12)
+
+[node name="HUD_HowToPlay" type="Control" unique_id=97840809 node_paths=PackedStringArray("btnClose", "txtContent")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3p302")
+btnClose = NodePath("btnExit")
+txtContent = NodePath("txtContent")
+
+[node name="bgColor" type="ColorRect" parent="." unique_id=2147027697]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 240.0
+color = Color(0.09019608, 0.09019608, 0.09019608, 1)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="." unique_id=489045233]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 240.0
+texture = ExtResource("2_vsvyx")
+patch_margin_left = 19
+patch_margin_top = 20
+patch_margin_right = 19
+patch_margin_bottom = 20
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="txtContent" type="RichTextLabel" parent="." unique_id=392860114]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 15.0
+offset_right = 285.0
+offset_bottom = 224.0
+theme = ExtResource("3_l8vug")
+bbcode_enabled = true
+
+[node name="btnExit" type="TextureButton" parent="." unique_id=317642927]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 14.0
+offset_right = 299.0
+offset_bottom = 26.0
+texture_normal = SubResource("AtlasTexture_ycens")

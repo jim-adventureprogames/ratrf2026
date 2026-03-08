@@ -27,6 +27,9 @@ func onAttached() -> void:
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover:
 		mover.movementBlocked.connect(_onMovementBlocked)
+	if GameManager.timeKeeper != null \
+			and not GameManager.timeKeeper.halfHourPassed.is_connected(_onHalfHourPassed):
+		GameManager.timeKeeper.halfHourPassed.connect(_onHalfHourPassed)
 
 
 func onDetached() -> void:
@@ -36,6 +39,9 @@ func onDetached() -> void:
 	var mover := entity.getComponent(&"MoverComponent") as MoverComponent
 	if mover and mover.movementBlocked.is_connected(_onMovementBlocked):
 		mover.movementBlocked.disconnect(_onMovementBlocked)
+	if GameManager.timeKeeper != null \
+			and GameManager.timeKeeper.halfHourPassed.is_connected(_onHalfHourPassed):
+		GameManager.timeKeeper.halfHourPassed.disconnect(_onHalfHourPassed)
 
 
 # Walking into the same wall twice looks dumb — pick a new direction immediately.
@@ -67,6 +73,12 @@ func updateSpriteBorderByLootability() -> void:
 			SpriteComponent.ESpriteBorderStyle.has_loot if 
 			lootsRemaining > 0 else 
 			SpriteComponent.ESpriteBorderStyle.none )
+
+func _onHalfHourPassed() -> void:
+	if lootsRemaining < 1:
+		lootsRemaining = 1
+		updateSpriteBorderByLootability()
+
 
 func onEndOfTurn() -> void:
 	super();

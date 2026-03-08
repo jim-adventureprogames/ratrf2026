@@ -61,18 +61,15 @@ func _roll() -> String:
 #     data:            ← indent 2: marks start of entry block
 #       "result": 10   ← indent 4: weighted entry
 #
+# Explicit list of yaml files to load. Add new table files here as they are created.
+# (DirAccess directory scanning does not work reliably in exported builds.)
+const _TABLE_FILES: Array[String] = [
+	"res://tables/random_tables.yaml",
+]
+
 static func _loadAllTables() -> void:
-	var dir := DirAccess.open("res://tables")
-	if dir == null:
-		push_error("RandomTable: could not open res://tables directory")
-		return
-	dir.list_dir_begin()
-	var fileName := dir.get_next()
-	while fileName != "":
-		if not dir.current_is_dir() and fileName.ends_with(".yaml"):
-			_loadFile("res://tables/" + fileName)
-		fileName = dir.get_next()
-	dir.list_dir_end()
+	for path: String in _TABLE_FILES:
+		_loadFile(path)
 	# Register console command now that table names are known for autocomplete.
 	Console.add_command("rt", _cmdRollOnTable, ["table_name"], 1, "Rolls on a named random table and prints the result.")
 	Console.add_command_autocomplete_list("rt", PackedStringArray(_tables.keys()))
@@ -144,11 +141,12 @@ static func _loadFile(path: String) -> void:
 				key    = trimmed.substr(1, sep - 1)  # strip surrounding quotes
 				weight = trimmed.right(trimmed.length() - sep - 3).strip_edges().to_int()
 			else:
-				# Unquoted key — split on the first ': '.
-				var sep := trimmed.find(": ")
+				# Unquoted key — split on the first ':' and strip surrounding whitespace
+				# from the weight so tabs or multiple spaces both work.
+				var sep := trimmed.find(":")
 				if sep == -1:
 					continue
 				key    = trimmed.left(sep)
-				weight = trimmed.right(trimmed.length() - sep - 2).strip_edges().to_int()
+				weight = trimmed.right(trimmed.length() - sep - 1).strip_edges().to_int()
 			if weight > 0:
 				currentTable.addEntry(key, weight)

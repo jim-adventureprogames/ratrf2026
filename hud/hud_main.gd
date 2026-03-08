@@ -10,9 +10,16 @@ static func summon() -> HUD_Main:
 @export var inventoryGrid:    InventoryGrid
 @export var txtTime:          Label
 @export var txtCoin:          Label
+@export var txtFun:	          Label
+
 @export var tooltipPopup:     TooltipPopup
 @export var alartMeter:       Control
 @export var alartProgressBar: TextureProgressBar
+
+@export var txtHeatWarning: Label
+
+@export var txtStamina: Label
+@export var txtThirst:  Label
 
 @export var btnHowToPlay: TextureButton
 @export var btnOptions:   TextureButton
@@ -36,6 +43,9 @@ func _ready() -> void:
 		tooltipPopup.hide()
 	CrimeManager.summon().chaseStarted.connect(_onChaseStarted)
 	updateAlartMeter()
+	var fm := FunManager.summon()
+	if fm:
+		fm.funChanged.connect(_onFunChanged)
 
 
 func _exit_tree() -> void:
@@ -68,8 +78,17 @@ func _onStatsPressed() -> void:
 func _OnDebugStartPressed() -> void:
 	GameManager.startGame()
 	btnDebugStart.hide()
-	GameManager.timeKeeper.turnAdvanced.connect(_onTurnAdvanced)
+
+
+# Called by GameManager.startGame() after the world and player are ready.
+# Connects the timeKeeper signal (idempotent — safe to call more than once)
+# and does an initial refresh of all time-dependent displays.
+func onGameStarted() -> void:
+	if GameManager.timeKeeper != null \
+			and not GameManager.timeKeeper.turnAdvanced.is_connected(_onTurnAdvanced):
+		GameManager.timeKeeper.turnAdvanced.connect(_onTurnAdvanced)
 	_updateTimeDisplay()
+	_updateHeatWarning()
 
 
 # Resets the HUD to its pre-game state so the player can start a new run.
@@ -90,13 +109,35 @@ func resetForNewGame() -> void:
 	# Blank out the time and coin labels; they will repopulate once the
 	# new game starts and the first turn / coin event fires.
 	if txtTime: txtTime.text = ""
-	if txtCoin: txtCoin.text = ""
+	if txtCoin:
+		txtCoin.text     = ""
+		txtCoin.modulate = Color.WHITE
+	if _coinColorTween:
+		_coinColorTween.kill()
+		_coinColorTween = null
+	_lastCoinAmount = 0
+	if txtFun:
+		txtFun.text            = ""
+		txtFun.modulate        = Color.WHITE
+	if _funColorTween:
+		_funColorTween.kill()
+		_funColorTween = null
+	if txtHeatWarning:
+		txtHeatWarning.hide()
+	if _heatTween:
+		_heatTween.kill()
+		_heatTween = null
+	if txtStamina:
+		txtStamina.text = ""
+	if txtThirst:
+		txtThirst.text = ""
 	updateAlartMeter()
 
 
 func _onTurnAdvanced() -> void:
 	_updateTimeDisplay()
 	updateAlartMeter()
+	_updateHeatWarning()
 
 
 func _onChaseStarted() -> void:
@@ -113,10 +154,51 @@ func updateAlartMeter() -> void:
 	alartProgressBar.value   = cm.chaseAlertValue if cm != null else 0.0
 
 
+func _updateHeatWarning() -> void:
+	if txtHeatWarning == null:
+		return
+	var tk := GameManager.timeKeeper
+	if tk == null:
+		return
+	var bHot := tk.getHeatMultiplier() > 1.0
+	if bHot and not txtHeatWarning.visible:
+		txtHeatWarning.show()
+		txtHeatWarning.modulate = Color.ORANGE
+		_heatTween = create_tween().set_loops()
+		_heatTween.tween_property(txtHeatWarning, "modulate", Color.YELLOW, 2.0)
+		_heatTween.tween_property(txtHeatWarning, "modulate", Color.ORANGE, 2.0)
+	elif not bHot and txtHeatWarning.visible:
+		txtHeatWarning.hide()
+		if _heatTween:
+			_heatTween.kill()
+			_heatTween = null
+
+
 func _updateTimeDisplay() -> void:
 	if txtTime == null:
 		return
 	txtTime.text = GameManager.timeKeeper.getTimeString()
+
+
+func showPlayerStats(pcc: PlayerCharacterComponent) -> void:
+	if pcc.staminaChanged.is_connected(_onStaminaChanged):
+		pcc.staminaChanged.disconnect(_onStaminaChanged)
+	if pcc.hydrationChanged.is_connected(_onHydrationChanged):
+		pcc.hydrationChanged.disconnect(_onHydrationChanged)
+	pcc.staminaChanged.connect(_onStaminaChanged)
+	pcc.hydrationChanged.connect(_onHydrationChanged)
+	_onStaminaChanged(pcc.stamina)
+	_onHydrationChanged(pcc.hydration)
+
+
+func _onStaminaChanged(newValue: float) -> void:
+	if txtStamina:
+		txtStamina.text = "%d" % ceili(newValue)
+
+
+func _onHydrationChanged(newValue: float) -> void:
+	if txtThirst:
+		txtThirst.text = "%d" % ceili(newValue)
 
 
 func showInventory(inventory: InventoryComponent) -> void:
@@ -128,9 +210,21 @@ func showInventory(inventory: InventoryComponent) -> void:
 
 
 func _onInventoryItemRightClicked(item: Item) -> void:
+	# During a sell transaction: stage the item for sale.
 	var sellHud := HUD_SellToMerchant.summon()
 	if sellHud != null and sellHud.visible:
 		sellHud.addItemToTransaction(item)
+		return
+	# During any other merchant transaction (buy HUD open): do nothing.
+	if GameManager.getGamePhase() == GameManager.EGamePhase.Merchant:
+		return
+	# Normal play: consume the item if it is consumable.
+	if not item.isConsumable():
+		return
+	var pcc := GameManager.getPlayerComponent()
+	if pcc == null:
+		return
+	pcc.consumeItem(item)
 
 
 func _updateCoinDisplay(amount: int) -> void:
@@ -139,6 +233,32 @@ func _updateCoinDisplay(amount: int) -> void:
 	var dollars := amount / 100
 	var cents   := amount % 100
 	txtCoin.text = "$%d.%02d" % [dollars, cents]
+	if amount != _lastCoinAmount:
+		var flashColor := Color.GREEN if amount > _lastCoinAmount else Color.RED
+		if _coinColorTween:
+			_coinColorTween.kill()
+		txtCoin.modulate = flashColor
+		_coinColorTween  = create_tween()
+		_coinColorTween.tween_property(txtCoin, "modulate", Color.WHITE, 1.0)
+		_lastCoinAmount = amount
+
+
+var _funColorTween:  Tween = null
+var _coinColorTween: Tween = null
+var _lastCoinAmount: int   = 0
+var _heatTween:      Tween = null
+
+
+func _onFunChanged(newScore: int) -> void:
+	if txtFun == null:
+		return
+	txtFun.text = "%d" % newScore
+	# Flash green, then lerp back to white over one second.
+	if _funColorTween:
+		_funColorTween.kill()
+	txtFun.modulate    = Color.GREEN
+	_funColorTween     = create_tween()
+	_funColorTween.tween_property(txtFun, "modulate", Color.WHITE, 1.0)
 
 
 const _FLOATING_DISPLAY := preload("res://hud/floating_display.tscn")

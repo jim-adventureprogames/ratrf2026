@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://f0cocdss7ttu"]
+
+[ext_resource type="Texture2D" uid="uid://dfccx1jow5d5e" path="res://textures/loots.png" id="1_b7t5c"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_dbipn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jti6a"]
+atlas = ExtResource("1_b7t5c")
+region = Rect2(36, 36, 12, 12)
+
+[resource]
+script = ExtResource("2_dbipn")
+archetypeName = "enerjam"
+friendlyName = "itemname_enerjam"
+flavorText = "flavor_enerjam"
+value = 5000
+dropWeight = 1
+bConsumable = true
+restoreStamina = 60.0
+restoreHydration = 40.0
+image = SubResource("AtlasTexture_jti6a")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

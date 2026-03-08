@@ -30,6 +30,15 @@ extends Resource
 # Relative probability weight used when this item is added to a loot table.
 @export var dropWeight: int = 10
 
+# When true, right-clicking this item in the player inventory consumes it.
+@export var bConsumable: bool = false
+
+# Stamina restored on consumption (0 = none).
+@export var restoreStamina: float = 0.0
+
+# Hydration restored on consumption (0 = none).
+@export var restoreHydration: float = 0.0
+
 # When true, this item never stacks and each instance occupies its own slot.
 # Takes precedence over maxStackCount.
 @export var bUnique: bool = false
@@ -55,8 +64,11 @@ static func loadAll() -> void:
 	dir.list_dir_begin()
 	var fileName := dir.get_next()
 	while fileName != "":
-		if not dir.current_is_dir() and fileName.ends_with(".tres"):
-			var data := load("res://items/data/" + fileName) as ItemData
+		# In exported builds Godot appends ".remap" to resource filenames.
+		# Strip it before loading — load() resolves the remap automatically.
+		var baseName := fileName.trim_suffix(".remap")
+		if not dir.current_is_dir() and baseName.ends_with(".tres"):
+			var data := load("res://items/data/" + baseName) as ItemData
 			if data == null:
 				push_warning("ItemData: skipping non-ItemData resource: %s" % fileName)
 			elif data.archetypeName.is_empty():

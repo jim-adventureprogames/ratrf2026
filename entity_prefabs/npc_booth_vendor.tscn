@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://cjlfpp7wxv0j4" path="res://entities/components/mouseable_component.gd" id="7_8ofk2"]
 [ext_resource type="Script" uid="uid://brvs0licd288f" path="res://entities/components/crime_detection_component.gd" id="8_dc6nc"]
 [ext_resource type="Script" uid="uid://comtspau41kqu" path="res://entities/components/merchant_component.gd" id="9_31reb"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="10_2p1f1"]
+[ext_resource type="Script" uid="uid://cwfu5aiqsviau" path="res://entities/components/inventory_component.gd" id="11_cq8l5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
 shader = ExtResource("2_2p1f1")
@@ -31,7 +33,7 @@ material = SubResource("ShaderMaterial_lvaaw")
 sprite_frames = ExtResource("3_j5ymm")
 animation = &"idle_up"
 autoplay = "idle_down"
-frame_progress = 0.31095397
+frame_progress = 0.15517735
 script = ExtResource("4_5e4gr")
 
 [node name="moverComponent" type="Node" parent="." unique_id=224727644]
@@ -51,7 +53,17 @@ metadata/_custom_type_script = "uid://brvs0licd288f"
 [node name="MerchantComponent" type="Node" parent="." unique_id=222283597]
 script = ExtResource("9_31reb")
 bAllowBuyFrom = true
+tablePopulateInventory = "food_loot_table_01"
 dialogFile = "vendor_dialog"
 dialogKeyStartVend = "interact_normal"
 dialogKeyWhileAlart = "interact_alart"
+haggleMultiplier = 0.2
 metadata/_custom_type_script = "uid://comtspau41kqu"
+
+[node name="BlocksMovementComponent" type="Node" parent="." unique_id=1030587411]
+script = ExtResource("10_2p1f1")
+metadata/_custom_type_script = "uid://dq7fkkfn4ythi"
+
+[node name="InventoryComponent" type="Node" parent="." unique_id=492669712]
+script = ExtResource("11_cq8l5")
+metadata/_custom_type_script = "uid://cwfu5aiqsviau"

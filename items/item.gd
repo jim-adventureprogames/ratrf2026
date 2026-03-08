@@ -71,3 +71,27 @@ func getTier() -> int:
 	if data == null:
 		return 1
 	return data.tier
+
+
+# Returns true if this item can be consumed from the inventory.
+func isConsumable() -> bool:
+	var data := ItemData.getByArchetype(archetypeName)
+	if data == null:
+		return false
+	return data.bConsumable
+
+
+# Returns the stamina restored when this item is consumed.
+func getRestoreStamina() -> float:
+	var data := ItemData.getByArchetype(archetypeName)
+	if data == null:
+		return 0.0
+	return data.restoreStamina
+
+
+# Returns the hydration restored when this item is consumed.
+func getRestoreHydration() -> float:
+	var data := ItemData.getByArchetype(archetypeName)
+	if data == null:
+		return 0.0
+	return data.restoreHydration

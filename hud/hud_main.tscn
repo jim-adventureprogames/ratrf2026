@@ -95,7 +95,7 @@ animations = [{
 "speed": 12.0
 }]
 
-[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime", "txtCoin", "tooltipPopup", "alartMeter", "alartProgressBar", "btnHowToPlay", "btnOptions", "btnMap", "btnStats")]
+[node name="HUD_Main" type="Control" unique_id=1639213077 node_paths=PackedStringArray("btnDebugStart", "inventoryGrid", "txtTime", "txtCoin", "txtFun", "tooltipPopup", "alartMeter", "alartProgressBar", "txtHeatWarning", "txtStamina", "txtThirst", "btnHowToPlay", "btnOptions", "btnMap", "btnStats")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -107,9 +107,13 @@ btnDebugStart = NodePath("imgBG/btnDebugStart")
 inventoryGrid = NodePath("InventoryGrid")
 txtTime = NodePath("imgBG/lblTime/txtTime")
 txtCoin = NodePath("imgBG/lblCoin/txtCoin")
+txtFun = NodePath("imgBG/lblFun/txtFun")
 tooltipPopup = NodePath("TooltipPopup")
 alartMeter = NodePath("AlartMeter")
 alartProgressBar = NodePath("AlartMeter/progressBar")
+txtHeatWarning = NodePath("imgBG/lblTime/txtHeatWarning")
+txtStamina = NodePath("imgBG/lblStamina/txtStamina")
+txtThirst = NodePath("imgBG/lblThirst/txtThirst")
 btnHowToPlay = NodePath("imgBG/hbox_buttons/btnHowToPlay")
 btnOptions = NodePath("imgBG/hbox_buttons/btnOptions")
 btnMap = NodePath("imgBG/hbox_buttons/btnMap")
@@ -123,6 +127,7 @@ offset_bottom = 240.0
 texture = ExtResource("1_xhti2")
 
 [node name="btnDebugStart" type="Button" parent="imgBG" unique_id=543835367]
+visible = false
 layout_mode = 0
 offset_left = 10.0
 offset_top = 7.0
@@ -151,6 +156,15 @@ theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
 text = "99:99"
 
+[node name="txtHeatWarning" type="Label" parent="imgBG/lblTime" unique_id=696723643]
+layout_mode = 0
+offset_top = 6.0
+offset_right = 48.0
+offset_bottom = 11.0
+theme = ExtResource("4_46uo4")
+theme_override_font_sizes/font_size = 4
+text = "Heat Warning"
+
 [node name="lblCoin" type="Label" parent="imgBG" unique_id=185066904]
 layout_mode = 0
 offset_left = 6.0
@@ -168,7 +182,7 @@ offset_right = 42.0
 offset_bottom = 5.0
 theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
-text = "$9999.99"
+text = "$0.00"
 
 [node name="lblStamina" type="Label" parent="imgBG" unique_id=1235735465]
 layout_mode = 0
@@ -225,7 +239,7 @@ offset_right = 42.0
 offset_bottom = 5.0
 theme = ExtResource("4_46uo4")
 theme_override_font_sizes/font_size = 4
-text = "9999"
+text = "0"
 
 [node name="hbox_buttons" type="HBoxContainer" parent="imgBG" unique_id=448060073]
 layout_mode = 0

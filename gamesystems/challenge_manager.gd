@@ -74,9 +74,13 @@ func HandleChallengeComplete(bSuccess: bool) -> void:
 	if( GameManager.getGamePhase() == GameManager.EGamePhase.CoinChallenge):
 		GameManager.setGamePhase(GameManager.EGamePhase.Player);
 
-	if( bSuccess ) :
-		challengeSuccessCount[activeChallengeType] = challengeSuccessCount.get_or_add(activeChallengeType, 1) + 1;
-	
+	if bSuccess:
+		challengeSuccessCount[activeChallengeType] = challengeSuccessCount.get_or_add(activeChallengeType, 1) + 1
+		# Award FUN for winning any coin flip challenge.
+		var fm := FunManager.summon()
+		if fm:
+			fm.addFun(FunManager.FUN_COIN_CHALLENGE, "coin challenge win: " + activeChallengeType)
+
 	match activeChallengeType:
 		"fast_talk_guard":
 			if( bSuccess ):
@@ -91,7 +95,11 @@ func HandleChallengeComplete(bSuccess: bool) -> void:
 				mc.onHaggleSuccess()
 			else:
 				mc.onHaggleFail()
-			HUD_SellToMerchant.summon().applyHaggleResult(mc.haggleMultiplier)
+			# Notify whichever merchant HUD is currently open.
+			if HUD_SellToMerchant.summon() and HUD_SellToMerchant.summon().visible:
+				HUD_SellToMerchant.summon().applyHaggleResult(mc.haggleMultiplier)
+			if HUD_BuyFromMerchant.summon() and HUD_BuyFromMerchant.summon().visible:
+				HUD_BuyFromMerchant.summon().applyHaggleResult(mc.haggleMultiplier)
 
 				
 	activeChallengeType = "";

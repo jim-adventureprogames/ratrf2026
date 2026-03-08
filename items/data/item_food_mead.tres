@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://blrnt16smnug0"]
+
+[ext_resource type="Texture2D" uid="uid://dfccx1jow5d5e" path="res://textures/loots.png" id="1_7tr1j"]
+[ext_resource type="Script" uid="uid://b04yd0fmhcv5o" path="res://items/item_data.gd" id="2_3rfoi"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jti6a"]
+atlas = ExtResource("1_7tr1j")
+region = Rect2(24, 36, 12, 12)
+
+[resource]
+script = ExtResource("2_3rfoi")
+archetypeName = "mead"
+friendlyName = "itemname_mead"
+flavorText = "flavor_mead"
+value = 3500
+dropWeight = 1
+bConsumable = true
+restoreHydration = 40.0
+image = SubResource("AtlasTexture_jti6a")
+metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

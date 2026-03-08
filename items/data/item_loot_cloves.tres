@@ -12,6 +12,6 @@ script = ExtResource("2_rqski")
 archetypeName = "cloves"
 friendlyName = "itemname_cloves"
 flavorText = "flavor_cloves"
-value = 10
+value = 500
 image = SubResource("AtlasTexture_jti6a")
 metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

@@ -114,8 +114,8 @@ func _onTweenFinished() -> void:
 		return
 	mover.setMovingComplete()
 	var inputComp := entity.getComponent(&"PlayerInputComponent") as PlayerInputComponent
-	var inputDir  := inputComp.getInputDirection() if inputComp else Vector2i.ZERO
-	if inputDir == Vector2i.ZERO:
+	var bMoving := inputComp != null and inputComp.hasMovementInput()
+	if not bMoving:
 		play(_animationName("idle", mover.facing))
 
 
@@ -144,8 +144,8 @@ func _onBumpFinished() -> void:
 		return
 	mover.setBumpComplete()
 	var inputComp := entity.getComponent(&"PlayerInputComponent") as PlayerInputComponent
-	var inputDir  := inputComp.getInputDirection() if inputComp else Vector2i.ZERO
-	if inputDir == Vector2i.ZERO:
+	var bMoving := inputComp != null and inputComp.hasMovementInput()
+	if not bMoving:
 		play(_animationName("idle", mover.facing))
 
 

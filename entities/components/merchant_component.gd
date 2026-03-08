@@ -17,7 +17,7 @@ extends EntityComponent
 @export var dialogKeyWhileAlart : String
 
 # how much more or less we value goods sold to us by the player.
-var haggleMultiplier : float = -0.1;
+@export var haggleMultiplier : float = -0.1;
 
 # how many flips are needed to successfully haggle with us.
 var haggleDifficulty : int = 1;
@@ -54,12 +54,13 @@ func onDetached() -> void:
 	#	 mover.movementBlocked.disconnect(_onMovementBlocked)
 		
 func _onBumped(bumper: Entity) -> void:
-	if CrimeManager.getAlertRatio() > 0.0 :
-		GameManager.spawnDialog(dialogFile, dialogKeyWhileAlart, entity);
-	else:
-		GameManager.spawnDialog(dialogFile, dialogKeyStartVend, entity);
-		
-	GameManager.setTargetMerchant(self);
+	if( bumper == GameManager.playerEntity):
+		if CrimeManager.getAlertRatio() > 0.0 :
+			GameManager.spawnDialog(dialogFile, dialogKeyWhileAlart, entity);
+		else:
+			GameManager.spawnDialog(dialogFile, dialogKeyStartVend, entity);
+			
+		GameManager.setTargetMerchant(self);
 		
 func updateSpriteBorder() -> void:
 	var sprite = entity.getComponent(&"SpriteComponent") as SpriteComponent;
@@ -75,7 +76,12 @@ func onBeginTransactionSellToMe(inventory : InventoryComponent) -> void:
 	AudioManager.playSfx(clip_onOpenSell)
 
 func onBeginTransactionBuyFromMe() -> void:
+	var inv = entity.getComponent(&"InventoryComponent") as InventoryComponent;
+	if( inv.is_empty() ) :
+		inv.fill_for_shop(tablePopulateInventory);
+
 	AudioManager.playSfx(clip_onOpenBuy)
+	HUD_BuyFromMerchant.summon().open(self)
 
 func onTransactionComplete() -> void:
 	AudioManager.playSfx(clip_onSuccessfulTransaction)
@@ -88,13 +94,21 @@ func getHaggleDifficulty() -> int:
 	return haggleDifficulty;
 	
 func onHaggleSuccess() -> void:
-	haggleMultiplier += randf() * 0.2 + 0.1;
+	if( bAllowBuyFrom ) :
+		haggleMultiplier -= randf() * 0.2 + 0.1;
+	else :
+		haggleMultiplier += randf() * 0.2 + 0.1;
 	haggleDifficulty += 1;
 	
 func onHaggleFail() -> void:
-	haggleMultiplier -= randf() * 0.1 + 0.05;
-	if( haggleMultiplier <= 0.0 && haggleDifficulty > 1 ) :
-		haggleDifficulty -= 1;
+	if( bAllowBuyFrom ):
+		haggleMultiplier += randf() * 0.1 + 0.05;
+		if( haggleDifficulty > 1 ):
+			haggleDifficulty -= 1;
+	else:
+		haggleMultiplier -= randf() * 0.1 + 0.05;
+		if( haggleMultiplier <= 0.0 && haggleDifficulty > 1 ) :
+			haggleDifficulty -= 1;
 
 	
 		

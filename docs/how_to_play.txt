@@ -1,0 +1,25 @@
+[color=yellow]Rogue At The Ren Faire[/color]
+
+Incomplete entry for 7DRL 2026. You can still have some fun with it though!
+
+[b]Movement[/b]
+WASD / Arrow keys — cardinal directions
+Numpad 7/9/1/3 — diagonal movement (but not on web build?)
+Space / Numpad 5 — wait a turn
+Left click — move toward clicked tile (click yourself to wait)
+
+[b]Pickpocketing[/b]
+Bump into a Mark to attempt a pickpocket. Approaching from behind is safer than from the front.
+
+[b]Guards[/b]
+Guards patrol the faire grounds. If a guard catches you stealing, they will chase you. Talk your way out or run!
+
+[b]Merchants and Fences[/b]
+Merchants will sell you food and other items, but they won't buy your stolen goods.
+Fences will purchase your stolen goods. Try haggling for a better price!
+
+[b]Escaping[/b]
+Head to any gate and walk through to end your run. Your score is calculated from FUN earned and money taken.
+
+[b]Score[/b] = FUN points + Money bonus
+Earn FUN by pickpocketing, surviving guard chases, and winning coin flip challenges.

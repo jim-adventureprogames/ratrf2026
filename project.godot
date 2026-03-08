@@ -32,6 +32,7 @@ TutorialManager="*uid://cwy02hgjhm25h"
 AudioManager="*res://audio/scripts/audio_manager.gd"
 Console="*uid://ouiu5xh1cs8n"
 RetailManager="*res://autoload/retail_manager.gd"
+FunManager="*uid://dms5lbwhnnkj1"
 
 [console]
 

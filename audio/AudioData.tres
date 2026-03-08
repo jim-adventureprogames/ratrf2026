@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="AudioData" format=3 uid="uid://6x3fwqlswrpy"]
+
+[ext_resource type="Script" uid="uid://dtjlge6sfrum0" path="res://audio/scripts/audio_data.gd" id="1_audiodata"]
+[ext_resource type="AudioStream" uid="uid://u2jciwn1vi3s" path="res://audio/sfx/sfx_alart.mp3" id="1_dfrcd"]
+[ext_resource type="AudioStream" uid="uid://dyl4aibc8l8bb" path="res://audio/music/bgm_fantasy_tavern_chill_01.ogg" id="1_lh26o"]
+[ext_resource type="AudioStream" uid="uid://2d1r665f08pn" path="res://audio/music/bgm_alart_01.mp3" id="2_83dt5"]
+[ext_resource type="AudioStream" uid="uid://dirxeha3bsslj" path="res://audio/music/bgm_alart_02.mp3" id="2_tci5f"]
+[ext_resource type="AudioStream" uid="uid://dalyfua0cwg78" path="res://audio/music/bgm_fantasy_tavern_chill_02.ogg" id="2_wnbws"]
+[ext_resource type="AudioStream" uid="uid://c1kywj8p38xyv" path="res://audio/music/bgm_fantasy_tavern_chill_03.ogg" id="3_na308"]
+[ext_resource type="AudioStream" uid="uid://cmgmmqtepygh0" path="res://audio/music/bgm_fantasy_tavern_chill_04.ogg" id="4_67ah4"]
+[ext_resource type="AudioStream" uid="uid://kdcj0rlrjqau" path="res://audio/music/bgm_fantasy_tavern_chill_05.ogg" id="5_al0mp"]
+[ext_resource type="AudioStream" uid="uid://dd3o3fbc8ldsy" path="res://audio/music/bgm_tavern_01.ogg" id="6_7h5u3"]
+[ext_resource type="AudioStream" uid="uid://c2vn542t728n4" path="res://audio/music/bgm_tavern_02.ogg" id="7_1fadw"]
+[ext_resource type="AudioStream" uid="uid://djrgoq5xgg6i0" path="res://audio/music/bgm_tavern_03.ogg" id="8_dfrcd"]
+[ext_resource type="AudioStream" uid="uid://t6m6emb683qv" path="res://audio/music/bgm_tavern_04.ogg" id="9_tci5f"]
+[ext_resource type="AudioStream" uid="uid://dd2m8k0fr3tkf" path="res://audio/music/bgm_tavern_05.ogg" id="10_83dt5"]
+[ext_resource type="AudioStream" uid="uid://tb1uwfqkjxgs" path="res://audio/sfx/grumbles/grumble_01.wav" id="11_grumble01"]
+[ext_resource type="AudioStream" uid="uid://cykt3v0rsp5hn" path="res://audio/sfx/grumbles/grumble_02.wav" id="12_grumble02"]
+[ext_resource type="AudioStream" uid="uid://dgkvt7xrtrrwm" path="res://audio/sfx/grumbles/grumble_03.wav" id="13_grumble03"]
+[ext_resource type="AudioStream" uid="uid://dt6rffehd0goa" path="res://audio/sfx/grumbles/grumble_05.wav" id="14_grumble05"]
+[ext_resource type="AudioStream" uid="uid://cl5wnjvg4v238" path="res://audio/music/bgm_game_over.mp3" id="14_orkcg"]
+[ext_resource type="AudioStream" uid="uid://bwfk1ougloryt" path="res://audio/sfx/grumbles/grumble_07.wav" id="15_grumble07"]
+[ext_resource type="AudioStream" uid="uid://csnwvji8djp6m" path="res://audio/music/bgm_tension_01.mp3" id="19_83dt5"]
+[ext_resource type="AudioStream" uid="uid://dq1uak1w2gwd7" path="res://audio/music/bgm_title_screen.mp3" id="21_54opd"]
+
+[resource]
+script = ExtResource("1_audiodata")
+BackgroundMusic = Array[AudioStream]([ExtResource("1_lh26o"), ExtResource("2_wnbws"), ExtResource("3_na308"), ExtResource("4_67ah4"), ExtResource("5_al0mp"), ExtResource("6_7h5u3"), ExtResource("7_1fadw"), ExtResource("8_dfrcd"), ExtResource("9_tci5f"), ExtResource("10_83dt5")])
+GuardGrumbles = Array[AudioStream]([ExtResource("11_grumble01"), ExtResource("12_grumble02"), ExtResource("13_grumble03"), ExtResource("14_grumble05"), ExtResource("15_grumble07")])
+AlartMusic = Array[AudioStream]([ExtResource("2_83dt5"), ExtResource("2_tci5f")])
+TensionMusic = Array[AudioStream]([ExtResource("19_83dt5")])
+AlartBark = ExtResource("1_dfrcd")
+GameOverMusic = ExtResource("14_orkcg")
+TitleScreenMusic = ExtResource("21_54opd")

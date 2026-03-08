@@ -14,9 +14,14 @@ extends RefCounted
 # so the underlying zone data shows through.
 static func stampTmx(tmxName: String, topLeft: Vector3i) -> void:
 	var path   := "res://tiled/" + tmxName
+	# In exported builds Godot may append ".remap" to non-resource files.
+	if not FileAccess.file_exists(path) and FileAccess.file_exists(path + ".remap"):
+		path += ".remap"
+		print("Found a remap path: %s " % path);
 	var parser := XMLParser.new()
-	if parser.open(path) != OK:
-		push_error("TmxStamper.stampTmx: could not open '%s'" % path)
+	var result =  parser.open(path);
+	if result != OK:
+		push_error("TmxStamper.stampTmx: could not open '%s' '%s'" % path % result)
 		return
 
 	# Tile-layer state.

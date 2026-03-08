@@ -1,13 +1,8 @@
 [gd_resource type="Resource" script_class="WorldSettings" format=3 uid="uid://3fq5w0rx3pxw"]
 
 [ext_resource type="Script" uid="uid://v0by16uq72x5" path="res://data/world_settings.gd" id="1_6fabv"]
-[ext_resource type="PackedScene" uid="uid://dd52i4r0f6dbm" path="res://tiled/building_shop_10x10_01.tmx" id="1_essh4"]
-[ext_resource type="PackedScene" uid="uid://bq02aew2g1fi" path="res://tiled/building_shop_5x4_food_01.tmx" id="2_ifnqm"]
-[ext_resource type="PackedScene" uid="uid://bus4v51k5lgtf" path="res://tiled/building_shop_8x8_01.tmx" id="3_x3k6q"]
-[ext_resource type="PackedScene" uid="uid://cv2qywx0u4ybt" path="res://tiled/building_shop_8x8_02.tmx" id="4_x3k6q"]
-[ext_resource type="PackedScene" uid="uid://o5pdjwnuu80l" path="res://tiled/building_shop_8x8_03.tmx" id="5_rbsbx"]
 
 [resource]
 script = ExtResource("1_6fabv")
-roadsideBuildingArray = Array[PackedScene]([ExtResource("2_ifnqm"), ExtResource("3_x3k6q"), ExtResource("4_x3k6q"), ExtResource("5_rbsbx")])
-emptyAreaBuildingArray = Array[PackedScene]([ExtResource("1_essh4")])
+roadsideBuildingArray = Array[String](["building_shop_5x4_food_01.tmx", "building_shop_8x8_01.tmx", "building_shop_8x8_02.tmx", "building_shop_8x8_03.tmx", "building_tables_chairs_01.tmx"])
+emptyAreaBuildingArray = Array[String](["building_shop_10x10_01.tmx"])

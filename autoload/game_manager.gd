@@ -57,6 +57,7 @@ func _ready() -> void:
 	Console.add_command("test_coin_flip", _cmdTestCoinFlip, ["string"], 0, "Launches N coins (default 3) with random heads/tails results.")
 	Console.add_command("test_dialog", _cmdTestDialog, [], 0, "Opens a test dialog between the player and a nearby guard.")
 	Console.add_command("reset_game", _cmdResetGame, [], 0, "Tears down the current game and returns to the main menu.")
+	Console.add_command("set_time", _cmdSetTime, ["string"], 1, "Set the game clock to a 24-hour time, e.g. set_time 13:30")
 
 
 func getEntityByID(id: int) -> Entity:
@@ -110,7 +111,10 @@ func startGame() -> void:
 	HUDMiniMap.summon().populate();
 	HUDMiniMap.summon().setPlayerZone(playerEntity.worldPosition.z);
 	MapManager.worldTileMap.loadZone(playerEntity.worldPosition.z)
-	gameState = EGameState.Gameplay;
+	gameState = EGameState.Gameplay
+	var hud := HUD_Main.summon()
+	if hud:
+		hud.onGameStarted()
 
 
 func generateWorld() -> void:
@@ -150,6 +154,11 @@ func spawnPlayer() -> void:
 		if hud:
 			hud.showInventory(inventory)
 
+	if playerCharacter:
+		var hud := HUD_Main.summon()
+		if hud:
+			hud.showPlayerStats(playerCharacter)
+
 
 # ── Debug helpers ────────────────────────────────────────────────────────────
 
@@ -173,13 +182,33 @@ func _spawnDebugGuards() -> void:
 		_spawnGuardInZone(packed, zone.id)
 
 
+# Spawns one fence per region, choosing a random non-gate zone within each.
+# This spreads fences across the world so the player has to explore to find them.
 func _spawnFencesAtGates() -> void:
 	var packed := load("res://entity_prefabs/npc_fence.tscn") as PackedScene
 	if packed == null:
 		push_error("GameManager: could not load npc_fence.tscn")
 		return
-	for zoneId: int in MapManager.gateZoneIds:
-		_spawnFenceInZone(packed, zoneId)
+
+	# Build a dictionary: EZoneRegion → Array of eligible zone IDs.
+	var byRegion: Dictionary = {}
+	for zoneId: int in MapManager.zones.size():
+		var zone := MapManager.getZone(zoneId)
+		if zone == null:
+			continue
+		if MapManager.gateZoneIds.has(zoneId):
+			continue
+		if not byRegion.has(zone.region):
+			byRegion[zone.region] = []
+		byRegion[zone.region].append(zoneId)
+
+	# Spawn one fence in a random eligible zone from each region.
+	for region: int in byRegion:
+		var candidates: Array = byRegion[region]
+		if candidates.is_empty():
+			continue
+		candidates.shuffle()
+		_spawnFenceInZone(packed, candidates[0])
 
 
 func _spawnFenceInZone(packed: PackedScene, zoneId: int) -> void:
@@ -260,6 +289,8 @@ func onDialogueFinished(result: String) -> void:
 		"merchant":
 			if( splitsies[1] == "sell" ):
 				_targetMerchant.onBeginTransactionSellToMe(playerEntity.getComponent(&"InventoryComponent"))
+			if( splitsies[1] == "buy" ):
+				_targetMerchant.onBeginTransactionBuyFromMe();
 
 
 # ── Game over / reset ─────────────────────────────────────────────────────────
@@ -283,11 +314,59 @@ func goToGameOver(reason: String) -> void:
 
 	# Hide the coin flip challenge if one was open.
 	var challenge := HUDCoinFlipContest.summon()
-	challenge.turnOff();
+	challenge.turnOff()
 
-	# TODO: show a game-over screen and await player input before resetting.
-	# For now, reset immediately.
-	resetForNewGame()
+	# Grab the player's coin total before world teardown so it can go into
+	# the final score.  Player entity is freed during resetForNewGame() so we
+	# must read it now.
+	var coins := 0
+	if playerEntity:
+		var inv := playerEntity.getComponent(&"InventoryComponent") as InventoryComponent
+		if inv:
+			coins = inv.getCoin()
+			
+	if ( reason != "victory" ) :
+		coins = 0;
+
+	var finalScore := FunManager.summon().getFinalScore(coins) if FunManager.summon() else 0
+
+	# Show the game-over screen and let the player dismiss it.
+	# HUD_GameOver.btnMainMenu calls resetForNewGame() when pressed.
+	AudioManager.summon().setMusicState(AudioManager.EMusicState.Defeat)
+	var gameOverHud := HUD_GameOver.summon()
+	if gameOverHud:
+		HUD_ScreenFader.summon().fadeToBlack(1.0, func(): gameOverHud.showResult(reason, finalScore, false, coins))
+	else:
+		# Fallback: no game-over scene in tree yet — reset immediately.
+		push_warning("goToGameOver: HUD_GameOver not in scene, resetting immediately.")
+		resetForNewGame()
+
+
+# Called when the player successfully exits through a gate.
+# Mirrors goToGameOver but marks the result as a victory.
+func goToVictory() -> void:
+	gameState = EGameState.GameOver
+	get_tree().paused = false
+
+	var dialog := HUDDialog.summon()
+	if dialog != null and dialog.visible:
+		HUDDialog.turnOff()
+
+	var coins := 0
+	if playerEntity:
+		var inv := playerEntity.getComponent(&"InventoryComponent") as InventoryComponent
+		if inv:
+			coins = inv.getCoin()
+
+	var finalScore := FunManager.summon().getFinalScore(coins) if FunManager.summon() else 0
+
+	AudioManager.summon().setMusicState(AudioManager.EMusicState.Victory)
+	var gameOverHud := HUD_GameOver.summon()
+	if gameOverHud:
+		HUD_ScreenFader.summon().fadeToBlack(1.0, func(): gameOverHud.showResult("victory", finalScore, true, coins))
+	else:
+		push_warning("goToVictory: HUD_GameOver not in scene, resetting immediately.")
+		resetForNewGame()
 
 
 # Tears down every piece of per-run state and returns to the main menu so the
@@ -344,9 +423,43 @@ func resetForNewGame() -> void:
 	# Clear chase mode so guards don't resume pursuit on the next game.
 	CrimeManager.summon().resetForNewGame()
 
+	# Zero out the FUN score for the next run.
+	var fm := FunManager.summon()
+	if fm:
+		fm.resetForNewGame()
+
 	# Return the game loop to its resting state.
 	currentPhase = EGamePhase.Player
 	gameState    = EGameState.MainMenu
+
+	# Show the title screen so the player can start a new run.
+	var titleScreen := HUD_TitleScreen.summon()
+	if titleScreen:
+		titleScreen.turnOn()
+
+
+func _cmdSetTime(timeStr: String) -> void:
+	if timeKeeper == null or gameState != EGameState.Gameplay:
+		Console.print_warning("set_time: start a game first.")
+		return
+	var parts := timeStr.split(":")
+	if parts.size() != 2 or not parts[0].is_valid_int() or not parts[1].is_valid_int():
+		Console.print_warning("set_time: expected HH:MM format (e.g. 13:30).")
+		return
+	var hours   := parts[0].to_int()
+	var minutes := parts[1].to_int()
+	if hours < 0 or hours > 23 or minutes < 0 or minutes > 59:
+		Console.print_warning("set_time: %s is not a valid time." % timeStr)
+		return
+	var targetSeconds := float(hours * 3600 + minutes * 60)
+	var startSeconds  := timeKeeper.gameStartHour * 3600.0
+	var elapsed       := targetSeconds - startSeconds
+	if elapsed < 0.0:
+		Console.print_warning("set_time: %s is before the faire opens at %02d:00." \
+				% [timeStr, int(timeKeeper.gameStartHour)])
+		return
+	timeKeeper.jumpToElapsedSeconds(elapsed)
+	Console.print_line("set_time: clock set to %s (%d turns)." % [timeStr, timeKeeper.getTurns()])
 
 
 func _cmdResetGame() -> void:
@@ -531,6 +644,10 @@ func handlePlayerDoPickPocket(attacker: PlayerCharacterComponent, victim: MarkCo
 			elif loot["item"] != null:
 				inventory.addItem(loot["item"])
 				_spawnLootFloater(attacker.entity, loot["item"])
+			# Award FUN for any successful steal, whether item or coin.
+			var fm := FunManager.summon()
+			if fm:
+				fm.addFun(FunManager.FUN_PICKPOCKET, "pickpocket")
 
 		_registerPickpocketCrime(attacker, victim, approachRating, loot)
 	
@@ -688,17 +805,54 @@ func _processMainGameplay(_delta: float) -> void:
 func _processPlayerPhase() -> void:
 	if playerEntity == null:
 		return
+		
+	# player can't act with low AP
+	var pcc = getPlayerComponent();	
+	if( pcc.currentAP < 1.0 ):
+		_onPlayerTurnTaken();
+		
 	var inputComp := playerEntity.getComponent(&"PlayerInputComponent") as PlayerInputComponent
 	if inputComp:
 		inputComp.processInput()
+		
 	# Phase transition is driven by mover.turnTaken → _onPlayerTurnTaken.
 
 
 func _onPlayerTurnTaken() -> void:
+	# Check whether the player just walked onto an exit tile before advancing
+	# the turn — a victory exits the game immediately.
+	if _checkForExitTileVictory():
+		return
+
 	# Snapshot all AIs into the pending list for this turn.
-	if( currentPhase == EGamePhase.Player ): 
+	if currentPhase == EGamePhase.Player:
 		pendingAIComponents = aiComponents.duplicate()
 		currentPhase = EGamePhase.Monster
+
+
+# Returns true and triggers a victory if the player is standing on an exit
+# spawn point in a gate zone.
+#
+# Exit positions are defined in gate TMX files as point objects with the
+# property  name="spawn"  value="exit".  They should be placed at the very
+# outer edge of the gate opening so the player has to intentionally walk
+# into them.
+#
+# TODO: once the gate TMX files have "exit" spawn objects, this will work
+# automatically.  Until then it always returns false and no victory fires.
+func _checkForExitTileVictory() -> bool:
+	if playerEntity == null:
+		return false
+	# Only fire in gate zones — exits don't exist elsewhere.
+	if not MapManager.gateZoneIds.has(playerEntity.worldPosition.z):
+		return false
+
+	var exitPoints: Array = MapManager.spawnPoints.get("exit", [])
+	for point: Vector3i in exitPoints:
+		if point == playerEntity.worldPosition:
+			goToVictory()
+			return true
+	return false
 
 
 func _onPlayerZoneChanged(newZoneId: int) -> void:

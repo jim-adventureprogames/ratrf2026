@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://brvs0licd288f" path="res://entities/components/crime_detection_component.gd" id="10_03rna"]
 [ext_resource type="AudioStream" uid="uid://b6dqk4y6q2b0l" path="res://audio/sfx/fence_what_are_you_sellin.wav" id="10_lo8wl"]
 [ext_resource type="AudioStream" uid="uid://ccjtkkqesotm6" path="res://audio/sfx/fence_thank_you.wav" id="11_hu0hv"]
+[ext_resource type="Script" uid="uid://dq7fkkfn4ythi" path="res://entities/components/blocks_movement_component.gd" id="12_lo8wl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvaaw"]
 shader = ExtResource("2_vxkil")
@@ -33,7 +34,7 @@ material = SubResource("ShaderMaterial_lvaaw")
 sprite_frames = ExtResource("3_ywoxk")
 animation = &"idle_down"
 autoplay = "idle_down"
-frame_progress = 0.086227834
+frame_progress = 0.36502218
 script = ExtResource("4_hu0hv")
 
 [node name="moverComponent" type="Node" parent="." unique_id=224727644]
@@ -59,3 +60,7 @@ dialogKeyWhileAlart = "interact_alart"
 clip_onOpenSell = ExtResource("10_lo8wl")
 clip_onSuccessfulTransaction = ExtResource("11_hu0hv")
 metadata/_custom_type_script = "uid://comtspau41kqu"
+
+[node name="BlocksMovementComponent" type="Node" parent="." unique_id=1438807257]
+script = ExtResource("12_lo8wl")
+metadata/_custom_type_script = "uid://dq7fkkfn4ythi"

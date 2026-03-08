@@ -10,3 +10,12 @@ mark_loot_table_01:
 
 clothing_loot_table_01:
 	data:
+
+food_loot_table_01:
+	data:
+		enerjam:	10
+		mead:	10
+		turkeyleg:	10
+		nuts:	10
+		water:	10
+		

@@ -12,6 +12,6 @@ script = ExtResource("2_ylhhg")
 archetypeName = "tamagotchi"
 friendlyName = "itemname_tamagotchi"
 flavorText = "flavor_tamagotchi"
-value = 10
+value = 750
 image = SubResource("AtlasTexture_jti6a")
 metadata/_custom_type_script = "uid://b04yd0fmhcv5o"

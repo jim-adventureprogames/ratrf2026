@@ -12,6 +12,8 @@ var _currentItem: Item = null
 # Seconds of continuous hover required before item_hovered fires.
 const HOVER_DELAY := 0.5
 
+# Emitted immediately when the cursor enters a filled slot.
+signal item_entered(item: Item)
 # Emitted after the hover delay if the cursor is still over a filled slot.
 signal item_hovered(item: Item, canvas_pos: Vector2)
 # Emitted immediately when the cursor leaves, regardless of delay state.
@@ -37,6 +39,7 @@ func _gui_input(event: InputEvent) -> void:
 func _onMouseEntered() -> void:
 	if _currentItem == null:
 		return
+	item_entered.emit(_currentItem)
 	_hoverPending = true
 	get_tree().create_timer(HOVER_DELAY).timeout.connect(_onHoverTimerExpired)
 

@@ -14,6 +14,12 @@ itemname_pog_slammer,Pog Slammer
 itemname_quarters,Arcade-Ready Quarters
 itemname_tamagotchi,Tamugacheen
 itemname_wallet_chain,Wallet Chain
+itemname_enerjam,Enerjam
+itemname_nuts,The King's Nuts
+itemname_water,Water
+itemname_mead,Mead
+itemname_turkeyleg,Huge Turkey Leg
+,
 ,
 flavor_cloves,The D is not silent.
 flavor_dog_sunscreen,For their cute little noses and bald spots!
@@ -30,6 +36,13 @@ flavor_pog_slammer,"Radical design, weighted for victory."
 flavor_quarters,Specially designed for quick continues and indicating who got next.
 flavor_tamagotchi,"This one will live forever, right? Right!?"
 flavor_wallet_chain,Did you also get the wallet?
+flavor_enerjam,Hydration and stamina
+flavor_nuts,Small stamina boost
+flavor_water,Large hydration boost
+flavor_mead,Mead-ium hydration boost
+flavor_turkeyleg,Large stamina boost
+,
+,
 ,
 ,
 bark_crime_suspect_01,hmm...
